@@ -8,4 +8,4 @@ Feel free to provide comments and feedback.
 
 ### SQL_SKELETON
 
-Batch program with SQL embedded in RPGLE. Includes error checking and handling.  Two versions, one in completely free format and one not free with the D-Specs in fixed format.
+Batch program with SQL embedded in RPGLE. Includes error checking and handling.  There are two versions, one in completely free format and one not free with the D-Specs in fixed format.
