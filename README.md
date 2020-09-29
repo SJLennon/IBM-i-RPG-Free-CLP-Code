@@ -4,11 +4,12 @@
 More developers are learning about the **IBM i** as a wonderful business platform. ( It was formerly known as the **AS/400**.) 
 
 My intent is to provide real programs that help you learn, or improve your current understanding, and which you can adapt to you needs.
+
 Feel free to provide comments and feedback.
 
 ## Copy_Mbrs
 
-Code to be copies into other programs.
+Code to be copied into other programs.
 
 ## Service_Pgms
 

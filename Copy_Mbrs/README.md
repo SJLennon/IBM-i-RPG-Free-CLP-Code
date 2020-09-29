@@ -8,6 +8,6 @@ These are source files that will be copied into programs using /COPY or /INCLUDE
 
 * SRV_MSG_P
 
-     Prototype definition for procedures in the SRV_MSG service program.
+     Prototype definitions for procedures in the SRV_MSG service program.
 
 

@@ -1,6 +1,6 @@
-### Service Programss
+### Service Programs
 
-Utility Service Programs
+Utility Service Programs. This is probably the first code you want to explore before going on to the interactive programs.
 
 * SRV_MSG 
 
