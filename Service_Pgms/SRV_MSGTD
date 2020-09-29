@@ -1,0 +1,89 @@
+     A*%%TS  SD  20200723  195503  LENNONS     REL-V7R4M0  5770-WDS
+     A*===============================================================
+     A* Display to test functions in SRV_MSG service program
+     A*===============================================================
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      PRINT
+     A                                      INDARA
+     A                                      ALTHELP
+     A                                      CA03
+     A                                      CF04
+     A                                      CF05
+     A                                      CF06
+     A                                      CF07
+     A                                      CA12
+     A                                      HELP
+     A*===============================================================
+     A*=== Screen Header:  Fields begin with SH_ =====================
+     A*
+     A          R SH_HDR
+     A*%%TS  SD  20111207  212036  SLENNON     REL-V7R1M0  5770-WDS
+     A                                      OVERLAY
+     A                                      TEXT('Screen Header')
+     A            SH_PGM        10A  O  1  2
+     A                                  1 27'Test SRV_MSG Service Program'
+     A                                  1 72DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A            SH_FUNCT      50A  O  2 16DSPATR(HI)
+     A                                  2 72TIME
+     A                                  4  4'Message to send:'
+     A            SH_MSG        69   B  5  4
+     A                                  8  4'F4 - SndMsgPgmQ'
+     A                                  9  4'F5 - ClrMsgPgmQ'
+     A                                 10  4'F6 - SndInfMsg'
+     A                                 11  4'F7 - SndEscMsg'
+     A  40                              6  4'Please enter a message.'
+     A                                      DSPATR(RI)
+     A*===============================================================
+     A*=== Screen footer & function keys:  Fields begin with SFT_ ====
+     A*
+     A          R SFT_FKEY
+     A*%%TS  SD  20111208  204102  SLENNON     REL-V7R1M0  5770-WDS
+     A                                      TEXT('Screen Footer')
+     A                                      OVERLAY
+     A                                 22  2'                          Demo Cor-
+     A                                      p of America                       -
+     A                                               '
+     A                                      DSPATR(UL)
+     A            SFT_KEYS      78A  O 23  2COLOR(BLU)
+     A*===============================================================
+     A*=== Message Subfile:  No fields ===============================
+     A*
+     A          R MSGSFL                    SFL
+     A*%%TS  SD  19990831  134515  LENNON$S    REL-V4R2M0  5769-PW1
+     A                                      TEXT('Message Subfile')
+     A                                      SFLMSGRCD(24)
+     A            MSGKEY                    SFLMSGKEY
+     A            MSGPGMQ                   SFLPGMQ(10)
+     A*===============================================================
+     A*=== Message Subfile Control: No fields ========================
+     A*
+     A          R MSGCTL                    SFLCTL(MSGSFL)
+     A*%%TS  SD  19990831  134515  LENNON$S    REL-V4R2M0  5769-PW1
+     A                                      TEXT('Message Subfile Control')
+     A                                      PAGEDOWN
+     A                                      PAGEUP
+     A                                      OVERLAY
+     A                                      SFLDSP
+     A                                      SFLDSPCTL
+     A                                      SFLINZ
+     A N90                                  SFLEND
+     A                                      SFLSIZ(0002)
+     A                                      SFLPAG(0001)
+     A            MSGPGMQ                   SFLPGMQ(10)
+     A*===============================================================
+     A*=== Dummy Record ==============================================
+     A*
+     A          R DUMMY
+     A                                 24 79'*'
+     A*%%RS+<record-sequences>
+     A*%%RS+ <sequence name="TOP">
+     A*%%RS+  <device type="display" width="80" height="24" />
+     A*%%RS+  <record-write record-format="SH_HDR" />
+     A*%%RS+  <record-write record-format="SFT_FKEY" />
+     A*%%RS+  <record-write record-format="MSGSFL" />
+     A*%%RS+  <record-write record-format="MSGCTL" />
+     A*%%RS+ </sequence>
+     A*%%RS </record-sequences>
