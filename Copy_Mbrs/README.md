@@ -10,4 +10,8 @@ These are source files that will be copied into programs using /COPY or /INCLUDE
 
      Prototype definitions for procedures in the SRV_MSG service program.
 
+* SRV_STR_P
+
+     Prototype definitions for procedures in the SRV_STR service program.
+
 

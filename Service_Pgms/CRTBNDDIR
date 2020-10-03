@@ -1,7 +1,8 @@
              PGM
 /* Create UTIL_BND binding directory in *CURLIB                  */
-/*  Change next statement if a different library is needed       */
+/*  Change next statement if needed                              */
              CRTBNDDIR  BNDDIR(*CURLIB/UTIL_BND) TEXT('Utilities +
                           Service PGMs')
              ADDBNDDIRE BNDDIR(UTIL_BND) OBJ((SRV_MSG *SRVPGM *DEFER))
+             ADDBNDDIRE BNDDIR(UTIL_BND) OBJ((SRV_STR *SRVPGM *DEFER))
              ENDPGM
