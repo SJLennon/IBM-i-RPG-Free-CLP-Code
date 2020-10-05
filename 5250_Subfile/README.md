@@ -15,18 +15,18 @@ This is a working application that allows display, selection and maintenance of 
 
 #### PMTCUSTR/PMTCUSTD 
 
-    RPG program that puts up a 5250 subfile that allows searching by customer name, city and state. Display of Inactive records can be toggled using F9.
+ RPG program that puts up a 5250 subfile that allows searching by customer name, city and state. Display of Inactive records can be toggled using F9.
     
-    There are 3 functions, or modes, controlled by the first parameter passsed:  Inquiry to display a record; Maintenance to change a record;, Selection to return a customer id.
+ There are 3 functions, or modes, controlled by the first parameter passsed:  Inquiry to display a record; Maintenance to change a record;, Selection to return a customer id.
 
         - I gives 5=Display
         - M gives 2=Edit 5=Display
         - S gives 1=select 5=Display
-     Conceptually, you can call this program from almost anywhere and  access to it is contolled by whatever menuing or security system you have in place. The general user population would progably get Inquiry and Sales would have Maintanance. Selection could be used for any in-house program that needed to prompt for  a customer id number.
+  Conceptually, you can call this program from almost anywhere and access to it is contolled by whatever menuing or security system you have in place. The general user population would progably get Inquiry and Sales would have Maintanance. Selection could be used for any in-house program that needed to prompt for  a customer id number.
   
 #### MTNCUSTR/MTNCUSTD
 
-  RPG program that maintains a customer.  Customer id is provided as the first parameter. It also adds or displays a customer. Function is controlled by the second parameter. It is called from PMTCUSTR, but it could be called from any program that has a customer id available.
+  RPG program that maintains a customer.  Customer id is provided as the first parameter. It also adds or displays a customer. Function is controlled by the second parameter. It is called from PMTCUSTR, but it could be called from any program that has a customer id available, or needs to add a customer.
 
 #### CRTMSGF
 
@@ -38,6 +38,6 @@ This is a working application that allows display, selection and maintenance of 
 
 #### CustMast.SQL
 
-  SQL code to create and populate the CUSTMAST tsble. You will need to change the _set schema_ to your target library.
+  SQL code to create and populate the CUSTMAST tsble. You will need to change the _**set schema**_ in the first line to your target library.  You would put this in the IFS and run it with the RUNSQLSTM command.
 
   Contains 300 randomly generate rows, courtesy of the fine folk at _http://generatedata.com/_, plus a little tweaking by hand.   
