@@ -1,0 +1,833 @@
+      /TITLE MNTCUSTR - Update/Display a Customer Master
+       //==============================================================
+       // A maintenance or display program for a Customer Master Recds
+       //
+       //
+       // Parameters
+       // ----------
+       //  1 In  Z4  Customer Id to, or 0 to add a new code
+       //  2 In  CL1 Function
+       //            C - Close Display file
+       //            E - Edit passed record
+       //            A - Add a new record
+       //            D - Display record
+       //
+       //==============================================================
+       // MM/DD/YYYY  Proj# Developer
+       // ----------  ----- -------------------------------------------
+       // 10/21/2012  8399  Sam Lennon   Original coding
+       //
+       //==============================================================
+       // Program is essentially without indicators. (Indicators are
+       // stil lneeded to control the display file, but all have names.)
+       //
+       // Naming Conventions
+       // ==================
+       // - Lower case is the default for opcodes.
+       // - TitleCase is used for program variables, subroutines and procedure
+       //     names, e.g. MaxOrderQty, BldFkeyText, etc.
+       // - Temporary variables are prefixed with "wk", e.g., wkDate.  Such
+       //     variables contain valid data for only a short time and are never
+       //     carried across subroutines.
+       // - UPPERCASE is used for external names, i.e., files, fields, formats
+       //     and anything else not directly coded in the program.
+
+       // - In the display file, this screen field naming convention is used:
+       //     Screen Header:   Fields begin with SH_
+       //     Detail           Fields begin with SD_
+       //     Screen footer:   Fields begin with SFT_
+       //==============================================================
+       // Compilation
+       //    Use CRTSQLRPGI command.
+       //    Note that /INCLUDEs expects to find code in DEMO library,
+       //    not the default of QRPGLESRC. Change as needed.
+       //=============================================================
+
+     H DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt)
+     H BndDir('UTIL_BND')
+
+       //=== Display File =============================================
+     FMTNCUSTD  CF   E             WorkStn INFDS(dfInfDS)
+     F                                     INDDS(dfIndDS)
+     F                                     USROPN
+
+       //=== Service Program Prototypes ===============================
+      /include DEMO,Srv_Msg_P
+
+       //=== Named hexadecimal constants for function keys ============
+      /include DEMO,##AIDBYTES
+
+       //=== Fields read by SQL ========================================
+       // NOTE: Only the fields in the SQL statement are populated!
+     D CUSTMAST      e ds                  extname(CUSTMAST)
+       //                                     qualified template
+       // FetchData       ds                  likeds(STATES)
+     D
+       //=== SQL State Constants ======================================
+     d SQLSuccess      c                   '00000'
+     d SQLNoData       c                   '02000'
+     d SQLNoMoreData   c                   '02000'
+     d SQLDupRecd      c                   '23505'
+     d SQLRowLocked    c                   '57033'
+
+
+       //=== Display File Information Data Structure ==================
+       //    Allows us to determine which function key was pressed
+     D dfInfDS         DS
+     D Key                   369    369
+
+       //=== Display File Indicator Data Structure ====================
+       // This is a "private" indicator area for the display file.
+     D dfIndDS         ds            99
+
+       //--- 01-20 are not automatically cleared after EXFMT ----------
+     D Protect_SD_ALL         10     10n
+
+       //--- 21-99 are automatically cleared after EXFMT --------------
+     D dfIndClr               21     99                                         ????
+     D RI_SD_ACTIVE           40     40n
+     D PC_SD_ACTIVE           41     41n
+     D RI_SD_NAME             42     42n
+     D PC_SD_NAME             43     43n
+     D RI_SD_ADDR             44     44n
+     D PC_SD_ADDR             45     45n
+     D RI_SD_CITY             46     46n
+     D PC_SD_CITY             47     47n
+     D RI_SD_STATE            48     48n
+     D PC_SD_STATE            49     49n
+     D RI_SD_ZIP              50     50n
+     D PC_SD_ZIP              51     51n
+     D RI_SD_ACCTPH           52     52n
+     D PC_SD_ACCTPH           53     53n
+     D RI_SD_ACCTMGR          54     54n
+     D PC_SD_ACCTMGR          55     55n
+     D RI_SD_CORPPH           56     56n
+     D PC_SD_CORPPH           57     57n
+
+       //*=== Fields to control the subfile screen =====================
+       //  SflRRN         s              5  0
+       //  RcdsInSfl      s              5  0
+       //  SflPageSize    c                   12
+       //* SC_CSR_RCD is defined in the display file and is set with a
+       //* RRN which determines which subfile page is displayed and on
+       //* which record the cursor is positioned.
+
+       //=== Screen Header Text =======================================
+     D H2TextD         s                   like(SH_FUNCT)
+     D                                     inz('Display')
+     D H2TextU         s                   like(SH_FUNCT)
+     D                                     inz('Add/Change')
+
+       //=== Text for function keys ===================================
+     D F3Text          c                   'F3=Exit'
+       //F4Text          c                   'F4=Prompt*'
+     d F5Text          c                   'F5=Refresh'
+     d F12Text         c                   'F12=Cancel'
+
+       //=== External Programs Prototypes =============================
+     D PmtState        PR                  EXTPGM('PMTSTATER')
+     D  TheState                           like(STATE)
+     d
+       //=== Global Switches ==========================================
+     D SflMsgSnt       s               n
+     D CowsComeHome    c                   const('0')
+     D Function        s              1a
+     D Displaying      c                   const('D')
+     D Editing         c                   const('E')
+     D Adding          c                   const('A')
+     D Closing         c                   const('C')
+     D NoErrors        s               n
+
+       // === Global Fields ===========================================
+     D Orig_CHGTIME    s               z
+
+       //=== Work Fields ==============================================
+     D wkInt           s             10i 0
+     D wkMsgText       s            256a   varying
+
+       //=== Translation ==============================================
+     D Lower           c                   const('abcdefghijklmnopqrstuvwxyz')
+     D Upper           c                   const('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+
+     D HighVals        s             30    inz(*hival)
+
+       // === Next available customer number ==========================
+       // CUSTNEXT        ds                  dtaara(CUSTNEXT)
+     d Cust_Next       s              4p 0 dtaara(CUSTNEXT)
+
+       //=== Program Status Data Structure ============================
+     D ProgStatus     sds
+     D PgmName           *PROC
+     D  CURR_USER            358    367                                         * Current user
+     D  USER                 254    263                                         * User name
+
+       //=== Program Parameters =======================================
+     D pId             s                   Like(CUSTID)
+     D pMaintain       s              1a
+
+       // I/O/B   Type  Lgth  Description
+       // -----   ----  ----  -----------------------------------------
+       //   I      P      3   Manufacturing Cust Mast
+       //   I      C      1   If Y, then maintenance is allowed.
+       //                     Otherwise, or omitted, display only.
+
+       //==============================================================
+       // === Program Starts Here =====================================
+       //==============================================================
+     C     *Entry        plist
+     C                   parm                    pId
+     C                   parm                    pMaintain
+      /FREE
+
+       //=== Set SQL Options ===============================
+       exec sql set option datfmt=*iso,
+                           closqlcsr=*endmod,
+                           commit = *NONE;
+
+       //=== Initialization Logic ===================================
+       exsr Init;
+
+       //--- Establish window that other formats refer to ---
+       write SH_HDR;
+
+       //============================================================
+       // === Main Program Loop =====================================
+       //============================================================
+       // Loops until logic decides to exit.
+       dou CowsComeHome;
+
+         select;
+           // =======================================================
+           // === Displaying an existing Customer ===================
+           // =======================================================
+           when  Function = Displaying;
+             exsr ReadRecd;
+             if SQLSTT = SQLNoData;
+               SQLProblem('Calling error 1: Code passed in does not exist.');
+             endif;
+             exsr FillScreenFields;
+             // All Fields protected
+             exsr ProtectAll;
+             exsr ScreenIO;
+             exsr CloseDownPgm;
+             return;
+
+           // =======================================================
+           // === Updating an existing Customer =====================
+           // =======================================================
+           when Function = Editing;
+             exsr ReadRecd;
+             if SQLSTT = SQLNoData;
+               SQLProblem('Calling error 2: Code passed in does not exist.');
+             endif;
+             exsr FillScreenFields;
+
+             // Write/read screen until all data is valid,
+             // then re-display for confirmation to update.
+             dou NoErrors;
+               exsr ScreenIO;
+               select;
+
+                 when Key = F03 or Key = F12;
+                   exsr CloseDownPgm;
+                   return;
+
+                 when Key = F05;
+                     exsr ReadRecd;
+                     if SQLSTT = SQLNoData;
+                         // Record vanished!
+                     SflMsgSnt= SndSflMsg('DEM0599'); //Delete, redo search
+                         clear CUSTMAST;
+                     endif;
+                     NoErrors = *off;
+
+                 when Key = F04;
+                   // CF04 reads the screen data. We then prompt and replace
+                   // anything in the state field, then we redisplay and
+                   // re-edit the screen data.
+                   select;
+                   //  --- Prompt for State Code
+                     when SD_PMT_FLD = 'SD_STATE';
+                       PmtState(STATE);
+                       SD_STATE = STATE;
+                       NoErrors = *off;       // DOU Loop again
+                     // --- Field not promptable
+                     other;
+                     //   Use F4 only in field followed by + sign
+                     SflMsgSnt= SndSflMsg('DEM0005');
+                     NoErrors = *off;        // DOU Loop again
+                   endsl;
+
+                 when Key = Enter;
+                   exsr EditUpdData;
+                   if NoErrors;
+                     // Re-display screen fields for confirmation
+                     exsr ProtectAll;
+                     exsr FillScreenFields;
+                     SflMsgSnt = SndSflMsg('DEM0000'); // Enter to update ...
+                     exsr ScreenIO;
+                     select;
+                       when Key = F12 or Key = F03 or Key = F05;
+                         // Loop again
+                       when Key = Enter;
+                         exsr UpdateRecd;
+                         if NoErrors;
+                           exsr CloseDownPgm; // Success! Exit program
+                           return;
+                         endif;
+                       other;
+                         SflMsgSnt = SndSflMsg('DEM0003'); // Key not active
+                         NoErrors = *off;
+                     endsl;
+                   endif;
+                   // Open up fields for correction of errors
+                   exsr UnprotectAll;
+
+                 other;
+                   SflMsgSnt = SndSflMsg('DEM0003'); // Key not active
+                   NoErrors = *off;                  // Stay in dou NoErrors
+               endsl;
+             enddo;
+
+           // =======================================================
+           // === Adding a new Customer =============================
+           // =======================================================
+           when  Function=Adding;
+             clear  CUSTMAST;
+             //Default status to active
+             ACTIVE = 'Y';
+             //set just to make screen look better
+             CHGTIME = %timestamp();
+             CHGUSER = CURR_USER;
+             exsr FillScreenFields;
+
+             dou NoErrors;
+               // Write/read screen until all data is valid,
+               // then re-display for confirmation to update.
+               //All fields can be keyed
+               exsr UnProtectAll;
+               exsr ScreenIO;
+               select;
+                 when Key = F03 or Key = F12;
+                   exsr CloseDownPgm;
+                   return;
+                 when Key = Enter;
+                   exsr EditUpdData;
+                   if NoErrors;
+                     // Re-display field for confirmation
+                     exsr ProtectAll;
+                     SflMsgSnt = SndSflMsg('DEM0009'); // Enter to add ...
+                     exsr FillScreenFields;
+                     exsr ScreenIo;
+                     select;
+                       when Key=F12;
+                         exsr FillScreenFields;
+                       when Key = Enter;
+                         exsr AddRecd;
+                         if NoErrors;
+                           exsr CloseDownPgm;
+                           return;
+                         endif;
+                       other;
+                         SflMsgSnt = SndSflMsg('DEM0003'); // Key not active
+                         NoErrors = *off;
+                     endsl;
+                   endif;
+                 other;
+                   SflMsgSnt = SndSflMsg('DEM0003'); // Key not active
+               endsl;
+             enddo;
+
+           other;
+           // =======================================================
+           //=== Goofed - Should ever happen ========================
+           // =======================================================
+             dump(a);
+             SflMsgSnt = SndSflMsg('DEM9999'); // Contact IT now ...
+             return;
+         endsl;
+
+       enddo;
+       return;
+
+       //============================================================
+       //=== End of Main Program Loop ===============================
+       //============================================================
+       return;
+
+
+       //=== ReadRecd ===============================================
+       begsr ReadRecd;
+       exec sql
+        select		
+             CUSTID
+            ,NAME
+            ,ADDR
+            ,CITY
+            ,STATE
+            ,ZIP
+            ,CORPPHONE
+            ,ACCTMGR
+            ,ACCTPHONE
+            ,ACTIVE
+            ,CHGTIME
+            ,CHGUSER
+        into       :CUSTMAST
+        from   	  CUSTMAST
+        where      CUSTID = :pID
+         ;
+       if SQLSTT <> SQLSuccess and SQLSTT <> SQLNoData;
+         SQLProblem('ReadRecd');
+       endif;
+       Orig_CHGTIME = CHGTIME;   // Save for update comparison
+       endsr;
+
+       //=== FillScreenFields =======================================
+       begsr FillScreenFields;
+           SD_CUSTID = CUSTID;
+           SD_NAME = NAME;
+           SD_ADDR = ADDR;
+           SD_CITY = CITY;
+           SD_STATE = STATE;
+           SD_ZIP = ZIP;
+           SD_ACTIVE = ACTIVE;
+           SD_ACCTPH = ACCTPHONE;
+           SD_ACCTMGR =ACCTMGR;
+           SD_CORPPH = CORPPHONE;
+           exec sql VALUES
+                 varchar_format(:CHGTIME, 'YYYY-Mon-DD')
+                 concat ' at ' concat
+                 varchar_format(:CHGTIME,'HH24:MI:SS')
+                 into :SD_CHGTIME;
+           SD_CHGUSER = CHGUSER;
+       endsr;
+
+       //=== EditUpdData ============================================
+       // Edit the screen fields that can be changed on a update.
+       // Give up when the first error found.
+       // A valid screen field is moved to the database record.
+       begsr EditUpdData;
+       NoErrors = *on;
+
+       // ACTIVE Status
+       exsr Edit_SD_ACTIVE;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+       // Name
+       exsr Edit_SD_NAME;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+       // Addr
+       exsr Edit_SD_ADDR;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+       // City
+       exsr Edit_SD_CITY;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+       // State
+       exsr Edit_SD_STATE;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+       // ZIP
+       exsr Edit_SD_ZIP;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+       // Account Phone
+       exsr Edit_SD_ACCTPH;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+       // Account Manager
+       exsr Edit_SD_ACCTMGR;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+       // Corporate Phone
+       exsr Edit_SD_CORPPH;
+       if NoErrors = *off;
+           leavesr;
+       endif;
+
+       endsr;
+
+       //=== EditAddData ============================================
+       // Edit the screen fields needed to add a record.
+       // Give up when the first error found.
+       // A valid screen field is moved to the database record.
+       begsr EditAddData;
+       NoErrors = *on;
+
+       endsr;
+
+       //=== Edit_SD_ACTIVE==========================================
+       begsr Edit_SD_ACTIVE;
+           if SD_ACTIVE = 'Y' or SD_ACTIVE = 'N';
+               ACTIVE = SD_ACTIVE;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0501': 'Active Status');
+           NoErrors = *off;
+           RI_SD_ACTIVE = *on;
+           PC_SD_ACTIVE = *on;
+       endsr;
+
+       //=== Edit_SD_NAME ===========================================
+       begsr Edit_SD_NAME;
+           if SD_NAME <> ' ';
+               NAME = SD_NAME;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0502': 'Name');
+           NoErrors= *off;
+           RI_SD_NAME = *ON;
+           PC_SD_NAME = *ON;
+       endsr;
+
+       //=== Edit_SD_ADDR ===========================================
+       begsr Edit_SD_ADDR;
+           if SD_ADDR <> ' ';
+               ADDR = SD_ADDR;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0502': 'Address');
+           NoErrors= *off;
+           RI_SD_ADDR = *ON;
+           PC_SD_ADDR = *ON;
+       endsr;
+
+       //=== Edit_SD_CITY ===========================================
+       begsr Edit_SD_CITY;
+           if SD_CITY <> ' ';
+               CITY = SD_CITY;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0502': 'City');
+           NoErrors= *off;
+           RI_SD_CITY = *ON;
+           PC_SD_CITY = *ON;
+       endsr;
+
+       //=== Edit_SD_STATE ==========================================
+       begsr Edit_SD_STATE;
+           exec sql select STATE into :STATE
+           from STATES
+           where STATE = :SD_STATE;
+           if SQLSTT = SQLSuccess;
+               STATE = SD_STATE;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0503');
+           NoErrors= *off;
+           RI_SD_STATE= *ON;
+           PC_SD_STATE = *ON;
+       endsr;
+
+       //=== Edit_SD_ZIP ============================================
+       begsr Edit_SD_ZIP;
+           if SD_ZIP <> ' ';
+               ZIP = SD_ZIP;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0502': 'ZIP');
+           NoErrors= *off;
+           RI_SD_ZIP= *ON;
+           PC_SD_ZIP = *ON;
+       endsr;
+
+       //=== Edit_SD_ACCTPH =========================================
+       begsr Edit_SD_ACCTPH;
+           if SD_ACCTPH <> ' ';
+               ACCTPHONE = SD_ACCTPH;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0502': 'Account Manager Phone');
+           NoErrors= *off;
+           RI_SD_ACCTPH= *ON;
+           PC_SD_ACCTPH = *ON;
+       endsr;
+
+       //=== Edit_SD_ACCTMGR =========================================
+       begsr Edit_SD_ACCTMGR;
+           if SD_ACCTMGR <> ' ';
+               ACCTMGR = SD_ACCTMGR;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0502': 'Account Manager Name');
+           NoErrors= *off;
+           RI_SD_ACCTMGR= *ON;
+           PC_SD_ACCTMGR = *ON;
+       endsr;
+
+       //=== Edit_SD_CORPPH =========================================
+       begsr Edit_SD_CORPPH;
+           if SD_CORPPH <> ' ';
+               CORPPHONE = SD_CORPPH;
+               leavesr;
+           endif;
+           SflMsgSnt = SndSflMsg('DEM0502': 'Corporate Phone');
+           NoErrors= *off;
+           RI_SD_CORPPH= *ON;
+           PC_SD_CORPPH = *ON;
+       endsr;
+
+
+       //=== AddRecd ================================================
+       // Insert a record into the file.
+       // Returns:  NoErrors = *on if the add was successful.
+       begsr AddRecd;
+         NoErrors = *on;
+         in *LOCK Cust_Next;
+         Cust_Next += 1;
+         Out Cust_Next;
+         CUSTID= Cust_Next;
+         CHGTIME = %timestamp();
+         CHGUSER = USER;
+         exec sql
+         insert into custmast
+           values(:CUSTMAST)
+           ;
+         // There is no good reason why insert should fail.
+         if SQLSTT <> SQLSuccess;
+           SQLProblem('Insert into CUSTMAST ...');
+         endif;
+       endsr;
+
+       //=== UpdateRecd =============================================
+       // Updates the record with the screen data.
+         // The SQL WHERE checks the last time stamp and if different,
+         // doesn't update because someone else updated the record.
+         // SQLERRD(3) contains the actual number of records updated
+         // when the update is successful.
+       begsr UpdateRecd;
+         NoErrors = *on;
+         exec sql
+         update CUSTMAST
+         SET NAME = :SD_NAME,
+             ADDR = :SD_ADDR,
+             CITY = :SD_CITY,
+             STATE = :SD_STATE,
+             ZIP = :SD_ZIP,
+             CORPPHONE = :SD_CORPPH,
+             ACCTMGR = :SD_ACCTMGR,
+             ACCTPHONE = :SD_ACCTPH,
+             ACTIVE = :SD_ACTIVE,
+             CHGTIME = CURRENT TIMESTAMP,
+             CHGUSER = USER
+         where CUSTID = :CUSTID
+            -- and compare timestamp
+               and CHGTIME = :Orig_CHGTIME;
+         select;
+             when SQLSTT = SQLNOData;            // Update Failed
+               SflMsgSnt = SndSflMsg('DEM1002'); // Record changed, review.
+               NoErrors = *off;
+               // Show the changed data
+               exsr ReadRecd;
+               exsr FillScreenFields;
+
+             when SQLSTT =SQLRowLocked;          // Row locked
+       //          exec sql get diagnostics condition 1 :wkMsgText = MESSAGE_TEXT;
+                 sflMsgSnt = SndSflMsg('DEM1001' : SQLERRMC);
+                 NoErrors = *off;
+             when SQLSTT = SQLSuccess;
+
+             other;
+               SQLProblem('Update CUSTMAST');
+         endsl;
+       endsr;
+
+       //=== ClearScreenData ========================================
+       begsr ClearScreenData;
+         clear DETAILS;
+       endsr;
+
+       //=== ProtectAll =============================================
+       begsr ProtectAll;
+           Protect_SD_ALL = *on;
+       endsr;
+
+       //=== UnProtectAll ===========================================
+       begsr UnProtectAll;
+           Protect_SD_ALL = *off;
+       endsr;
+
+       //=== ScreenIO ===============================================
+       // Writes and Reads the screen
+       begsr ScreenIO;
+
+         write SH_HDR;
+         write SFT_FKEY;
+
+         // Show any messages in the error subfile.
+         if SflMsgSnt = *on;
+           write MSGCTL;
+         endif;
+
+         exfmt Details;
+
+         // Clear most display file indicators
+         clear dfIndClr;
+
+         // Clear any messages in the error subfile.
+         if SflMsgSnt = *on;
+           SflMsgSnt = ClrMsgPgmQ(PgmName);
+           write MSGCTL;
+         endif;
+
+       endsr;
+
+       //=== BldFKeyText ============================================
+       // Build the Function key text for the bottom of the screen.
+       begsr BldFkeyText;
+         SFT_KEYS=' ';
+         SFT_KEYS = CatB(SFT_KEYS : F3Text);
+         // SFT_KEYS = CatB(SFT_KEYS : F4Text);
+         SFT_KEYS = CatB(SFT_KEYS : F5Text);
+         SFT_KEYS = CatB(SFT_KEYS : F12Text);
+       endsr;
+
+       //=== CloseDownPgm ===========================================
+       // Things to do before we issue a return to the caller
+       begsr CloseDownPgm;
+       //    write DUMMY;
+       //    close MTNCUSTD;
+           // Do not turn on *LR to maintain an SFL display in caller
+       endsr;
+
+       //=== Init ===================================================
+       // Every time initialization logic
+       begsr Init;
+
+       //--- Analyse parameters ---
+       select;
+         when  %parms() = 0;     // Close down
+               if %open(MTNCUSTD);
+                  close MTNCUSTD;
+               endif;
+       //        *inlr = *on;
+               return;
+         when  %parms() = 1;
+           Function = Displaying;
+         when  %parms() = 2;
+           select;
+             when  pMaintain = Closing;
+             when  pMaintain = Adding;
+               Function = Adding;
+             when  pMaintain = Editing;
+               Function = Editing;
+             other;
+               Function = Displaying;
+           endsl;
+         other;
+           // Problem.
+       endsl;
+
+       //--- Miscellaneous setup ---
+       MSGPGMQ = PgmName;
+       SH_PGM = PgmName;
+       clear CUSTMAST;
+       clear dfIndDS;
+       exsr BldFkeyText;
+
+       //--- Open display file ---
+       if not %open(MTNCUSTD);
+         open MTNCUSTD;
+       endif;
+       endsr;
+       //============================================================
+       //   S u b  P r o c e d u r e s
+       //============================================================
+
+       //=== CatB ===================================================
+       // Concatenates a string to another string with a blank between.
+       // If the target string is all blank to start with it will not
+       // end up with a leading blank.
+      /END-FREE
+     PCatB             b
+     dCatB             PI            79    varying
+     D ToStr                         79    varying value
+     D AddStr                        79    varying value
+      /FREE
+       if ToStr=' ';
+         return AddStr;
+       else;
+         return %trimr(ToStr) + ' ' + AddStr;
+       endif;
+      /END-FREE
+     PCatB             e
+     P
+       //=== SQLProblem ===============================================
+       // For those "Never should happen" SQL errors.
+       // Issues DUMP(A) to dump memory, then ends program by
+       // sending an *ESCAPE message of the supplied debugging text.
+     p SQLProblem      B
+     d SQLProblem      PI
+     d piSQLDebug                  1024    varying value
+
+       //--- Local Variables ------------------------------------------
+     d wkSQLDebug      s           1024    varying
+
+      /free
+       wkSQLDebug = 'SQLSTT ' + SQLSTT
+                    + ' << Unexpected SQL Return Code: '
+                    + piSQLDebug;
+       dump(a);
+       SndEscMsg(wkSqlDebug);
+       return;
+      /end-free
+     p SQLProblem      E
+
+
+
+       //--------------------------------------------------------------
+       // Procedure name: SndSflMsg
+       // Purpose:        Send a message to the Error Subfile
+       // Returns:        *ON
+       // Parameter:      ErrMsgId => Msg Id to Send
+       // Parameter:      ErrMsgData => Optional Error Message Data
+       // Parameter:      ErrMsgFile => Optional Error Message File
+       //                 Defaults to PCAMSGF
+       //--------------------------------------------------------------
+     P SndSflMsg       B
+     D SndSflMsg       PI              N
+     D  ErrMsgId                      7A   CONST
+     D  ErrMsgData                   80A   CONST
+     D                                     OPTIONS(*NOPASS:*VARSIZE)
+     D  ErrMsgFile                   10A   CONST
+     D                                     OPTIONS(*NOPASS)
+
+       // Local fields
+     D retField        S               N
+     D wkMsgId         s              7a
+     D wkMsgFile       s             10a
+     D wkMsgData       s             80a   varying
+
+      /FREE
+       if %parms >2;
+         wkMsgFile = ErrMsgFile;
+       else;
+         wkMsgFile = 'CUSTMSGF';
+       ENDIF;
+       if %parms > 1;
+         wkMsgData = ErrMsgData;
+       else;
+         wkMsgData = ' ';
+       ENDIF;
+       wkMsgId = ErrMsgId;
+       SNDMSGPGMQ(PgmName:
+             wkMsgid:
+             wkMsgFile:
+             wkMsgData);
+
+        retField = *on;
+        RETURN retField;
+
+      /END-FREE
+     P SndSflMsg       E
+

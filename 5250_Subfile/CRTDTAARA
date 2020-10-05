@@ -1,0 +1,6 @@
+             PGM
+             DLTDTAARA  DTAARA(CUSTNEXT)
+             MONMSG     MSGID(CPF0000)
+             CRTDTAARA  DTAARA(CUSTNEXT) TYPE(*DEC) LEN(4) +
+                          VALUE(301) TEXT('Next customer number')
+             ENDPGM

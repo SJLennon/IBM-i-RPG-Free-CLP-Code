@@ -1,0 +1,40 @@
+             PGM
+             DLTMSGF    MSGF(LENNONS1/CUSTMSGF)
+             MONMSG     MSGID(CPF0000)
+
+             CRTMSGF    MSGF(LENNONS1/CUSTMSGF) TEXT('Customer +
+                          Related Messages')
+             ADDMSGD    MSGID(DEM0000) MSGF(CUSTMSGF) MSG('Press Enter to +
+                          update. F12 to Cancel.')
+             ADDMSGD    MSGID(DEM0002) MSGF(CUSTMSGF) MSG('No +
+                          records match the selection criteria')
+             ADDMSGD    MSGID(DEM0003) MSGF(CUSTMSGF) MSG('Key is +
+                          not active now')
+             ADDMSGD    MSGID(DEM0004) MSGF(CUSTMSGF) MSG('&1 is not +
+                          a valid option at this time.') FMT((*CHAR 1))
+             ADDMSGD    MSGID(DEM0005) MSGF(CUSTMSGF) MSG('Use F4 only if +
+                          + is on field')
+             ADDMSGD    MSGID(DEM0006) MSGF(CUSTMSGF) MSG('Too many +
+                          records. Change the selection criteria.')
+             ADDMSGD    MSGID(DEM0007) MSGF(CUSTMSGF) MSG('State +
+                          selection field in invalid.')
+             ADDMSGD    MSGID(DEM0008) MSGF(CUSTMSGF) MSG('Use F4 +
+                          only in field followed by +')
+             ADDMSGD    MSGID(DEM0009) MSGF(CUSTMSGF) MSG('Press Enter to +
+                          add.  Press F12 to cancel')
+             ADDMSGD    MSGID(DEM0501) MSGF(CUSTMSGF) MSG('&1: Must +
+                          be Y or N') FMT((*CHAR 40))
+             ADDMSGD    MSGID(DEM0502) MSGF(CUSTMSGF) MSG('&1: Must +
+                          not be blank') FMT((*CHAR 40))
+             ADDMSGD    MSGID(DEM0503) MSGF(CUSTMSGF) MSG('State +
+                          invalid. Can use F4 to prompt.')
+             ADDMSGD    MSGID(DEM0599) MSGF(CUSTMSGF) MSG('Customer +
+                          deleted. Exit & redo search.')
+             ADDMSGD    MSGID(DEM1001) MSGF(CUSTMSGF) MSG('Customer +
+                          being updated by another user or job.')
+             ADDMSGD    MSGID(DEM1002) MSGF(CUSTMSGF) MSG('Someone else +
+                          changed record.  Rewiew data.')
+
+             ADDMSGD    MSGID(DEM9999) MSGF(CUSTMSGF) MSG('Program Error! +
+                          Please contact IT now.')
+             ENDPGM
