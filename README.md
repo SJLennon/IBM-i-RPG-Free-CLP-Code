@@ -18,3 +18,7 @@ Utility support routines that are called from other code.
 ## SQL_SKELETON
 
 Batch program with SQL embedded in RPGLE. Includes error checking and handling.  There are two versions, one in completely free format and one not free with the D-Specs in fixed format.
+
+##  5250 Subfile
+
+Fully functional 5250 "green screen" Customer Master maintenance and prompting application, with full screen and window displays, modular code, service programs, message files and a  sample database.     
