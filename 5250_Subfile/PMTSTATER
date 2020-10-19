@@ -1,5 +1,12 @@
       /TITLE PMTSTATE Search and return a USA State Code
        //==============================================================*
+       // This is a "load all" subfile, where the system takes care or
+       // paging up and down. All selected data is loaded into the
+       // subfile. STATES table has only 58 rows, so selecting all
+       // is approptiate.
+       // For larger numbers of rows, a "page at at time" approach
+       // may make more sense.
+       //==============================================================*
        // Displays USA state names and their 2-char codes in a window.
        // Can sort the display by name or code.
        // Optionally can select and return a 2-char code.
@@ -22,7 +29,7 @@
        //     carried across subroutines.
        // - UPPERCASE is used for external names, i.e., files, fields, formats
        //     and anything else not directly coded in the program.
-
+       //
        // - In the display file, this field naming convention is used:
        //     Screen Header:   Fields begin with SH_
        //     Subfile:         Fields begin with SF_
@@ -35,18 +42,18 @@
        //    not the default of QRPGLESRC. Change as needed.
        //=============================================================
 
-     H DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt)
-     H BndDir('UTIL_BND')
-     H main(Main)
+     h DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt)
+     h BndDir('UTIL_BND')
+     h main(Main)
 
        //=== Display File ==============================================
-     FPMTSTATED CF   E             WorkStn INFDS(dfInfDS)
-     F                                     INDDS(dfIndDS)
-     F                                     SFILE(SFL:SflRRN)
-     F                                     USROPN
+     fPMTSTATED CF   E             WorkStn INFDS(dfInfDS)
+     f                                     INDDS(dfIndDS)
+     f                                     SFILE(SFL:SflRRN)
+     f                                     USROPN
 
-     D Main            pr                  extpgm('PMTSTATER')
-     D                                2A
+     d Main            pr                  extpgm('PMTSTATER')
+     d ReturnState                    2A
 
        //=== Service Program Prototypes ================================
       /include DEMO,Srv_Msg_P
@@ -57,8 +64,8 @@
        //=== Fields read by SQL ========================================
        // NOTE: Only the fields in fetchData which are fetched by the
        // SQL Cursor are populated.
-     D STATES        e ds                  extname(STATES)
-     D                                     qualified template
+     d STATES        e ds                  extname(STATES)
+     d                                     qualified template
      d FetchData       ds                  likeds(STATES)
 
        //=== SQL State Constants =======================================
@@ -70,56 +77,58 @@
 
        //=== Display File Information Data Structure ===================
        //    Allows us to determine which function key was pressed
-     D dfInfDS         DS
-     D Key                   369    369
+     d dfInfDS         DS
+     d Key                   369    369
        //=== Display File Indicator Data Structure =====================
        // This is a "private" indicator area for the display file.
-     D dfIndDS         ds            99
+     d dfIndDS         ds            99
 
        //--- 01-20 are not automatically cleared after EXFMT ----------
-     D scSortColor            01     01
+     d scCodeHi               01     01
+     d scNameHi               02     02
 
        //--- 21-99 automatically cleared after EXFMT ------------------
-     D dfIndClr               21     99
+     d dfIndClr               21     99
 
        //--- Subfile indicators (prefix "sf") -------------------------
-     D sfSflNxtChg            80     80n
-     D sfOPT_RI               81     81n
-     D sfOPT_PC               82     82n
+     d sfSflNxtChg            80     80n
+     d sfOPT_RI               81     81n
+     d sfOPT_PC               82     82n
 
        //--- Subfile Control indicators (prefix "sc") ----------------
-     D scMDT                  95     95n
-     D scNoDta                96     96n
-     D scSflEnd               97     97n
-     D scSflDsp               98     98n
-     D scSflClr               99     99n
+     d scMDT                  95     95n
+     d scNoDta                96     96n
+     d scSflEnd               97     97n
+     d scSflDsp               98     98n
+     d scSflClr               99     99n
 
        //=== Fields to control the subfile screen ======================
-     D  SflRRN         s              5  0
-     D  RcdsInSfl      s              5  0
-     D  SflPageSize    c                    7
+     d  SflRRN         s              5i 0
+     d  RcdsInSfl      s              5i 0
+     d  SflPageSize    c                    6
+     d  SflMaxRecd     s              5i 0  inz(9999)
        // SC_CSR_RCD is defined in the display file and is set with a
        // RRN which determines which subfile page is displayed and on
        // which record the cursor is positioned.
 
        //=== Program Status Data Structure =============================
-     D ProgStatus     sds
-     D PgmName           *PROC
+     d ProgStatus     sds
+     d PgmName           *PROC
 
-     D MainProc        S             10a
+     d MainProc        S             10a
 
        //=== Text for function keys ====================================
-     D F3Text          c                   'F3=Exit'
+     d F3Text          c                   'F3=Exit'
      d F5Text          c                   'F5=Refresh'
      d F12Text         c                   'F12=Cancel'
-     D F7Text1         c                   'F7=By '
-     D F7Text2         s              5a   inz(' ')
-     D F7Text          S             11a   inz(' ')
+     d F7Text1         c                   'F7=By '
+     d F7Text2         s              5a   inz(' ')
+     d F7Text          S             11a   inz(' ')
 
-       //SortSeq is used in SQL Order By
-     D SortSeq         s              4a   inz(' ')
-     D SortbyName      s              4a   inz('Name')
-     D SortbyCode      s              4a   inz('Code')
+       //SortSeq is used in SQL Order By in a CASE construct.
+     d SQLSortSeq      s              4a   inz(' ')
+     d SortbyName      s              4a   inz('Name')
+     d SortbyCode      s              4a   inz('Code')
 
        //=== Options Text ==============================================
 
@@ -127,35 +136,28 @@
 
        //=== Search Criteria Screen Fields =============================
      d SearchCriteria  ds                  inz
-     D SC_NAME
+     d SC_NAME
 
        //=== Last Search Criteria Fields ===============================
      d LastSearchCriteria...
      d                 ds                  inz
-     D LastSC_NAME                         Like(SC_NAME)
+     d LastSC_NAME                         Like(SC_NAME)
 
        //=== SQL Search Variables ======================================
-     D DESCLike        S             12    varying
+     d DESCLike        S             12    varying
 
        //=== Global Switches ===========================================
-     D EofData         s               n
-     D CursorOpen      s               n
-     D NewSearchCriteria...
-     D                 s               n
-     D SflMsgSnt       s               n
+     d EofData         s               n
+     d CursorOpen      s               n
+     d NewSearchCriteria...
+     d                 s               n
+     d SflMsgSnt       s               n
      d Opt1OK          s               n
-     D OptError        s               n
-     D CowsComeHome    c                   const('0')
+     d OptError        s               n
+     d CowsComeHome    c                   const('0')
 
        //=== Work Fields ===============================================
-     D inx             s             10i 0
-
-       //=== Translation ===============================================
-     D Lower           c                   const('abcdefghijklmnopqrstuvwxyz')
-     D Upper           c                   const('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-
-     D HighVals        s             30    inz(*hival)
-
+     d inx             s             10i 0
 
        //=============================================================
        //== Program Starts Here ======================================
@@ -163,7 +165,6 @@
      p Main            b
      d Main            pi
      d pState                              Like(FetchData.STATE)
-
 
       /FREE
        exsr Init;
@@ -173,7 +174,7 @@
        exec sql set option datfmt=*iso,
                            closqlcsr=*endmod;
        //=== SQL Cursor Definitions ==================================
-       // Sort Order is controlled by field SortSeq which is
+       // Sort Order is controlled by field SQLSortSeq which is
        // used in a CASE statement.
        exec SQL
         declare DataCur cursor for
@@ -182,18 +183,18 @@
                  NAME
         from     STATES
         where    upper(NAME) like :DescLike
-        order by case :SortSeq
+        order by case :SQLSortSeq
                       when :SortByName then NAME
                       when :SortByCode then STATE
                       else '1'
                  end
-        optimize for  7 rows
         for fetch only;
 
        // === Initial screen display =================================
        write SH_HDR;
        SflClear();
-       exsr SflFirstPage;
+       exsr ProcessSearchCriteria;
+       exsr SflLoadAll;
 
        //=============================================================
        // === Main Program Loop ======================================
@@ -206,7 +207,8 @@
 
          // If switching display order, reload first page
          if Key = F07;
-           exsr SflFirstPage;
+           exsr ProcessSearchCriteria;
+           exsr SflLoadAll;
          endif;
 
          // Write/Read the screen
@@ -219,21 +221,12 @@
            if SearchCriteria <> LastSearchCriteria
              or NewSearchCriteria = *on;
              SflClear();
-             exsr SflFirstPage;
+             exsr ProcessSearchCriteria;
+             exsr SflLoadAll;
            else;
              exsr ProcessOption;
            endif;
-           iter;
-         endif;
 
-         //--- Page Down -------------------------------------------
-         if Key = PageDown;
-           if RcdsInSfl > 0;
-             exsr SflFillPage;
-           else;
-             // Key not active msg
-             SflMsgSnt= SndSflMsg('DEM0003');
-           endif;
            iter;
          endif;
 
@@ -292,8 +285,8 @@
 
            //--- F3: Exit, close down program -----------------------
          when Key = F03;
-           *inlr = *on;
            exsr CloseDownPgm;
+           *inlr = *on;
            return;
 
            //--- F12: Return to caller, leave program active ---------
@@ -309,15 +302,17 @@
 
            //--- F7: Toggle Sort Sequence ---------------------------
          when Key = F07;
-           if SortSeq=SortByName;
-             SortSeq = SortByCode;
-             SC_SORTED = SortbyName;
-             ScSortColor=*on;
+           if SQLSortSeq=SortByName;
+             SQLSortSeq = SortByCode;
+             SC_SORTED = SortByCode;
+             scCodeHi = *on;
+             scNameHi = *off;
              F7Text2 = SortByName;
            else;
-             SortSeq = SortByName;
-             SC_SORTED = SortbyCode;
-             scSortColor = *off;
+             SQLSortSeq = SortByName;
+             SC_SORTED = SortByName;
+             scNameHi = *on;
+             scCodeHI = *off;
              F7Text2 = SortbyCode;
            endif;
            F7Text = F7Text1 + F7Text2;
@@ -353,8 +348,8 @@
                  // Return Code to caller
                  pSTATE = SF_CODE;
                  exsr CloseDownPgm;
+                 *inlr = *on;
                  return;
-
 
                //--- Opt is blank ----------------------------------------
                when SF_OPT = ' ';
@@ -372,7 +367,7 @@
                  // Not a valid option at this time
                  SflMsgSnt= SndSflMsg('DEM0004':SF_OPT);
                  // Leave cursor at first invalid option
-                 exsr SetCursorPosition;
+                 exsr SetScreenCursorPosition;
                  optError = *on;
 
                  // SFLNXTCHG forces this record to be read again
@@ -404,91 +399,43 @@
 
        endsr;
 
-       //=== SflFirstPage ============================================
-       // Processes the Search fields in the Sub file control, then
-       // fills the first page of the subfile.
-       // If any errors in the search  fields then no records are
-       // are added to the subfile.
+       //=== SflLoadAll ==============================================
+       // Loads all selected records to the subfile.
 
        // Returns:
-       //   EofData = *on  if there are no more data records
-       //             *off if there is at least one more data
-       //                  record.
-       //   NewSearchCriteria = *on  Next time evaluate the
-       //                  search fields again.
-       //   RcdsInSfl  contains relative record number of last record
-       //              written to the subfile.
-
-       begsr SflFirstPage;
-         exsr ProcessSearchCriteria;
-         if NewSearchCriteria = *off;
-           EofData = FetchNextData();
-           if EofData = *off;
-             exsr SflFillPage;
-           else;
-             // No records match selection criteria
-             SflMsgSnt= SndSflMsg('DEM0002');
-             NewSearchCriteria = *on;
-           endif;
-
-         endif;
-       endsr;
-
-       //=== SflFillPage =============================================
-       // Adds a page worth of records to the subfile.
-
-       // Assumes:
-       //   One record is already read from the SQL cursor.
-
-       // Returns:
-       //   EofData = *on  if no more data records.
-       //             *off if at least one data record is read
-       //                  and has not been displayed.
+       //   EofData = *on  (there are no more data records.)
        //   RcdsInSfl contains relative record number of last record
        //             written to the subfile.
        //   SC_CSR_RCD contains relative record number of 1st record
        //             on the page & positions cursor there.
 
-       begsr SflFillPage;
-         select;
+       begsr SflLoadAll;
 
-         when EofData = *on;
-           // do nothing
-         other;
-           // Add a subfile page.  If not EOF, then one extra recd is
-           // read for the next time.
            // Position cursor at first record on the subfile page.
-           SC_CSR_RCD = 0;
-           for inx = 1 to SflPageSize;
+           SC_CSR_RCD = 1;
+
+           for inx = 1 to SflMaxRecd;
+             EofData = FetchNextData();
+             if EofData = *on;
+               leave;
+             endIf;
              // Build/Format the subfile record
              clear SF_OPT;
              SF_CODE = FetchData.STATE;
              SF_NAME = FetchData.NAME;
 
+             SflRRN = inx;
              RcdsinSfl = RcdsInSfl + 1;
-             SflRRN = RcdsInSfl;
              write SFL;
 
-             // Leave curson on first SFL record
-             if SC_CSR_RCD = 0;
-               SC_CSR_RCD = SflRRN;
-             endif;
-
              // Can't display more than 9,9999 records.
-             if SflRRN = 9999;
+             if SflRRN = SflMaxRecd;
                EofData = *on;
                SflMsgSnt= SndSflMsg('DEM0006');
                leave;
              endif;
 
-             EofData = FetchNextData();
-             if EofData = *on;
-               leave;
-             endIf;
-
            endfor;
-
-         endsl;
 
        endsr;
 
@@ -510,7 +457,6 @@
          NewSearchCriteria = *off;
          // Save entered values.  (Never change screen fields.)
          LastSearchCriteria = SearchCriteria;
-         //exsr SaveSearchCriteria;
          CloseCursor();
 
          //---------------------------------------------------------------
@@ -522,7 +468,7 @@
           endif;
          //---------------------------------------------------------------
 
-         // If no errors, open the SQL cursor
+         // If no errors in search criteria, open the SQL cursor
          if NewSearchCriteria = *off;
            exec sql open DataCur;
            if SQLSTT  <> SQLSuccess;
@@ -536,7 +482,7 @@
        //=== SetCursorPostion ========================================
        // If Invalid Option, position screen cursor on first one,
        // else postion cursor on the last valid option.
-       begsr SetCursorPosition;
+       begsr SetScreenCursorPosition;
          if OptError = *off;
            SC_CSR_RCD=SflRRN;
          endif;
@@ -556,15 +502,18 @@
        // Things to do before we issue a return to the caller
        begsr CloseDownPgm;
            CloseCursor();
+         if %open(PMTSTATED);
+           close PMTSTATED;
+         endif;
        endsr;
 
        //=== Init ====================================================
-       // Must be executed each time program is entered, because F12
-       // and Enter key leave with LR off.
+       // Must be executed each time program is entered
        begsr Init;
-         SortSeq = SortByCode;
-         SC_SORTED = SortbyName;
-         scSortColor = *off;
+         SQLSortSeq = SortByName;
+         SC_SORTED = SortByName;
+         scNameHi = *on;       // Name highlighted
+         scCodeHi = *off;
          F7Text2 = SortByCode;
          F7Text = F7Text1 + F7Text2;
 
@@ -578,9 +527,11 @@
          MSGPGMQF = MainProc;
          MSGPGMQC = MSGPGMQF;
          SH_PGM = PgmName;
+
          if not %open(PMTSTATED);
            open PMTSTATED;
          endif;
+
          // Clear fields left over from previous F12.
          reset LastSearchCriteria;
          reset SearchCriteria;
@@ -602,10 +553,10 @@
        // If the target string is all blank to start with it will not
        // end up with a leading blank.
       /END-FREE
-     PCatB             b
+     pCatB             b
      dCatB             PI            79    varying
-     D ToStr                         79    varying value
-     D AddStr                        79    varying value
+     d ToStr                         79    varying value
+     d AddStr                        79    varying value
       /FREE
        if ToStr=' ';
          return AddStr;
@@ -613,7 +564,8 @@
          return %trimr(ToStr) + ' ' + AddStr;
        endif;
       /END-FREE
-     PCatB             e
+     pCatB             e
+
        // === SQLProblem ================================================
        // For those "Never should happen" SQL errors.
        // Issues DUMP(A) to dump memory, then ends program by
@@ -635,7 +587,6 @@
       /end-free
      p SQLProblem      E
 
-
        //--------------------------------------------------
        // Procedure name: FetchNextData
        // Purpose:        Fetch the next row from the cursor
@@ -643,11 +594,11 @@
        //                   *ON   No more data, nothing returned
        //                   *OFF  Data returned
        //--------------------------------------------------
-     P FetchNextData   B
-     D FetchNextData   PI              N
+     p FetchNextData   B
+     d FetchNextData   PI              N
 
        // Local fields
-     D wkEof           S               N
+     d wkEof           S               N
       /FREE
          wkEoF= *off;
            exec sql fetch DataCur into
@@ -666,7 +617,7 @@
          RETURN wkEof;
 
       /END-FREE
-     P FetchNextData   E
+     p FetchNextData   E
 
        //--------------------------------------------------
        // Procedure name: SndSflMsg
@@ -677,19 +628,19 @@
        // Parameter:      ErrMsgFile => Optional Error Message File
        //                 Defaults to CUSTMSGF
        //--------------------------------------------------
-     P SndSflMsg       B
-     D SndSflMsg       PI              N
-     D  ErrMsgId                      7A   CONST
-     D  ErrMsgData                   80A   CONST
-     D                                     OPTIONS(*NOPASS:*VARSIZE)
-     D  ErrMsgFile                   10A   CONST
-     D                                     OPTIONS(*NOPASS)
+     p SndSflMsg       B
+     d SndSflMsg       PI              N
+     d  ErrMsgId                      7A   CONST
+     d  ErrMsgData                   80A   CONST
+     d                                     OPTIONS(*NOPASS:*VARSIZE)
+     d  ErrMsgFile                   10A   CONST
+     d                                     OPTIONS(*NOPASS)
 
        // Local fields
-     D retField        S               N
-     D wkMsgId         s              7a
-     D wkMsgFile       s             10a
-     D wkMsgData       s             80a   varying
+     d retField        S               N
+     d wkMsgId         s              7a
+     d wkMsgFile       s             10a
+     d wkMsgData       s             80a   varying
 
       /FREE
        if %parms >2;
@@ -712,14 +663,14 @@
         RETURN retField;
 
       /END-FREE
-     P SndSflMsg       E
+     p SndSflMsg       E
 
        //--------------------------------------------------
        // Procedure name: CloseCurssor
        // Purpose:        Closes the SQL Cursor
        //--------------------------------------------------
-     P CloseCursor     B
-     D CloseCursor     PI
+     p CloseCursor     B
+     d CloseCursor     PI
       /FREE
         if CursorOpen = *on;
             exec sql close DataCur;
@@ -730,16 +681,15 @@
         endif;
         RETURN;
       /END-FREE
-     P CloseCursor     E
-
+     p CloseCursor     E
 
        //--------------------------------------------------
        // Procedure name: SflClear
        // Purpose:        Clears the Subfile
        // Returns:
        //--------------------------------------------------
-     P SflClear        B
-     D SflClear        PI
+     p SflClear        B
+     d SflClear        PI
       /FREE
          clear SflRRN;
          clear RcdsInSfl;
@@ -748,7 +698,4 @@
          scSflClr = *OFF;
          return;
       /END-FREE
-     P SflClear        E
-
-
-
+     p SflClear        E

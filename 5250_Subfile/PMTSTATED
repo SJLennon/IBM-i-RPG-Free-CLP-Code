@@ -1,8 +1,9 @@
-     A*%%TS  SD  20200724  153608  LENNONS     REL-V7R4M0  5770-WDS
      A*===============================================================
-     A* This is a full screen expanding subfile to search for and
-     A* select a Manufacturing QC Hold Disposition code
+     A* This is a "load all" subfile in a windown to select a
+     A* state code.
      A*===============================================================
+     A*  CRTDSPF FILE(PMTSTATED) SRCFILE(...) RSTDSP(*YES)
+     A*==============================================================
      A* There is a naming convention for the fields in each record.
      A*  -- Screen Header:   Fields begin with SH_
      A*  -- Subfile:         Fields begin with SF_
@@ -23,34 +24,22 @@
      A*       data structure separate from the program indicators.
      A*       This makes it easy to name the indicators in the DS.
      A*==============================================================
-     A* MM/DD/YYYY  Proj# Developer
-     A* ----------  ----- -------------------------------------------
-     A* 04/14/2013  8651  Sam Lennon   Original coding
-     A*
-     A*==============================================================
-     A*%%EC
      A                                      DSPSIZ(24 80 *DS3                  -
      A                                             27 132 *DS4)
      A                                      PRINT
      A                                      INDARA
      A                                      ALTHELP
-     A                                      CA03
-     A                                      CF05
-     A                                      CA07
-     A                                      CA12
      A                                      HELP
      A*===============================================================
      A*=== Screen Header:  Fields begin with SH_ =====================
      A*
      A          R SH_HDR
-     A*%%TS  SD  20111207  212036  SLENNON     REL-V7R1M0  5770-WDS
      A                                      OVERLAY
      A                                      TEXT('Screen Header')
-     A                                      WINDOW(*DFT 17 40)
-     A                                      WDWBORDER((*DSPATR RI))
+     A                                      WINDOW(*DFT 16 40)
+     A                                      WDWBORDER((*DSPATR RI) (*CHAR +
+     A                                      '        '))
      A                                      WDWBORDER((*COLOR BLU))
-     A*                                     CA03
-     A*                                     CA12
      A            SH_PGM        10A  O  1  1
      A                                  1 16'USA States'
      A                                      COLOR(WHT)
@@ -63,7 +52,6 @@
      A*=== Subfile:  Fields begin with SF_ ===========================
      A*
      A          R SFL                       SFL
-     A*%%TS  SD  20200723  210409  LENNONS     REL-V7R4M0  5770-WDS
      A                                      TEXT('SubFile')
      A  80                                  SFLNXTCHG
      A            SF_OPT         1A  B  6  2
@@ -77,15 +65,17 @@
      A*=== Subfile Control: Fields begin with SC_ ====================
      A*
      A          R SFLCTL                    SFLCTL(SFL)
-     A*%%TS  SD  20200723  210409  LENNONS     REL-V7R4M0  5770-WDS
-     A  *DS3                                SFLSIZ(0008)
-     A  *DS4                                SFLSIZ(0008)
-     A  *DS3                                SFLPAG(0007)
-     A  *DS4                                SFLPAG(0007)
+     A                                      CF03
+     A                                      CF05
+     A                                      CF07
+     A                                      CF12
+     A  *DS3                                SFLSIZ(9999)
+     A  *DS4                                SFLSIZ(9999)
+     A  *DS3                                SFLPAG(0006)
+     A  *DS4                                SFLPAG(0006)
      A  *DS3                                WINDOW(SH_HDR)
      A  *DS4                                WINDOW(SH_HDR)
      A                                      TEXT('Subfile Control')
-     A                                      PAGEDOWN
      A                                      RTNCSRLOC(&SC_PMT_RCD &SC_PMT_FLD)
      A                                      BLINK
      A                                      OVERLAY
@@ -104,13 +94,11 @@
      A                                      DSPATR(HI)
      A                                      DSPATR(UL)
      A                                  5  5'Code'
-     A N01                                  COLOR(WHT)
      A  01                                  COLOR(PNK)
      A                                      DSPATR(UL)
      A                                  5 11'Name                          '
      A                                      DSPATR(UL)
-     A  01                                  COLOR(WHT)
-     A N01                                  COLOR(PNK)
+     A  02                                  COLOR(PNK)
      A            SC_PMT_RCD    10A  H
      A            SC_PMT_FLD    10A  H
      A            SC_CSR_RCD     4S 0H      SFLRCDNBR(CURSOR)
@@ -118,29 +106,26 @@
      A*=== Screen footer & function keys:  Fields begin with SFT_ ====
      A*
      A          R SFT_FKEY
-     A*%%TS  SD  20200724  143229  LENNONS     REL-V7R4M0  5770-WDS
      A  *DS3                                WINDOW(SH_HDR)
      A  *DS4                                WINDOW(SH_HDR)
      A                                      TEXT('Screen Footer')
      A                                      OVERLAY
-     A                                 14  1'          Demo Corp of America    -
+     A                                 13  1'          Demo Corp of America    -
      A                                            '
      A                                      DSPATR(UL)
-     A            SFT_KEYS      40   O 15  1
+     A            SFT_KEYS      40   O 14  1
      A*===============================================================
      A*=== Message Subfile:  No fields ===============================
      A*
      A          R MSGSFL                    SFL
-     A*%%TS  SD  19990831  134515  LENNON$S    REL-V4R2M0  5769-PW1
      A                                      TEXT('Message Subfile')
-     A                                      SFLMSGRCD(16)
+     A                                      SFLMSGRCD(15)
      A            MSGKEY                    SFLMSGKEY
      A            MSGPGMQF                  SFLPGMQ(10)
      A*===============================================================
      A*=== Message Subfile Control: No fields ========================
      A*
      A          R MSGCTL                    SFLCTL(MSGSFL)
-     A*%%TS  SD  19990831  134515  LENNON$S    REL-V4R2M0  5769-PW1
      A                                      TEXT('Message Subfile Control')
      A                                      WINDOW(SH_HDR)
      A                                      PAGEDOWN

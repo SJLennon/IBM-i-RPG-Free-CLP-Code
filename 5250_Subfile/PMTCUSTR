@@ -4,7 +4,7 @@
        // It can be called to return a selected customer number or
        // just to provide general inquiry functionality from a menu.
        //
-       // Detailed Item information is displayed in a window  by
+       // Detailed Item information is displayed in a window by
        // call another program, MTNCUSTR.
        //
        // Parameters:
@@ -15,11 +15,6 @@
        //            I - Inquiry, read only: 5=Display
        // 2  Char 4  Selected customer id if parm 1 is S.
        //
-       //
-       //=============================================================
-       // MM/DD/YYYY  Proj# Developer
-       // ----------  ----- -----------------------------------------
-       // 00/00/0000  nnnnn Sam Lennon   Original coding
        //=============================================================
        // Program uses a full screen expanding subfile to select
        // a Customer Master record.
@@ -60,14 +55,14 @@
        //    not the default of QRPGLESRC. Change as needed.
        //=============================================================
 
-     H DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt)
-     H BndDir('UTIL_BND')
+     h DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt)
+     h BndDir('UTIL_BND')
 
        //=== Display File ============================================
-     FPMTCUSTD  CF   E             WorkStn INFDS(dfInfDS)
-     F                                     INDDS(dfIndDS)
-     F                                     SFILE(SFL:SflRRN)
-     F                                     USROPN
+     fPMTCUSTD  CF   E             WorkStn INFDS(dfInfDS)
+     f                                     INDDS(dfIndDS)
+     f                                     SFILE(SFL:SflRRN)
+     f                                     USROPN
        // File is closed when returning with LR off. This avoids an
        // annoying resdisplay of the last subfile on re-entry.
 
@@ -80,41 +75,41 @@
 
        //=== Display File Information Data Structure =================
        //    Allows us to determine which function key was pressed
-     D dfInfDS         DS
-     D Key                   369    369
+     d dfInfDS         DS
+     d Key                   369    369
        //=== Display File Indicator Data Structure ===================
        // This is a "private" indicator area for the display file.
-     D dfIndDS         ds            99
+     d dfIndDS         ds            99
 
        //--- 01-20 are not automatically cleared after EXFMT ----------
-     D scIncActInc            03     03n
+     d scIncActInc            03     03n
 
        //--- 21-99 automatically cleared after EXFMT ------------------
-     D dfIndClr               21     99
+     d dfIndClr               21     99
 
        //--- Subfile indicators (prefix "sf") ---
-     D SC_NAME_PC             79     79n
-     D sfSflNxtChg            80     80n
-     D sfOPT_RI               81     81n
-     D sfOPT_PC               82     82n
-     D sfInAct                83     83n
+     d SC_NAME_PC             79     79n
+     d sfSflNxtChg            80     80n
+     d sfOPT_RI               81     81n
+     d sfOPT_PC               82     82n
+     d sfInAct                83     83n
 
        //--- Subfile Control indicators (prefix "sc") ---
-     D*scNoDta                96     96n
-     D scSflEnd               97     97n
-     D scSflDsp               98     98n
-     D scSflClr               99     99n
+     d*scNoDta                96     96n
+     d scSflEnd               97     97n
+     d scSflDsp               98     98n
+     d scSflClr               99     99n
 
        //=== Fields to control the subfile screen ====================
-     D  SflRRN         s              5  0
-     D  RcdsInSfl      s              5  0
-     D  SflPageSize    c                   12
+     d  SflRRN         s              5  0
+     d  RcdsInSfl      s              5  0
+     d  SflPageSize    c                   12
        // SC_CSR_RCD is defined in the display file and is set with a
        // RRN which determines which subfile page is displayed and on
        // which record the cursor is positioned.
 
        //=== Text for function keys ==================================
-     D F3Text          c                   'F3=Exit'
+     d F3Text          c                   'F3=Exit'
      d F4Text          c                   'F4=Prompt+'
      d F5Text          c                   'F5=Reset'
      d F6Text          c                   'F6=Add'
@@ -139,16 +134,16 @@
 
        //=== Search Criteria Screen Fields ===========================
      d SearchCriteria  ds                  inz
-     D SC_NAME
-     D SC_CITY
-     D SC_STATE
+     d SC_NAME
+     d SC_CITY
+     d SC_STATE
 
        //=== Last Search Criteria Fields =============================
      d LastSearchCriteria...
      d                 ds                  inz
-     D LastSC_NAME                         Like(SC_NAME)
-     D LastSC_CITY                         Like(SC_CITY)
-     D LastSC_STATE                        Like(SC_STATE)
+     d LastSC_NAME                         Like(SC_NAME)
+     d LastSC_CITY                         Like(SC_CITY)
+     d LastSC_STATE                        Like(SC_STATE)
 
        //=== SQL Search Variables ====================================
      d Stmt            s           1024    varying                              Select Statement
@@ -162,13 +157,13 @@
 
        //== CUSTMAST - define fields for SQL =========================
        // NOTE: Only the fields read by SQL are populated!
-     D CustMast      e ds                  extname(CUSTMAST) template
+     d CustMast      e ds                  extname(CUSTMAST) template
 
-       // Records from SQL cursor read into CustCursor
-     D CustCursor      ds                  likeds(Custmast)
+       // Records from SQL CURSOR read into CustCursor
+     d CustCursor      ds                  likeds(Custmast)
 
-       // Records from SQL select read into CustSelect
-     D CustSelect      ds                  likeds(CustMast)
+       // Records from SQL SELECT read into CustSelect
+     d CustSelect      ds                  likeds(CustMast)
 
        //=== External Programs Prototypes ============================
 
@@ -176,59 +171,52 @@
      d CustID                              options(*nopass) like(CUSTID)
      d Maintain                       1a   options(*nopass)
 
-     D PmtState        PR                  EXTPGM('PMTSTATER')
-     D  TheState                           like(STATE)
-     D
+     d PmtState        PR                  EXTPGM('PMTSTATER')
+     d  TheState                           like(STATE)
+     d
 
        //=== Global Switches =========================================
-     D EofData         s               n
-     D CursorOpen      s               n
-     D NewSearchCriteria...
-     D                 s               n
-     D SflMsgSnt       s               n
-     D Opt1_OK         s               n
-     D OptError        s               n
-     D Maint_OK        s               n
-     D CowsComeHome    c                   const('0')
-     D MaxSflRecds     c                   const(9999)
+     d EofData         s               n
+     d CursorOpen      s               n
+     d NewSearchCriteria...
+     d                 s               n
+     d SflMsgSnt       s               n
+     d Opt1_OK         s               n
+     d OptError        s               n
+     d Maint_OK        s               n
+     d CowsComeHome    c                   const('0')
+     d MaxSflRecds     c                   const(9999)
 
        //=== Work Fields =============================================
-     D inx             s             10i 0
+     d inx             s             10i 0
 
        // Would prefer to defind these as  like(SC_NAME)
        // But SQL precompiler throws an error SQL0312, reason code 1
-     D wkName          s             13a
-     D wkCity          s             13a
+     d wkName          s             13a
+     d wkCity          s             13a
 
        //=== Parm fields for MTNCUSTR ================================
-     D wkCustid        s                   like(CUSTID)
-     D CustDspParm     s              1a
-     D CustDspEdit     c                   const('E')
-     D CustDspAdd      c                   const('A')
-     D CustDspDsply    c                   const('D')
-     D
+     d wkCustid        s                   like(CUSTID)
+     d CustDspParm     s              1a
+     d CustDspEdit     c                   const('E')
+     d CustDspAdd      c                   const('A')
+     d CustDspDsply    c                   const('D')
+     d
 
        //=== Program Status Data Structure ===========================
-     D ProgStatus     sds
-     D PgmName           *PROC
+     d ProgStatus     sds
+     d PgmName           *PROC
 
        //=== Program Parameters ======================================
-     D pParmType       S              1A
-     D pCustID         s                   Like(CUSTID)
-
-       //PmtItemR        pr
-       // I/O/B   Type  Lgth  Description
-       // -----   ----  ----  ---------------------------------------
-       //   O      C     13   Item number of selected record is returned
-       //                     here.  Blank if no selection made.
-       //                     Optional - need not be passed.
+     d pParmType       S              1A
+     d pCustID         s                   Like(CUSTID)
 
        //=============================================================
        // === Program Starts Here ====================================
        //=============================================================
-     C     *Entry        plist
-     C                   parm                    pParmType
-     C                   parm                    pCustID
+     c     *Entry        plist
+     c                   parm                    pParmType
+     c                   parm                    pCustID
 
       /FREE
        //=== Set SQL Options =========================================
@@ -389,7 +377,6 @@
            //--- F6: Add a record. ----------------------------------
          when Key = F06;
              if Maint_Ok = *on;
-                 pCustID = 0;
                  CustDspParm = CustDspAdd;
                    CustDsp(wkCustId : CustDspParm);
              else;
@@ -479,7 +466,7 @@
                  optError = *on;
 
                  // SFLNXTCHG forces this record to be read again
-                 // even if user doesn't correct it, so we can
+                 // (even if user doesn't correct it) so we can
                  // check it again for validity.
                  sfSflNxtChg = *on;
                  sfOPT_RI = *on;
@@ -493,7 +480,7 @@
 
              readc SFL;
            enddo;
-           CustDsp();    // Close Window DSPF
+           CustDsp();    // Closes Window DSPF & restores our subfile
          endif;
 
          // If no positioning done, display last page, cursor on 1st recd.
@@ -577,7 +564,6 @@
              endif;
 
              // Can't display more than 9,999 records.
-       //      if SflRRN = 9999;
              if SflRRN = MaxSflRecds;
                EofData = *on;
                SflMsgSnt= SndSflMsg('DEM0006');
@@ -604,7 +590,7 @@
            endif;
            update SFL;
            sfInAct = *off;
-           write DUMMY; // Helps restore SFL display
+           write DUMMY; // Supposed to help restore SFL display
        endsr;
 
        //=== ProcessSearchCriteria====================================
@@ -796,10 +782,10 @@
        // Concatenates a string to another string with a blank between.
        // If the target string is all blank to start with it will not
        // end up with a leading blank.
-     PCatB             b
+     pCatB             b
      dCatB             PI            79    varying
-     D ToStr                         79    varying value
-     D AddStr                        79    varying value
+     d ToStr                         79    varying value
+     d AddStr                        79    varying value
       /FREE
        if ToStr=' ';
          return AddStr;
@@ -807,7 +793,7 @@
          return %trimr(ToStr) + ' ' + AddStr;
        endif;
       /END-FREE
-     PCatB             e
+     pCatB             e
 
        //=== SQLProblem ==============================================
        // For those "Never should happen" SQL errors.
@@ -836,12 +822,12 @@
        //                   *ON   No more data, nothing returned
        //                   *OFF  Data returned
        //------------------------------------------------------------
-     P FetchNextData   B
-     D FetchNextData   PI              N
-     D TheRecd                             likeds(Custmast)
+     p FetchNextData   B
+     d FetchNextData   PI              N
+     d TheRecd                             likeds(Custmast)
 
        // Local fields
-     D wkEof           S               N
+     d wkEof           S               N
       /FREE
          wkEoF= *off;
            exec sql fetch ItemCur into
@@ -865,15 +851,15 @@
 
       /END-FREE
 
-     P FetchNextData   E
+     p FetchNextData   E
 
        //=== ReadByKey ===============================================
        // Read the record by key into the specified data record
        // using the key passed in.
-     P ReadByKey       B
-     D ReadByKey       PI
-     D TheKey                              like(CUSTID)
-     D TheRecd                             likeds(CustMast)
+     p ReadByKey       B
+     d ReadByKey       PI
+     d TheKey                              like(CUSTID)
+     d TheRecd                             likeds(CustMast)
       /FREE
        exec sql select
                          NAME,
@@ -894,11 +880,11 @@
        ;
       /END-FREE
 
-     P ReadByKey       E
+     p ReadByKey       E
 
        //=== BuildSFLRecd ============================================
        // Builds a SFL record from the specified data record
-     P BuildSflRecd    b
+     p BuildSflRecd    b
      d BuildSflRecd    PI
      d CustRecd                            likeds(CUSTMAST)
       /FREE
@@ -917,13 +903,13 @@
              // Save Active status in case we update subfile
              SF_ACT_H = CustRecd.ACTIVE;
       /END-FREE
-     P BuildSFLRecd    E
+     p BuildSFLRecd    E
 
        //=== Procedure name: CloseCurssor ============================
        // Closes the SQL Cursor if open
        //------------------------------------------------------------
-     P CloseCursor     B
-     D CloseCursor     PI
+     p CloseCursor     B
+     d CloseCursor     PI
        // Local fields
        //CursorOpen      s               n   static
       /FREE
@@ -936,7 +922,7 @@
         endif;
         RETURN;
       /END-FREE
-     P CloseCursor     E
+     p CloseCursor     E
 
        //=== SndSflMsg ===============================================
        // Send a message to the Error Subfile
@@ -946,19 +932,19 @@
        // Parameter:      ErrMsgFile => Optional Error Message File
        //                 Defaults to CUSTMSGF
        //------------------------------------------------------------
-     P SndSflMsg       B
-     D SndSflMsg       PI              N
-     D  ErrMsgId                      7A   CONST
-     D  ErrMsgData                   80A   CONST
-     D                                     OPTIONS(*NOPASS:*VARSIZE)
-     D  ErrMsgFile                   10A   CONST
-     D                                     OPTIONS(*NOPASS)
+     p SndSflMsg       B
+     d SndSflMsg       PI              N
+     d  ErrMsgId                      7A   CONST
+     d  ErrMsgData                   80A   CONST
+     d                                     OPTIONS(*NOPASS:*VARSIZE)
+     d  ErrMsgFile                   10A   CONST
+     d                                     OPTIONS(*NOPASS)
 
        // Local fields
-     D retField        S               N
-     D wkMsgId         s              7a
-     D wkMsgFile       s             10a
-     D wkMsgData       s             80a   varying
+     d retField        S               N
+     d wkMsgId         s              7a
+     d wkMsgFile       s             10a
+     d wkMsgData       s             80a   varying
 
       /FREE
        if %parms >2;
@@ -981,13 +967,13 @@
         RETURN retField;
 
       /END-FREE
-     P SndSflMsg       E
+     p SndSflMsg       E
 
        //=== SflClear ================================================
        // Clears the Subfile
        //------------------------------------------------------------
-     P SflClear        B
-     D SflClear        PI
+     p SflClear        B
+     d SflClear        PI
       /FREE
          clear SflRRN;
          clear RcdsInSfl;
@@ -996,6 +982,6 @@
          scSflClr = *OFF;
          return;
       /END-FREE
-     P SflClear        E
+     p SflClear        E
 
 

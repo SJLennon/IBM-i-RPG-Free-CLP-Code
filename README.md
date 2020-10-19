@@ -21,4 +21,4 @@ Batch program with SQL embedded in RPGLE. Includes error checking and handling. 
 
 ##  5250 Subfile
 
-Fully functional 5250 "green screen" Customer Master maintenance and prompting application, with full screen and window displays, modular code, service programs, message files and a  sample database.     
+Many shops are still using 5250 "green screen" applications and these need to be maintained and/or extended. This is a fully functional modernized 5250 "green screen" Customer Master maintenance and prompting application, with full screen and window displays, modular code, service programs, message files and a sample database.     

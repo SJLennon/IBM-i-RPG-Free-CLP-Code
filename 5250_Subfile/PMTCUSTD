@@ -1,11 +1,11 @@
-     A*%%TS  SD  20200723  195503  LENNONS     REL-V7R4M0  5770-WDS
      A*===============================================================
-     A* This is a full screen expanding subfile to search for and
-     A* select an item number.
-     A* ??- There are "from" and "to" positioner fields.
-     A* ??- There is a filter field on config.
-     A* ??- A message subfile is included.
+     A* This is a full screen expanding subfile to search for
+     A* a customer.
+     A*   - There are filters limit selection.
+     A*   - A message subfile is included.
      A*===============================================================
+     A*  CRTDSPF FILE(PMTCUSTD) SRCFILE(...) RSTDSP(*YES)
+     A*==============================================================
      A* There is a naming convention for the fields in each record.
      A*  -- Screen Header:   Fields begin with SH_
      A*  -- Subfile:         Fields begin with SF_
@@ -27,11 +27,6 @@
      A*       data structure separate from the program indicators.
      A*       This makes it easy to name the indicators in the DS.
      A*==============================================================
-     A* MM/DD/YYYY  Proj# Developer
-     A* ----------  ----- -------------------------------------------
-     A* 04/14/2013  8651  Sam Lennon   Original coding
-     A*===============================================================
-     A*%%EC
      A                                      DSPSIZ(24 80 *DS3)
      A                                      PRINT
      A                                      INDARA
@@ -41,14 +36,12 @@
      A                                      CA05
      A                                      CA06
      A                                      CA09
-     A*                                     CF10
      A                                      CA12
      A                                      HELP
      A*===============================================================
      A*=== Screen Header:  Fields begin with SH_ =====================
      A*
      A          R SH_HDR
-     A*%%TS  SD  20111207  212036  SLENNON     REL-V7R1M0  5770-WDS
      A                                      OVERLAY
      A                                      TEXT('Screen Header')
      A            SH_PGM        10A  O  1  2
@@ -62,7 +55,6 @@
      A*=== Subfile:  Fields begin with SF_ ===========================
      A*
      A          R SFL                       SFL
-     A*%%TS  SD  20200719  214706  LENNONS     REL-V7R4M0  5770-WDS
      A                                      TEXT('SubFile')
      A  80                                  SFLNXTCHG
      A            SF_ACT_H       1D  H
@@ -82,7 +74,6 @@
      A*=== Subfile Control: Fields begin with SC_ ====================
      A*
      A          R SFLCTL                    SFLCTL(SFL)
-     A*%%TS  SD  20200723  195503  LENNONS     REL-V7R4M0  5770-WDS
      A                                      SFLSIZ(0013)
      A                                      SFLPAG(0012)
      A                                      TEXT('Subfile Control')
@@ -95,10 +86,6 @@
      A                                      SFLDSPCTL
      A  99                                  SFLCLR
      A  97                                  SFLEND(*MORE)
-     A            SC_PMT_RCD    10A  H
-     A            SC_PMT_FLD    10A  H
-     A****        SC_CSR_RCD     4S 0H      SFLRCDNBR(CURSOR *TOP)
-     A            SC_CSR_RCD     4S 0H      SFLRCDNBR(CURSOR)
      A                                  4  2'Name starts with:'
      A                                  4 31'City Starts with:'
      A                                  4 60'State+'
@@ -114,7 +101,7 @@
      A N03                                  DSPATR(ND)
      A                                  6  2'Type options, press Enter.'
      A                                      COLOR(BLU)
-     A            SC_OPTIONS    69A  O  7  2COLOR(BLU)
+     A            SC_OPTIONS    69A     7  2COLOR(BLU)
      A                                  8  2'Opt'
      A                                      DSPATR(HI)
      A                                  8  6'Customer Name'
@@ -129,11 +116,13 @@
      A                                  8 74'ZIP  '
      A                                      COLOR(WHT)
      A                                      DSPATR(UL)
+     A            SC_PMT_RCD    10A  H
+     A            SC_PMT_FLD    10A  H
+     A            SC_CSR_RCD     4S 0H      SFLRCDNBR(CURSOR)
      A*===============================================================
      A*=== Screen footer & function keys:  Fields begin with SFT_ ====
      A*
      A          R SFT_FKEY
-     A*%%TS  SD  20111208  204102  SLENNON     REL-V7R1M0  5770-WDS
      A                                      TEXT('Screen Footer')
      A                                      OVERLAY
      A                                 22  2'                          Demo Cor-
@@ -145,7 +134,6 @@
      A*=== Message Subfile:  No fields ===============================
      A*
      A          R MSGSFL                    SFL
-     A*%%TS  SD  19990831  134515  LENNON$S    REL-V4R2M0  5769-PW1
      A                                      TEXT('Message Subfile')
      A                                      SFLMSGRCD(24)
      A            MSGKEY                    SFLMSGKEY
@@ -154,7 +142,6 @@
      A*=== Message Subfile Control: No fields ========================
      A*
      A          R MSGCTL                    SFLCTL(MSGSFL)
-     A*%%TS  SD  19990831  134515  LENNON$S    REL-V4R2M0  5769-PW1
      A                                      TEXT('Message Subfile Control')
      A                                      PAGEDOWN
      A                                      PAGEUP

@@ -2,7 +2,7 @@
 
 (__Under Construction__)
 
-This is a working application that allows display, selection and maintenance of a customer master. The screens are _similar_ to what you see in PDM. The code is modular and there are several programs that can be called from multiple places.  SQL is used for all database IO. There are full screen subfiles and subfiles in a window.
+This is a working application that allows display, selection and maintenance of a customer master. The screens are _similar_ to what you see in PDM. The code is modular and there are several programs that can be called from multiple places.  SQL is used for all database IO. There are  "page at a time" subfiles (full screen and in a window) and a "load all" subfile in a window. The windows show a couple of border styles.
 
 ### Sample Inquiry Screens
 
@@ -21,9 +21,9 @@ This is a working application that allows display, selection and maintenance of 
 
 Some of the programs use /Include statements, which are found in the Copy_Mbrs directory.  In the code these programs refer to my DEMO library, so to compile you may need to change this.
 
-The RPG code is free form, except that the D-Specs are fixed form. This probably allows more people developers who are still on older versions of the OS, or are still using the out of date SEU, to more easily use the code.  The code can be converted to totally free form using the free "JCRHFD - Rpg H,F,D to free form syntax" command available at [JCRCMDS.COM](http://www.jcrcmds.com/jcrdown2.html#JCRHFD_tag). If there is interest I may post totally free form versions.
+The RPG code is free form, except that the D-Specs are fixed form. This probably allows more  developers who are still on older versions of the OS, or are still using the out of date SEU, to more easily use the code.  The code can be converted to totally free form using the free _*"JCRHFD - Rpg H,F,D to free form syntax"*_ command available at [JCRCMDS.COM](http://www.jcrcmds.com/jcrdown2.html#JCRHFD_tag). If there is interest I may post totally free form versions.
 
-The genesis of these programs was code that I wrote in RPG IV for a Fortune 500 retailer circa 2000. The code was then cloned as a standard approach by another team leader.  This code is a more modern version that I cleaned up in 2020.
+The genesis of these programs was code that I wrote in RPG IV for a Fortune 500 retailer circa 2002-2004. The code was then cloned as a standard approach by another team leader.  This code is a more modern version that I cleaned up in 2020.
 
 The style tries to have consistent naming and I do not share field names between the RPG and the display files--I've seen too many accidental modifications in my support career.
 
@@ -48,11 +48,15 @@ The display file uses a private set of indicators, something I started doing to 
 
   If the cursor is in a field  with a + in the field name (ST+ here) you can press F4 to prompt the field.
 
+  The window has the default border, which may vary depending on which 5250 emulator you are using. The sample is using the iACS emulator from IBM. 
+
 ### PMTSTATER/PMTSTATED
 
 RPG program and window display file to prompt for a USA state code.  Called when F4 is used in PMTCUSTR or MTNCUSTR. Disply can be by either state name or 2-character code, toggled by F7. 
 
 Strictly speaking, this is more of a demonstration program that may, or may not, have a lot of practical value in real life.
+
+The window has a blue border or reverse image blanks. This will display consistently across most 5250 emulators.
 
 #### CRTMSGF
 
