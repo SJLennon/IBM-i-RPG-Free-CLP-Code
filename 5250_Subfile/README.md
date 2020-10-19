@@ -21,7 +21,7 @@ This is a working application that allows display, selection and maintenance of 
 
 Some of the programs use /Include statements, which are found in the Copy_Mbrs directory.  In the code these programs refer to my DEMO library, so to compile you may need to change this.
 
-The RPG code is free form, except that the D-Specs are fixed form. This probably allows more  developers who are still on older versions of the OS, or are still using the out of date SEU, to more easily use the code.  The code can be converted to totally free form using the free _*"JCRHFD - Rpg H,F,D to free form syntax"*_ command available at [JCRCMDS.COM](http://www.jcrcmds.com/jcrdown2.html#JCRHFD_tag). If there is interest I may post totally free form versions.
+The RPG code is free form, except that the D-Specs are fixed form. This probably allows more  developers who are still on older versions of the OS, or are still using the out of date SEU, to more easily use the code.  The code can be converted to totally free format using the free _**"JCRHFD - Rpg H,F,D to free form syntax"**_ command available at [JCRCMDS.COM](http://www.jcrcmds.com/jcrdown2.html#JCRHFD_tag). If there is interest I may post totally free form versions.
 
 The genesis of these programs was code that I wrote in RPG IV for a Fortune 500 retailer circa 2002-2004. The code was then cloned as a standard approach by another team leader.  This code is a more modern version that I cleaned up in 2020.
 
@@ -52,11 +52,11 @@ The display file uses a private set of indicators, something I started doing to 
 
 ### PMTSTATER/PMTSTATED
 
-RPG program and window display file to prompt for a USA state code.  Called when F4 is used in PMTCUSTR or MTNCUSTR. Disply can be by either state name or 2-character code, toggled by F7. 
+RPG program and window display file to prompt for a USA state code.  Called when F4 is used in PMTCUSTR or MTNCUSTR. Display can be sequenced by either state name or 2-character code, toggled by F7. 
 
 Strictly speaking, this is more of a demonstration program that may, or may not, have a lot of practical value in real life.
 
-The window has a blue border or reverse image blanks. This will display consistently across most 5250 emulators.
+The window has a blue border of reverse image blanks. This will display consistently across most 5250 emulators.
 
 #### CRTMSGF
 
@@ -68,7 +68,7 @@ The window has a blue border or reverse image blanks. This will display consiste
 
 #### CustMast.SQL
 
-  SQL code to create and populate the CUSTMAST tsble. You will need to change the _**set schema**_ in the first line to your target library.  You would put this file in the IFS and run it with the RUNSQLSTM command.
+  SQL code to create and populate the CUSTMAST table. You will need to change the _**set schema**_ in the first line to your target library.  You would put this file in the IFS and run it with the RUNSQLSTM command.
 
   Contains 300 randomly generate rows, courtesy of the fine folk at _http://generatedata.com/_, plus a little tweaking by hand.
 
