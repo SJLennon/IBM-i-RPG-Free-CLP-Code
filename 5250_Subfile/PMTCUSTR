@@ -192,8 +192,8 @@
 
        // Would prefer to defind these as  like(SC_NAME)
        // But SQL precompiler throws an error SQL0312, reason code 1
-     d wkName          s             13a
-     d wkCity          s             13a
+     d wkName          s             13a   varying
+     d wkCity          s             13a   varying
 
        //=== Parm fields for MTNCUSTR ================================
      d wkCustid        s                   like(CUSTID)
