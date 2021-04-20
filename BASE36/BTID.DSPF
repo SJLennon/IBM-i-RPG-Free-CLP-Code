@@ -1,0 +1,60 @@
+     A*===============================================================
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      PRINT
+     A                                      INDARA
+     A                                      CF04
+     A                                      CA05
+     A                                      CA03
+     A*===============================================================
+     A          R SCREEN
+     A                                      TEXT('Screen Header')
+     A            SH_PGM        10A  O  1  2
+     A                                  1 21'Test BASE36ADD'
+     A                                  1 47DATE
+     A                                      EDTCDE(Y)
+     A                                  2  1USER
+     A                                  2 47TIME
+     A*---------------------------------------------------------------
+     A                                  3 30'<-Rolling Value(s)'
+     A                                  4 30'<-'
+     A                                  5 30'<-'
+     A                                  6 30'<-'
+     A                                  7 30'<-'
+     A                                  8 30'<-'
+     A                                  9 30'<-'
+     A                                 10 30'<-'
+     A                                 11 30'<-'
+     A                                 12 30'<-'
+     A                                 13 30'<-'
+     A                                 14 30'<-'
+     A                                 15 30'<-'
+     A                                 16 30'<-'
+     A                                 17 30'<-'
+     A                                 18 30'<-'
+     A                                 19 30'<-'
+     A                                 20 30'<-Rolling Value(s)'
+     A            VAL1          20A  O  3  1
+     A            VAL2          20A  O  4  1
+     A            VAL3          20A  O  5  1
+     A            VAL4          20A  O  6  1
+     A            VAL5          20A  O  7  1
+     A            VAL6          20A  O  8  1
+     A            VAL7          20A  O  9  1
+     A            VAL8          20A  O 10  1
+     A            VAL9          20A  O 11  1
+     A            VAL10         20A  O 12  1
+     A            VAL11         20A  O 13  1
+     A            VAL12         20A  O 14  1
+     A            VAL13         20A  O 15  1
+     A            VAL14         20A  O 16  1
+     A            VAL15         20A  O 17  1
+     A            VAL16         20A  O 18  1
+     A            VAL17         20A  O 19  1
+     A            VAL18         20A  O 20  1
+     A            VAL           20A  B 21  1
+
+     A                                 21 30'Value'
+     A N40                             21 38'<- Enter a starting Value'
+     A  40                             22 30'Press enter to add 1 to value'
+     A  40                             23 30'F5 to enter new Value'
+     A                                 24 30'F3 to EXIT'

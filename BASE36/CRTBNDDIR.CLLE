@@ -1,0 +1,8 @@
+             PGM
+/* Create UTIL_BND binding directory in *CURLIB                  */
+/*  Change next statement if needed                              */
+             CRTBNDDIR  BNDDIR(*CURLIB/SRV_BASE36) TEXT('BASE36 ADD +
+                          Service PGMs')
+             ADDBNDDIRE BNDDIR(SRV_BASE36) OBJ((SRV_BASE36 *SRVPGM +
+                          *DEFER))
+             ENDPGM
