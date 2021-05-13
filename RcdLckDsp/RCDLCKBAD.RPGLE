@@ -5,14 +5,13 @@
       * Call this program in two different sessions to see the effect.
       * Second program will typically get a error:
       *   'Unable to allocate a record in file' (RNX1218)
-      * and the end user typically choses and unhelpful response.
+      * and the end user typically choses an unhelpful response.
       *==============================================================
       * Note: This is a poor technique because the record remains
       *       locked to all other users until the transaction is
       *       completed, which may be in a few seconds or after lunch.
-      *       It is used here to demonstate the RCDLCKDSP processing.
       *
-      *Note: Pgm reads by RRN for convenience. This is not a gopd
+      *Note: Pgm reads by RRN for convenience. This is not a good
       *      idea is a production program.
       *
       *Note: DSPLY is use to simulate a display file interaction
