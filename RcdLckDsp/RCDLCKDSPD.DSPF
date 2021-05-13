@@ -1,0 +1,41 @@
+     A                                      DSPSIZ(24 80 *DS3)
+     A          R DSPWIN
+     A                                      WINDOW(7 15 11 50)
+     A                                      OVERLAY
+     A                                      KEEP
+     A            SH_PGM        10A  O  1  1
+     A                                  1 33DATE
+     A                                      EDTWRD('  /  /  ')
+     A                                  1 42TIME
+     A            SC_USER1      49A  O  2  1DSPATR(HI)
+     A                                      COLOR(WHT)
+     A            SC_USER2      49A  O  3  1DSPATR(HI)
+     A                                      COLOR(WHT)
+     A            SC_USER3      49A  O  4  1DSPATR(HI)
+     A                                      COLOR(WHT)
+     A            SC_RESP        1A  I  5  1DSPATR(HI)
+     A            SC_INSTR      47A  O  5  3DSPATR(HI)
+     A                                      COLOR(WHT)
+     A                                  6  1'__________________________________-
+     A                                      _______________'
+     A                                  7  1'IT Information'
+     A                                  7 18'Pgm:'
+     A            SC_IT_PGM     10A  O  7 23
+     A                                  7 35'Status:'
+     A            SC_IT_STS      5D 0O  7 43
+     A                                  8  1'Opcode:'
+     A            SC_IT_OPCD     6A  O  8  9
+     A                                  8 28'Last File:'
+     A            SC_IT_FILE    10A  O  8 39
+     A            SC_IT_EM1     48A  O  9  1
+     A            SC_IT_EM2     48A  O 10  1
+     A*===============================================================
+     A*    If ASSUME is specified for any record format within a
+     A*    display file, OS/400 does not erase the display when the
+     A*    file is opened.  Even though DUMMY is never used in a
+     A*    WRITE or EXFMT, it keeps the calling program's screen
+     A*    from being blanked out when this program is called.
+     A          R DUMMY                     TEXT('Never used.  For ASSU
+     A                                      ')
+     A                                      ASSUME
+     A                                  1  3' '

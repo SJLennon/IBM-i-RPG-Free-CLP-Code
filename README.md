@@ -27,3 +27,7 @@ Many shops are still using 5250 "green screen" applications and these need to be
 ## BASE36
 
 A service program to add 1 to an alpha-numeric string of any length.
+
+## RCDLCKDSP
+
+A standardized way to handle locked records in an interactive program, and display information about who is holding the lock.  For programs that use native IO.
