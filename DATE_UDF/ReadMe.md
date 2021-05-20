@@ -41,7 +41,7 @@ An invalid input value will return a null value and give a 01H99 SQLSTATE warnin
 
 ## DATE_SQL
 
-The RPG code for the DATE_SQL service program, which contains the functions.  It is free forms but the D-Specs are still fixed, and it can be edited in SEU. (When I originally wrote it, it was in fixed form RPGIV.)
+The RPG code for the DATE_SQL service program, which contains the functions.  It is free format but the D-Specs are still fixed, and it can be edited in SEU. (When I originally wrote it, it was in fixed form RPGIV.)
 
 ## DATE_SQLFR
 
