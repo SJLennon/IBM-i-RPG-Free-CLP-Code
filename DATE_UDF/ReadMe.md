@@ -6,7 +6,7 @@ Legacy databases on the IBM i stored dates in numeric (or character) fields. Doi
 
     SELECT ...  FROM CUSTMAST WHERE DATE_YMD(DUEDATE) <= CURDATE() - 9O DAYS 
 
- The most common formats where month-day-year (in the USA) and year-month day. Often there was no century included.  There was also an IBM sanctioned format, CYMD, where the C was a 1-digit century, with 0 meaning 19, and 1 meaning 20.
+ The most common formats where month-day-year (in the USA) and year-month-day. Often there was no century included.  There was also an IBM sanctioned format, CYMD, where the C was a 1-digit century, with 0 meaning 19, and 1 meaning 20.
 
 ## Development
 
@@ -21,7 +21,7 @@ However...
 
 ## Functions
 
-There are three functions,each taking a numeric fieldas input. *Note:* Newer versions of SQL will automatically cast character fields to numeric, otherwise you have to cast to numeric manually.
+There are three functions,each taking a numeric field as input. *Note:* Newer versions of SQL will automatically cast character fields to numeric, otherwise you have to cast to numeric manually.
 
 * **DATE_YMD** to convert dates in either YYMMDD or CCYYMMD format.
   * Example: 980129 or 19980129.
