@@ -28,6 +28,10 @@ Many shops are still using 5250 "green screen" applications and these need to be
 
 A service program to add 1 to an alpha-numeric string of any length.
 
+## DATE_UDF
+
+SQL User Defined Functions to convert legacy dates to true dates.  Written in RPG.
+
 ## RCDLCKDSP
 
 A standardized way to handle locked records in an interactive program, and display information about who is holding the lock.  For programs that use native IO.
