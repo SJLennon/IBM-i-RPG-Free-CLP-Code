@@ -39,7 +39,7 @@ A batch program that exercises BASE36ADD. You call it with a starting and ending
 
 This program drops (deletes), creates and writes to the file using SQL. I wanted to try this to avoid creating DDS for the file.
 
-BTIR/BTID
+## BTIR/BTID
 
 A  program to explore BASE36ADD interactively. You enter a starting value and each successive enter adds to a rolling display of values.  Like this:
 
