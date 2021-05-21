@@ -1,12 +1,12 @@
-# IBM i RPG/Free CLP Code
+# RPGLE free format, SQL and CLP Code for the IBM i
 
-Demo code in RPG/Free, SQL and CLP for the IBM i
-
-More developers are learning about the **IBM i** as a wonderful business platform. ( It was formerly known as the **AS/400**.)
+This repository contains *working* example code, using RPGLE free-format, enbedded SQL and CLP for the IBM i
 
 My intent is to provide real programs that help you learn, or improve your current understanding, and which you can adapt to you needs.
 
-Feel free to provide comments and feedback.
+More developers are learning about the **IBM i** as a wonderful business platform. ( It was formerly known as the **AS/400**.)
+
+Feel free to provide comments and feedback as issues.
 
 ## Copy_Mbrs
 
