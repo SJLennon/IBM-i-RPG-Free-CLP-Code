@@ -8,6 +8,8 @@ More developers are learning about the **IBM i** as a wonderful business platfor
 
 Feel free to provide comments and feedback as issues.
 
+**Each folder has its own ReadMe with additional infomation/documentation.**
+
 ## Copy_Mbrs
 
 Code to be copied into other programs.
