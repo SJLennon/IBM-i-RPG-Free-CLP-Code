@@ -37,3 +37,7 @@ SQL User Defined Functions to convert legacy dates to true dates.  Written in RP
 ## RCDLCKDSP
 
 A standardized way to handle locked records in an interactive program, and display information about who is holding the lock.  For programs that use native IO.
+
+## GRP_JOB
+
+Sets up group jobs suitable for an IBM i developer.
