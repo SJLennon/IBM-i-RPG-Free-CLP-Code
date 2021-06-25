@@ -1,4 +1,4 @@
-These are personal utility commands that I wrote somewhere in my career. They made my life easier. Maybe they will make your life easier. 
+These are personal utility commands that I wrote somewhere in my career. They made my life easier. Maybe they will make your life easier.
 
 And you can see some examples of simple command definitions.
 
@@ -10,11 +10,11 @@ QRY invokes RUNQRY internally. RUNQRY is the runtime component of the old Query/
 
 ![QRY Prompter](Images/QRY_1.jpg)
 
-## Typical QRY, file in library list
+### Typical QRY, file in library list
 
 ![Typical QRY](Images/QRY_2.jpg)
 
-## QRY With Selection, specifying the library
+### QRY With Selection, specifying the library
 
 ![Qry with Selection](Images/QRY_3.jpg)
 
@@ -25,11 +25,11 @@ With results like this:
 
 ![QRY results](Images/QRY_3B.jpg)
 
-### QRY
+## QRY
 
 The command source
 
-### QRYC
+## QRYC
 
 The CLP command processing program
 
