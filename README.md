@@ -45,5 +45,7 @@ Sets up group jobs suitable for an IBM i developer.
 ## Utils
 
 Developer Utilities.
+
     QRY - Qry (List) Contents of a file
+    
     RC - Display File Record count
