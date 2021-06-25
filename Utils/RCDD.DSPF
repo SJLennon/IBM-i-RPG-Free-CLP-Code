@@ -1,0 +1,55 @@
+     A*===============================================================
+     A* Window for the RC command to display file record counts.
+     A*===============================================================
+     A*  CRTDSPF FILE(RCDD) RSTDSP(*YES)
+     A*==============================================================
+     A                                      DSPSIZ(24 80 *DS3                  -
+     A                                             27 132 *DS4)
+     A                                      PRINT
+     A*===============================================================
+     A          R RCD
+     A  40                                  PUTOVR
+     A                                      TEXT('Screen Header')
+     A                                      WINDOW(*DFT 8 32)
+     A                                      OVERLAY
+     A                                      CA12(12)
+     A                                      CA03(03)
+     A                                      CA05(05)
+
+     A                                  1  1SYSNAME
+     A                                  1 12DATE
+     A                                      EDTCDE(Y)
+     A                                  1 23TIME
+     A                                  2  1'Library   '
+     A                                      DSPATR(UL)
+     A                                  2 12'File      '
+     A                                      DSPATR(UL)
+     A                                  2 23'Member    '
+     A                                      DSPATR(UL)
+     A            LIB           10A  O  3  1DSPATR(HI)
+     A            FILE          10A  O  3 12DSPATR(HI)
+     A            MBR           10A  O  3 23DSPATR(HI)
+     A            RECT          10  0O  4  1EDTCDE(1)
+     A                                      OVRDTA
+     A                                  4 15'Total Records'
+     A            RECA          10  0O  5  1EDTCDE(1)
+     A                                      OVRDTA
+     A                                  5 15'Active'
+     A            RECD          10  0   6  1EDTCDE(1)
+     A                                      OVRDTA
+     A  41                                  OVRATR
+     A  41                                  COLOR(RED)
+     A                                  6 15'Deleted'
+     A  41                                  OVRATR
+     A  41                                  COLOR(RED)
+     A            PCT            4Y 1   6 26EDTCDE(3)
+     A  41                                  COLOR(RED)
+     A                                  6 32'%'
+     A  41                                  COLOR(RED)
+     A                                  7  1'F5=Refresh  F3/F12/Enter=Exit'
+     A*===============================================================
+     A*=== Dummy Record - Assume =====================================
+     A*
+     A          R DUMMY
+     A                                      ASSUME
+     A                                  1  2' '

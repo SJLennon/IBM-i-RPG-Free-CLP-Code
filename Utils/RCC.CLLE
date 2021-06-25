@@ -1,0 +1,82 @@
+RCC: +
+  PGM PARM(&PFILE &PMBR)
+
+/* This program displays the record count in a file and allows a     */
+/* a refresh with F5.  A member can be specified but defaults to     */
+/* *FIRST.                                                           */
+/*                                                                   */
+/* It's easier to read than the output of DSPFD.                     */
+/*                                                                   */
+/* Use the RC command to invoke this program                         */
+
+/* 01/01/98 LENNON.  Original Writing                                */
+
+/* Input parameters */
+  DCL VAR(&PFILE)      TYPE(*CHAR) LEN(20)    /* file/lib */
+  DCL VAR(&PMBR)       TYPE(*CHAR) LEN(10)    /* member */
+
+/* Variables used in this program                                    */
+  DCLF       FILE(RCDD)
+
+  DCL VAR(&LIB)        TYPE(*CHAR) LEN(10)
+  DCL VAR(&FILE)       TYPE(*CHAR) LEN(10)
+  DCL VAR(&MBR)        TYPE(*CHAR) LEN(10)
+  DCL VAR(&RECAN)      TYPE(*DEC)  LEN(10 0)  /* Active #  */
+  DCL VAR(&RECDN)      TYPE(*DEC)  LEN(10 0)  /* Deleted # */
+  DCL VAR(&RECTN)      TYPE(*DEC)  LEN(10 0)  /* Total #   */
+/*DCL VAR(&PCT)        TYPE(*DEC)  LEN(10 0)*//* % deleted */
+
+ /* Error Handling Variables */
+  DCL VAR(&E_MSGID)    TYPE(*CHAR) LEN(7)
+  DCL VAR(&E_MSGF)     TYPE(*CHAR) LEN(10)
+  DCL VAR(&E_MSGFLIB)  TYPE(*CHAR) LEN(10)
+  DCL VAR(&E_MSGDTA)   TYPE(*CHAR) LEN(100)
+
+/* Catch unmonitored errors */
+  MONMSG MSGID(CPF0000) EXEC(GOTO CMDLBL(ERROR))
+
+/* Split out file and library */
+  CHGVAR VAR(&FILE) VALUE(%SST(&PFILE 1 10))
+  CHGVAR VAR(&LIB) VALUE(%SST(&PFILE 11 10))
+  CHGVAR VAR(&MBR) VALUE(&PMBR)
+
+/* Loop displaying record count until exit with F3/F12 or enter */
+LOOP: +
+  RTVMBRD FILE(&LIB/&FILE) MBR(&PMBR) RTNLIB(&LIB) RTNMBR(&MBR) +
+     NBRCURRCD(&RECAN) NBRDLTRCD(&RECDN)
+  MONMSG MSGID(CPF3019) EXEC(DO)
+      CHGVAR VAR(&MBR) VALUE('No Members')
+  ENDDO
+  CHGVAR VAR(&RECTN) VALUE(&RECAN + &RECDN)
+  CHGVAR VAR(&RECA) VALUE(&RECAN)
+  CHGVAR VAR(&RECD) VALUE(&RECDN)
+  CHGVAR VAR(&RECT) VALUE(&RECTN)
+
+ /* Calculate Percent deleted and hightlight on screen if high */
+  CHGVAR VAR(&IN41) VALUE('0') /* clear highlight */
+  CHGVAR VAR(&PCT) VALUE(0)    /* zero the pct */
+  IF COND(&RECTN > 0) THEN(DO)
+      CHGVAR VAR(&PCT) VALUE(&RECDN / &RECTN * 100)
+      IF COND(&PCT > 10) THEN(DO)
+          CHGVAR VAR(&IN41) VALUE('1') /* highlight */
+      ENDDO
+  ENDDO
+
+  SNDRCVF    RCDFMT(RCD)
+  CHGVAR VAR(&IN40) VALUE('1') /* PUTOVR on */
+  IF COND(&IN03 *OR &IN12) THEN(GOTO CMDLBL(ENDPGM))
+  IF COND(&IN05) THEN(GOTO CMDLBL(LOOP))
+
+/* End of program */
+  RETURN
+
+/* Error handler - resend any trapped escape message */
+ERROR: +
+  RCVMSG MSGTYPE(*LAST) MSGDTA(&E_MSGDTA) MSGID(&E_MSGID) +
+     MSGF(&E_MSGF) MSGFLIB(&E_MSGFLIB)
+  MONMSG MSGID(CPF0000) /* Just in case */
+  SNDPGMMSG MSGID(&E_MSGID) MSGF(&E_MSGFLIB/&E_MSGF) +
+     MSGDTA(&E_MSGDTA) MSGTYPE(*ESCAPE)
+  MONMSG MSGID(CPF0000) /* Just in case */
+ENDPGM: +
+  ENDPGM
