@@ -16,7 +16,7 @@ It is currently set to use a BASE36 character set (A-Z and 0-9) and the raw EBCD
 
 ## Development
 
-I've been experimenting with the **free** [Visual Studio Code](https://code.visualstudio.com/) and the [Code for IBM i](https://halcyon-tech.github.io/code-for-ibmi/#/) :+1: extension to VS Code, so using that I tidied up the code, made it into a service program, made it more flexible and wrote some testing code. Lots of fun and a good learning experience using the new, totally free, D-specs :smile:
+I've been experimenting with the **free** [Visual Studio Code](https://code.visualstudio.com/) and the [Code for IBM i](https://github.com/halcyon-tech/vscode-ibmi) :+1: extension to VS Code, so using that I tidied up the code, made it into a service program, made it more flexible and wrote some testing code. Lots of fun and a good learning experience using the new, totally free, D-specs :smile:
 
 ## SRV_BASE36
 
