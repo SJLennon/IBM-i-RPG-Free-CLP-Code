@@ -35,7 +35,7 @@ This the command processing program for the GETOBJUSR command.  It calls GETOBJU
 
 This RPG program creates a user space in QTEMP, then calls the QWCLOBJL (List Object Locks) API to populate the user spaces, calls SRTUSRSPC to sort by job, returns the requested message and/or file, then deletes the user space.
 
-The code was originally in fexed form RPG/400, but I converted it to **FREE (using [Craig Rutledge's JCRCMDS](https://www.jcrcmds.com/)).
+The code was originally in fixed form RPG/400, but I converted it to **FREE (using [Craig Rutledge's JCRCMDS](https://www.jcrcmds.com/)).
 
 ## GETOBJUP
 
@@ -59,13 +59,13 @@ You pass it two parameters:
 2. Output: 1-character field to return the job type, as below.
 
 Type|Description
-----|-----------------------------------
+----|--------------------------------
 A|The job is an autostart job.
 B|The job is a batch job.
 I|The job is an interactive job.
-M|he job is a subsystem monitor job.
+M|The job is a subsystem monitor job.
 R|The job is a spooled reader job.
-S|he job is a system job.
+S|The job is a system job.
 W|The job is a spooled writer job.
 X|The job is the SCPF system job.
 
