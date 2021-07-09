@@ -1,14 +1,14 @@
 # RPGLE free format, SQL and CLP Code for the IBM i
 
-This repository contains *working* example code, using RPGLE free-format, enbedded SQL and CLP for the IBM i
+More developers are learning about the **IBM i** as a wonderful business platform. (It was formerly known as the **AS/400**.)
 
-My intent is to provide real programs that help you learn, or improve your current understanding, and which you can adapt to you needs.
+This repository contains *working* example code, using RPGLE free-format, enbedded SQL and CLP for the IBM i.
 
-More developers are learning about the **IBM i** as a wonderful business platform. ( It was formerly known as the **AS/400**.)
-
-Feel free to provide comments and feedback as issues.
+My intent is to provide real programs that help you learn and/or improve your current understanding. Explore and adapt the code to your needs. Some of the code may be of use "as is" but no guarantee is provided.
 
 **Each folder has its own ReadMe with additional infomation/documentation.**
+
+Feel free to provide comments and feedback as issues.
 
 ## Copy_Mbrs
 
@@ -37,6 +37,10 @@ SQL User Defined Functions to convert legacy dates to true dates.  Written in RP
 ## RCDLCKDSP
 
 A standardized way to handle locked records in an interactive program, and display information about who is holding the lock.  For programs that use native IO.
+
+## APIs
+
+Commands, with CLP and RPG programs, calling IBM i APis.
 
 ## GRP_JOB
 

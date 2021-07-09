@@ -1,0 +1,17 @@
+
+      *================================================================
+      * File of Jobs using an object, returned by GETOBJUSR Command.
+      *
+      * =====> Create with MBR(*NONE).  Dupe into QTEMP to use.
+      *
+      * 12/00/97 LENNON Initial Coding
+      *================================================================
+     A          R GETOBJU
+     A            OUJOBNAME     10          TEXT('Job Name')
+     A                                      COLHDG('Job' 'Name')
+     A            OUJOBUSER     10A         TEXT('Job User')
+     A                                      COLHDG('Job' 'User')
+     A            OUJOBNUM       6A         TEXT('Job Number')
+     A                                      COLHDG('Job' 'Number')
+     A            OUJOBTYPE      1A         TEXT('I=interact, other=non inter')
+     A                                      COLHDG('Type')

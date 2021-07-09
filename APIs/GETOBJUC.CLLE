@@ -1,0 +1,86 @@
+GETOBJUC: +
+  PGM PARM(&OBJECT &TYPE &MEMBER &RETMSG &RETMSGFLD &RETFILE)
+
+/* -----------------------------------------------------------------*/
+/* This program finds all the jobs which are using an object.       */
+/* It returns a message suitable for display to the operator        */
+/* and/or  file QTEMP/GETOBJUP listing all jobs.  This file         */
+/* could be used to send a message to all users of the object.      */
+/* -----------------------------------------------------------------*/
+/* Use the GETOBJUSR command to invoke this program                 */
+/* -----------------------------------------------------------------*/
+/* 11/24/97 LENNON Original writing                                 */
+/* -----------------------------------------------------------------*/
+/* 10/05/2001 Sam Lennon. If a non file object is locked *EXCL then */
+/*            RTVOBJD to get real library name to put in the        */
+/*            message fails. If this occurs, just continue and      */
+/*            *LIBL may appear in the message.                      */
+/* -----------------------------------------------------------------*/
+
+/* Input parameters */
+  DCL VAR(&OBJECT)     TYPE(*CHAR) LEN(20)    /* Obj & lib */
+  DCL VAR(&TYPE)       TYPE(*CHAR) LEN(10)    /* Obj type  */
+  DCL VAR(&MEMBER)     TYPE(*CHAR) LEN(10)    /* if *FILE */
+  DCL VAR(&RETMSG)     TYPE(*CHAR) LEN(4)     /* Return a msg? */
+  DCL VAR(&RETMSGFLD)  TYPE(*CHAR) LEN(200)   /* Fld for msg */
+  DCL VAR(&RETFILE)    TYPE(*CHAR) LEN(4)     /* Return a file? */
+
+/* Variables used in this program */
+  DCL VAR(&OBJNAM)     TYPE(*CHAR) LEN(10)    /* Obj name  */
+  DCL VAR(&OBJLIB)     TYPE(*CHAR) LEN(10)    /* Obj lib   */
+  DCL VAR(&FRMOBJLIB)  TYPE(*CHAR) LEN(10)    /* For duping file */
+  DCL VAR(&FAKMSGFLD)  TYPE(*CHAR) LEN(1)     /* No msg fld passed */
+
+ /* Error Handling Variables */
+  DCL VAR(&E_MSGID)    TYPE(*CHAR) LEN(7)
+  DCL VAR(&E_MSGF)     TYPE(*CHAR) LEN(10)
+  DCL VAR(&E_MSGFLIB)  TYPE(*CHAR) LEN(10)
+  DCL VAR(&E_MSGDTA)   TYPE(*CHAR) LEN(100)
+
+/* Catch unmonitored errors */
+  MONMSG MSGID(CPF0000) EXEC(GOTO CMDLBL(ERROR))
+
+/* Convert *LIBL/*CURLIB into a real name, if possible     */
+  CHGVAR VAR(&OBJNAM) VALUE(%SST(&OBJECT 1 10))
+  CHGVAR VAR(&OBJLIB) VALUE(%SST(&OBJECT 11 10))
+  RTVOBJD OBJ(&OBJLIB/&OBJNAM) OBJTYPE(&TYPE) RTNLIB(&OBJLIB)
+  MONMSG MSGID(CPF9803) EXEC(DO) /*Cannot Allocate*/
+      GOTO       CMDLBL(PASTLIBGET)
+  ENDDO
+  CHGVAR VAR(%SST(&OBJECT 11 10)) VALUE(&OBJLIB)
+  PASTLIBGET: +
+
+/* If output file requested, create empty file in QTEMP */
+  IF COND(&RETFILE = '*YES') THEN(DO)
+      DLTF FILE(QTEMP/GETOBJUP)
+      MONMSG MSGID(CPF2105) /* not found */
+      RTVOBJD OBJ(*LIBL/GETOBJUP) OBJTYPE(*FILE) RTNLIB(&FRMOBJLIB)
+      CRTDUPOBJ OBJ(GETOBJUP) FROMLIB(&FRMOBJLIB) OBJTYPE(*FILE) +
+         TOLIB(QTEMP)
+      ADDPFM FILE(QTEMP/GETOBJUP) MBR(GETOBJUP)
+      OVRDBF FILE(GETOBJUP) TOFILE(QTEMP/GETOBJUP) SECURE(*YES)
+  ENDDO
+
+/* Call RPG program to find the users */
+  IF COND(&RETMSG = '*YES') THEN(DO)
+      CALL PGM(GETOBJUR) PARM(&OBJECT &TYPE &MEMBER &RETMSG +
+         &RETMSGFLD &RETFILE)
+  ENDDO
+  ELSE CMD(DO)
+      CALL PGM(GETOBJUR) PARM(&OBJECT &TYPE &MEMBER &RETMSG +
+         &FAKMSGFLD &RETFILE)
+  ENDDO
+
+/* End of program */
+  GOTO CMDLBL(ENDPGM)
+
+/* Error handler - resend any trapped escape message */
+ERROR: +
+  RCVMSG MSGTYPE(*LAST) MSGDTA(&E_MSGDTA) MSGID(&E_MSGID) +
+     MSGF(&E_MSGF) MSGFLIB(&E_MSGFLIB)
+  MONMSG MSGID(CPF0000) /* Just in case */
+  SNDPGMMSG MSGID(&E_MSGID) MSGF(&E_MSGFLIB/&E_MSGF) +
+     MSGDTA(&E_MSGDTA) MSGTYPE(*ESCAPE)
+  MONMSG MSGID(CPF0000) /* Just in case */
+ENDPGM: +
+  ENDPGM
