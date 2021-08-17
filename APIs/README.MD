@@ -84,8 +84,8 @@ This is a command that calls the IBM QMHMOVPM (Move Program Messages) API. You'd
 
 ### RSNESCMSG - Resend Escape Message Command
 
-This is a command that calls the IBM QMHRSNEM (Resend Escape Message) API to send the current escape message to the caling program. This also ends the current program.
+This is a command that calls the IBM QMHRSNEM (Resend Escape Message) API to send the current escape message to the calling program. This also ends the current program.
 
 ### CLERRHANDL - Ted Holt's CL Error Handler Template
 
-This is execuatble code from Ted Holt that demonstrates handling exceptions in CL, using these two commands. Call it from a command line, it will fail and you will see the diagnostic message "From-file QCUSTCDT in *LIBL not found."
+This is execuatble code from Ted Holt that demonstrates handling exceptions in CL, using these two commands. When called it will fail and you will see the diagnostic message "From-file QCUSTCDT in *LIBL not found."
