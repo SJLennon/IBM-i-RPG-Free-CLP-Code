@@ -73,3 +73,19 @@ Notes:
 
 1. The code was originally fixed format but I converted it to **FREE (using [Craig Rutledge's JCRCMDS](https://www.jcrcmds.com/)). If needed for general use it should probably be a service program.  I'm not sure service programs were a thing in 1997, but if they were I was not familar with them then.
 2. On more current OS releases you can get similar information in SQL with the [GET_JOB_INFO table function](https://www.ibm.com/docs/en/i/7.4?topic=services-get-job-info-table-function).
+
+## Messages: QMHMOVPM (Move Program Messages) & QMHRSNEM (Resend Escape Message)
+
+These commands makes handling CL program exceptions easy and concise. Source is an [article in IT Jungle](https://www.itjungle.com/2012/05/02/fhg050212-story01/) back in 2012. My thanks to Ted Holt and Brian Rusch.
+
+### MOVPGMMSG - Move Program Messages Command
+
+This is a command that calls the IBM QMHMOVPM (Move Program Messages) API. You'd use it to pass diagnostic messages up to the calling program.
+
+### RSNESCMSG - Resend Escape Message Command
+
+This is a command that calls the IBM QMHRSNEM (Resend Escape Message) API to send the current escape message to the caling program. This also ends the current program.
+
+### CLERRHANDL - Ted Holt's CL Error Handler Template
+
+This is execuatble code from Ted Holt that demonstrates handling exceptions in CL, using these two commands. Call it from a command line, it will fail and you will see the diagnostic message "From-file QCUSTCDT in *LIBL not found."

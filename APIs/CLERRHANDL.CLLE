@@ -1,0 +1,46 @@
+pgm
+
+      dcl   &Abending      *lgl
+      dcl   &JobName       *char     10
+      dcl   &JobUser       *char     10
+      dcl   &JobNbr        *char      6
+      dcl   &MsgKey        *char      4
+      dcl   &PgmName       *char     10
+      dcl   &Sender        *char     80
+
+      monmsg cpf0000 exec(goto abend)
+
+/* Determine the name of this program. */
+
+      sndpgmmsg   msg('Dummy message') topgmq(*same) +
+                    msgtype(*info) keyvar(&msgkey)
+      rcvmsg      pgmq(*same) msgtype(*info) msgkey(&MsgKey) +
+                    rmv(*yes) sender(&Sender)
+      chgvar      var(&PgmName) value(%sst(&Sender 27 10))
+
+      rtvjoba     job(&JobName) user(&JobUser) nbr(&JobNbr)
+
+/* regular processing goes here */
+
+      cpyf fromfile(qcustcdt) tofile(qtemp/br549)
+      return
+
+/* ===========================================================*/
+/* * Routine to handle unexpected errors */
+Abend:
+/* Don't let this program go into a loop here. */
+      if &Abending then(do)
+         sndpgmmsg  msgid(cpf9898) msgf(qcpfmsg) msgtype(*escape) +
+                      msgdta('Program' *bcat &PgmName *bcat +
+                             'ended abnormally at label Abend')
+         monmsg cpf0000
+         return
+      enddo
+      chgvar   &Abending '1'
+
+/* Resend diagnostic & escape messages to the caller           */
+/* caller as diagnostic messages.                              */
+      movpgmmsg  msgtype(*diag)
+      rsnescmsg
+
+endpgm
