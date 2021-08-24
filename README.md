@@ -42,6 +42,10 @@ A standardized way to handle locked records in an interactive program, and displ
 
 Commands, with CLP and RPG programs, calling IBM i APis.
 
+## APIs_SQL
+
+Commands, CLLE, sQLRPGLE using SQL access to APIs.
+
 ## GRP_JOB
 
 Sets up group jobs suitable for an IBM i developer.
