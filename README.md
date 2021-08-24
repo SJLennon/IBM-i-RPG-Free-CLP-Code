@@ -44,7 +44,7 @@ Commands, with CLP and RPG programs, calling IBM i APis.
 
 ## APIs_SQL
 
-Commands, CLLE, sQLRPGLE using SQL access to APIs.
+Commands, CLLE, SQLRPGLE using SQL access to APIs.
 
 ## GRP_JOB
 
