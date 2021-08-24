@@ -1,6 +1,6 @@
 # APIs, including QWCLOBJL (List Object Locks), QUSLJOB(List Job) QUSCRTUS, QUSDLTUS, QUSPTRUS (User Spaces)
 
-- User commands that use RPG and CL to call IBM i APIs, sepecifically to list locks on objects
+- User commands that use RPG and CL to call IBM i APIs, sepecifically to return details of locks on an object
 - RPGLE program to return the job type, by calling the QUSLJOB API,
 - Commands to handle error messages in CL program, using the QMHMOVPM and QMHRSNEM APIs.
 
@@ -33,7 +33,7 @@ It shows the details of up to 4 jobs and lists how many additional jobs, if any,
 
 ### GETOBJUC.CLLE
 
-This the command processing program for the GETOBJUSR command.  It calls GETOBJUR to get the lock information.
+This is the command processing program for the GETOBJUSR command.  It calls GETOBJUR to get the lock information.
 
 ### GETOBJUR.RPGLE
 

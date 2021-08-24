@@ -1,6 +1,6 @@
 # Using IBM [Work Management Services](https://www.ibm.com/docs/en/i/7.4?topic=services-work-management)
 
-IBM has begun providing access to APIs using SQL. The code here uses the QSYS2.OBJECT_LOCK_INFO SQL view.  This is shorter and simplified code that can be  used to replace that in [APIs which returns users who have a lock on an object](https://github.com/SJLennon/IBM-i-RPG-Free-CLP-Code/tree/master/APIs).
+IBM has begun providing access to APIs using SQL. The code here uses the QSYS2.OBJECT_LOCK_INFO SQL view.  This is shorter and simplified code that can be  used to replace the code in [APIs, which returns users who have a lock on an object](https://github.com/SJLennon/IBM-i-RPG-Free-CLP-Code/tree/master/APIs).
 
 ## GETOBJUSR.CMD
 
@@ -11,8 +11,6 @@ This command is the top level interface. It is unchanged from the version in [AP
 
 You specify the object and type and the command returns information on the locks on the object. You can return a file of objects and/or a message.
 
-The returned file is GETOBJUP in QTEMP.
-
 The returned message would be suitable for sending to the operator and look something like one of these:
 ![GetObjUsr Message](Images/GetObjUsr_2.jpg)
 
@@ -20,7 +18,9 @@ The returned message would be suitable for sending to the operator and look some
 
 It shows the details of up to 4 jobs and lists how many additional jobs, if any, have locks.
 
-The job name can be copied and pasted into a WRKJOB command, e.g. `wrkjob 233920/LENNONS/QPAD151018`.
+A job name can be copied and pasted into a WRKJOB command, e.g. `wrkjob 233920/LENNONS/QPAD151018`.
+
+The returned file is GETOBJUP in QTEMP.
 
 ## GETOBJUP File
 
@@ -46,7 +46,7 @@ These are simple CL programs to test GETOBJUSR and display the results by sendin
 
 More complex testing:
 
-- Call T9ALLOCMNY to create a interactive lock and several batch locks on QIWS/QCUSTCDT.
+- First, Call T9ALLOCMNY to create a interactive lock and several batch locks on QIWS/QCUSTCDT.
 
 - Then call T9DSPMNY to display the locks.
 
