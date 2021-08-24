@@ -1,0 +1,14 @@
+PGM
+
+/* Basic test, using a library as the object to report on */
+/* Return both a message and a file                       */
+
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(200)
+
+             GETOBJUSR  OBJECT(QSYS/LENNONS2) TYPE(*LIB) +
+                          MSGFLD(&MSG) RETFILE(*YES)
+
+             SNDMSG     MSG(&MSG) TOUSR(*REQUESTER)
+             QRY        FILE(QTEMP/GETOBJUP)
+
+             ENDPGM

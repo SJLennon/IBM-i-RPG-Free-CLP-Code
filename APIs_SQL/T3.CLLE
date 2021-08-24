@@ -1,0 +1,12 @@
+PGM
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(200)
+
+/* QSYS library. Lots of jobs.                             */
+/* Return both a message and a file                        */
+
+             GETOBJUSR  OBJECT(QSYS/QSYS) TYPE(*LIB) MSGFLD(&MSG) +
+                          RETFILE(*YES)
+             SNDMSG     MSG(&MSG) TOUSR(*REQUESTER)
+             QRY        FILE(QTEMP/GETOBJUP)
+
+             ENDPGM

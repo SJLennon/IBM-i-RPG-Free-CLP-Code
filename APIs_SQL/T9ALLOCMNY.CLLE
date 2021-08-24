@@ -1,0 +1,20 @@
+             PGM
+/***************************************************************/
+/* Creates locks on QIWS/QCUSTCDT to test GETOBJUR.            */
+/* Call T9DSPMNY to report the locks.                          */
+/***************************************************************/
+
+/* Create an interactive lock                                  */
+             ALCOBJ     OBJ((QIWS/QCUSTCDT *FILE *SHRRD))
+
+/* Create some batch locks. Submitted jobs wait for 90 seconds */
+/* so you can call T9DSPMAY to see the locks.                  */
+             SBMJOB     CMD(CALL PGM(T9ALLOC1)) JOB(CUSTLST) +
+                          JOBQ(QUSRNOMAX)
+             SBMJOB     CMD(CALL PGM(T9ALLOC1)) JOB(INV_UPD) +
+                          JOBQ(QUSRNOMAX)
+             SBMJOB     CMD(CALL PGM(T9ALLOC1)) JOB(DAILYORD) +
+                          JOBQ(QUSRNOMAX)
+             SBMJOB     CMD(CALL PGM(T9ALLOC1)) JOB(YTD_RPT) +
+                          JOBQ(QUSRNOMAX)
+             ENDPGM

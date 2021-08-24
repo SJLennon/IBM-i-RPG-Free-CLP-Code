@@ -1,6 +1,8 @@
 # APIs, including QWCLOBJL (List Object Locks), QUSLJOB(List Job) QUSCRTUS, QUSDLTUS, QUSPTRUS (User Spaces)
 
-User commands that use RPG and CL to call IBM i APIs.
+- User commands that use RPG and CL to call IBM i APIs, sepecifically to list locks on objects
+- RPGLE program to return the job type, by calling the QUSLJOB API,
+- Commands to handle error messages in CL program, using the QMHMOVPM and QMHRSNEM APIs.
 
 ## QWCLOBJL (List Object Locks) API
 
@@ -12,7 +14,9 @@ The company is long gone, but I recently found the code on my PC and resurrected
 
 Now (2021) you can get similar information with SQL - see [Work Management Services](https://www.ibm.com/docs/en/i/7.4?topic=services-work-management) on the IBM site.  However, I have not found an SQL interface to QWCLOBJL. I also suspect that this code if faster than SQL, but probably in most use cases speed may not be a factor.
 
-### GETOBJUSR Command
+**Update 08/2021**: See APIs_SQL for code that does the same thing but using SQL provided by IBM in [Work Management Services](https://www.ibm.com/docs/en/i/7.4?topic=services-work-management)
+
+### GETOBJUSR.CMD
 
 This is the top level interface. Prompted, it looks like this:
 ![GetObjUsr Prompt](Images/GetObjUsr_1.jpg)
@@ -27,28 +31,28 @@ The message would be suitable for sending to the operator and look something lik
 
 It shows the details of up to 4 jobs and lists how many additional jobs, if any, have locks.
 
-### GETOBJUC
+### GETOBJUC.CLLE
 
 This the command processing program for the GETOBJUSR command.  It calls GETOBJUR to get the lock information.
 
-### GETOBJUR
+### GETOBJUR.RPGLE
 
 This RPG program creates a user space in QTEMP, then calls the QWCLOBJL (List Object Locks) API to populate the user spaces, calls SRTUSRSPC to sort by job, returns the requested message and/or file, then deletes the user space.
 
 The code was originally in fixed form RPG/400, but I converted it to **FREE (using [Craig Rutledge's JCRCMDS](https://www.jcrcmds.com/)).
 
-## GETOBJUP
+## GETOBJUP.PF
 
 DDS for the file created, if requested, in QTEMP. Resulting file contents look something like this:
 ![GetObjup Sample](Images/GetObjUsr_4.jpg)
 
-### SRTUSRSPC
+### SRTUSRSPC.RPGLE
 
 This program sorts a user space. I believe I downloaded the code from the Old News 3X/400 site.  It is fixed form RPG/400 that I haven't bothered to convert.  Old, educational, and it works.
 
 ## QUSLJOB (List Job) API
 
-### GETJOBTR
+### GETJOBTR.RPGLE
 
 This is a standalone program that returns the job type. GETOBJUR needed it, but I coded it separately in case it was useful elsewhere.
 
