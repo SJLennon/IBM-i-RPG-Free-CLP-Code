@@ -46,7 +46,7 @@ These are simple CL programs to test GETOBJUSR and display the results by sendin
 
 More complex testing:
 
-- First, call T9ALLOCMNY to create a interactive lock and several batch locks on QIWS/QCUSTCDT.
+- First, call T9ALLOCMNY to create an interactive lock and several batch locks on QIWS/QCUSTCDT.
 
 - Then call T9DSPMNY to display the locks.
 
