@@ -11,7 +11,9 @@
 // could be used to send messages to all interactive users of the
 // object, or for some other use. Or the jobname can be copied and
 // pasted into a command, e.g. wrkjob 110080/LENNONS/QPAD142626.
+
 // This program is called from CL program GETOBJUC.
+
 // It uses the QSYS2.OBJECT_LOCK_INFO SQL view.
 // Message looks like this:
 //   QIWS/QCUSTCDT *FILE is in use by 110088/LENNONS/QPAD142626.
@@ -30,8 +32,10 @@
 //            1997. This code probably performs better than existing
 //            SQL interfaces. For most use cases performance may not
 //            be a consideration.
-// 08/--2021  Converted to use QSYS2.OBJECT_LOCK_INFO and to create the
+// 08/--/2021 Converted to use QSYS2.OBJECT_LOCK_INFO and to create the
 //            GETOBJUP file with SQL.
+// 09/17/2021 - Fixed member logic by uppercasing CASE values
+//            - Added input parms to GETOBJUP output file.
 //--------------------------------------------------------------------
 ctl-opt debug option(*nodebugio: *srcstmt)
     dftactgrp(*no) actgrp(*caller)
@@ -82,6 +86,10 @@ dcl-proc Main ;
         JobNum char(6);
         JobType char(1);
         JobNM28 char(28);
+        JobOBJLIB CHAR(10);
+        JobOBJNAME CHAR(10);
+        JobOBJTYPE CHAR(10);
+        JobOBJMBR CHAR(10);
     end-ds;
 
     dcl-s theLibrary char(10);
@@ -116,14 +124,27 @@ dcl-proc Main ;
             OUJOBUSER char(10),
             OUJOBNUM char(6),
             OUJOBTYPE char(1),
-            OUJOBNAME28 CHAR(28)
+            OUJOBNAME28 CHAR(28),
+            OUOBJLIB CHAR(10),
+            OUOBJNAME CHAR(10),
+            OUOBJTYPE CHAR(10),
+            OUOBJMBR CHAR(10)
         );
         if SQLSTATE <> SQLSuccess;
             SQLProblem('Declare global tempory table GETOBJUP');
         endif;
     endif;
+
+    // Split Library/Object
     theObject = %subst(pObject:1:10);
     theLibrary = %subst(pObject:11:10);
+
+    // Put parms in output file data structure
+    JobOBJLIB = theLibrary;
+    JobOBJNAME = theObject;
+    JobOBJTYPE = pObjType;
+    JobOBJMBR = pObjMem;
+
 
     // === Find the locks ============================================
     exec sql declare Lock_Cursor cursor for
@@ -133,7 +154,7 @@ dcl-proc Main ;
           and SYSTEM_OBJECT_NAME = :theobject
           and OBJECT_TYPE = :pobjtype
           and ifnull(SYSTEM_TABLE_MEMBER,' ') =
-            case when :pobjtype = '*file' and :pobjmem <> '*all' then  :pobjmem
+            case when :pobjtype = '*FILE' and :pobjmem <> '*ALL' then  :pobjmem
                  else ' '
             END
         order by JOB_NAME
@@ -148,6 +169,7 @@ dcl-proc Main ;
     dow SQLSTT <> SQLNoData;
         NumJobs += 1;
         if pFileYN='*YES';
+            // Build JobName26, parm for GetJobType
             // JobName28 is  like '580065/USER/JOBNAME'
             //                     1234567890123456789
             JobNum = %subst(JobName28 :1 :6);      // Num Always 6
@@ -222,34 +244,38 @@ end-proc;
 //=== SQLProblem =====================================================
 // For those "Never should happen" SQL errors.
 // Issues DUMP(A) to dump memory, then ends program by
-// sending an *ESCAPE message of the supplied debugging text.
+// sending an *ESCAPE message of the supplied debugging message,
+// plus whatever SQL diagnostics we can fit into 512 chars.
 dcl-proc SQLProblem;
     dcl-pi SQLProblem;
-        piSQLDebug varchar(1024) value;
+        piSQLDebug varchar(200) value;
     end-pi;
 
     //--- Local Variables ---------------------------------
     dcl-s myDebugMsg varchar(512); //Max CPF9898 supports
     dcl-s wkRem int(10);
 
-    dcl-s myState CHAR(5);
-    dcl-s myMSGTXT varchar(32740);
-    dcl-s myMsgLgth int(5);
+    // Returned SQL diagnostic info
+    dcl-s mySQLState CHAR(5);
+    dcl-s mySQLMsgTxt varchar(32740);
+    dcl-s mySQLMsgLgth int(5);
+
     exec sql get diagnostics condition 1
-        :myState = RETURNED_SQLSTATE,
-        :myMsgTxt = MESSAGE_TEXT,
-        :myMsgLgth = MESSAGE_LENGTH
+        :mySQLState = RETURNED_SQLSTATE,
+        :mySQLMsgTxt = MESSAGE_TEXT,
+        :mySQLMsgLgth = MESSAGE_LENGTH
     ;
     myDebugMsg =  piSQLDebug
         + ' - Unexpected SQL return: SQLSTATE='
-        + myState
+        + mySQLState
         + '. "';
-    // Fit in as much of myMsgTxt as possible.
+
+    // Fit in as much of mySQLMsgTxt as possible.
     wkRem = (%size(myDebugMsg)-2) - %len(myDebugMsg);
-    if wkRem >= myMsgLgth +1;
-        myDebugMsg += (myMsgTxt +'"');
+    if wkRem >= mySQLMsgLgth +1;
+        myDebugMsg += (mySQLMsgTxt +'"');
     else;
-        myDebugMsg += (%subst(myMsgTxt: 1 :wkRem -5) + ' ..."');
+        myDebugMsg += (%subst(mySQLMsgTxt: 1 :wkRem -5) + ' ..."');
     endif;
 
     dump(a);
