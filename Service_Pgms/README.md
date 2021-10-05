@@ -1,15 +1,19 @@
 ### Service Programs
 
-Utility Service Programs. This is probably the first code you want to explore before going on to the interactive programs.
+Utility Service Programs. 
 
-* SRV_MSG 
+* SRV_MSG
 
     Contains procedures to send messages from an RPG program.
 
-* SRV_STR 
+* SRV_STR
 
     Contains procedures to manipulate strings in an RPG program.
 
+* SRV_SQL
+  
+  * Helper procedures for RPG programs using embedded SQL.
+  
 * CRTBNDDIR
 
    A CLLE program to create UTIL_BND, a binding directory for easy compiling of program that use SRV_MSG.
@@ -25,4 +29,3 @@ Utility Service Programs. This is probably the first code you want to explore be
 * SRV_STRTR
 
      RPG program to test the procedures in SRV_STR.
-

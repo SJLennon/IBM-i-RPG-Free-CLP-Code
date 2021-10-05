@@ -2,7 +2,7 @@
 
 These are source files that will be copied into programs using /COPY or /INCLUDE
 
-* ##AIDBTYES 
+* ##AIDBTYE
 
     5250 Attention ID Definitions. These are the value that are returned  in byte 369 of the display file indicator data structure when a screen entry is made.
 
@@ -14,4 +14,6 @@ These are source files that will be copied into programs using /COPY or /INCLUDE
 
      Prototype definitions for procedures in the SRV_STR service program.
 
+* SRV_SQL_P
 
+     Prorotype definitions for procedures in the SQL_SRV service program.
