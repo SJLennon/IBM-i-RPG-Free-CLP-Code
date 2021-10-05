@@ -1,0 +1,10 @@
+PGM
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ERROR))
+             CALL       PGM(*LIBL/SQL_SKEL2) PARM('CA')
+             RETURN
+ ERROR:
+            MOVPGMMSG  MSGTYPE(*INFO)
+            MOVPGMMSG  MSGTYPE(*COMP)
+            MOVPGMMSG  MSGTYPE(*DIAG)
+             RSNESCMSG
+ENDPGM

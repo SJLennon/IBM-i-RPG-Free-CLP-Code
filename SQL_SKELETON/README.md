@@ -6,4 +6,10 @@ Batch program with SQL embedded in RPGLE. Includes error checking and handling. 
 
 *SQL_SKELNF* is not totally free format, because the D_SPECS are in fixed format.  This should be compatible back to V5R4 I think
 
-You should be able to compile the program without any changes and run it on virtually any IBM i.  I developed it on a V7R4 machine.  If you are at an older release then the not totally free version will progably compile.
+*SQL_SKEL2* is an upgrade to SQL_SKEL.  The SQLProblem procedure is now in the SRV_SQL service program, so the code is much shorter. This is completely free format.
+
+  **NOTE:** There is a deliberate duplicated line in the SQL_SKEL2 code so that it triggers the SQLProblem handling procedure.
+
+You should be able to compile any version of the program without any changes and run it on virtually any IBM i with a reasonably current OS release.  I developed it on a V7R4 machine.  If you are at an older release then the not totally free version will proably compile.
+
+*SQLC and SQLC2* are simple CL program that call SQL_SKEL and SQL_SKEL2, so that you can see the difference in how SQL errors are reported. Call them from QCMD or the Man Menu.
