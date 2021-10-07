@@ -18,7 +18,7 @@ This is a working application that allows display, selection and maintenance of 
 
 ## General Notes
 
-Some of the programs use /Include statements, which are found in the Copy_Mbrs directory.  In the code these programs refer to my DEMO library, so to compile you may need to change this.
+Some of the programs use /Include statements, which are found in the Copy_Mbrs directory.  So to compile you will need to create and populate a source file named COPY_MBRS.
 
 The RPG code is free form, except that the D-Specs are fixed form. This probably allows more  developers who are still on older versions of the OS, or are still using the out of date SEU, to more easily use the code.  The code can be converted to totally free format using the free _**"JCRHFD - Rpg H,F,D to free form syntax"**_ command available at [JCRCMDS.COM](http://www.jcrcmds.com/jcrdown2.html#JCRHFD_tag). If there is interest I may post totally free form versions.
 
