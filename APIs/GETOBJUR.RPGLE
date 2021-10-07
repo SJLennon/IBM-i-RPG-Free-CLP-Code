@@ -29,7 +29,7 @@ ctl-opt debug option(*nodebugio: *srcstmt)
     dftactgrp(*no) actgrp(*caller)
     main(Main);
 dcl-f GETOBJUP usage(*output) usropn block(*yes);
-/copy USPHDR
+/copy copy_mbrs,USPHDR
 //=== CRTUSRSPC (QUSCTRUS) Parameters ================================
 dcl-ds *n;
     CusQName char(20);
