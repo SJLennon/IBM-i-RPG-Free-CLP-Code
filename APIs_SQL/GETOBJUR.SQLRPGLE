@@ -39,10 +39,11 @@
 //--------------------------------------------------------------------
 ctl-opt debug option(*nodebugio: *srcstmt)
     dftactgrp(*no) actgrp(*caller)
-    bnddir('UTIL_BND')
+    bnddir('UTIL_BND':'SQL_BND')
     main(Main);
 //=== Prototypes =====================================================
-/include DEMO,Srv_Msg_P
+/include copy_mbrs,Srv_Msg_P
+/include copy_mbrs,Srv_SQL_P
 
 // Gets job type entry for this job.
 // Returns:  JobType has the job type. I=interactive, B=batch, etc.
@@ -239,47 +240,5 @@ dcl-proc fetchNext;
         and SQLSTT <> SQLProcWarning;
         SQLProblem('fetchNext');
     endif;
-end-proc;
-
-//=== SQLProblem =====================================================
-// For those "Never should happen" SQL errors.
-// Issues DUMP(A) to dump memory, then ends program by
-// sending an *ESCAPE message of the supplied debugging message,
-// plus whatever SQL diagnostics we can fit into 512 chars.
-dcl-proc SQLProblem;
-    dcl-pi SQLProblem;
-        piSQLDebug varchar(200) value;
-    end-pi;
-
-    //--- Local Variables ---------------------------------
-    dcl-s myDebugMsg varchar(512); //Max CPF9898 supports
-    dcl-s wkRem int(10);
-
-    // Returned SQL diagnostic info
-    dcl-s mySQLState CHAR(5);
-    dcl-s mySQLMsgTxt varchar(32740);
-    dcl-s mySQLMsgLgth int(5);
-
-    exec sql get diagnostics condition 1
-        :mySQLState = RETURNED_SQLSTATE,
-        :mySQLMsgTxt = MESSAGE_TEXT,
-        :mySQLMsgLgth = MESSAGE_LENGTH
-    ;
-    myDebugMsg =  piSQLDebug
-        + ' - Unexpected SQL return: SQLSTATE='
-        + mySQLState
-        + '. "';
-
-    // Fit in as much of mySQLMsgTxt as possible.
-    wkRem = (%size(myDebugMsg)-2) - %len(myDebugMsg);
-    if wkRem >= mySQLMsgLgth +1;
-        myDebugMsg += (mySQLMsgTxt +'"');
-    else;
-        myDebugMsg += (%subst(mySQLMsgTxt: 1 :wkRem -5) + ' ..."');
-    endif;
-
-    dump(a);
-    SndEscMsg(myDebugMsg);
-    return;
 end-proc;
 

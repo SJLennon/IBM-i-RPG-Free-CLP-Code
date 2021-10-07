@@ -42,6 +42,10 @@ This about 100 lines shorter then the version in [APIs](https://github.com/SJLen
 
 These are simple CL programs to test GETOBJUSR and display the results by sending a message and/or displaying the QTEMP/GETOBJUP file.
 
+## T00.CLLE
+
+Simple CL to test GETOBJUR looking for locks on a file member.
+
 ## T9xxx.CLLE
 
 More complex testing:
