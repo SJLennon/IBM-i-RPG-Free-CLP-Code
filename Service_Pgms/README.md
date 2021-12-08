@@ -8,13 +8,13 @@ Utility Service Programs.
 
     **SndMSgPgmQ**: Send message to a provided program queue. (Interactive programming.)
 
-    **ClrMsgPgmQ**:  Clears all messages from the provided program queue. (Interactive programming.)
+    **ClrMsgPgmQ**:  Clear all messages from the provided program queue. (Interactive programming.)
 
     **SndEscMsg**:    Send provided text as an escape message.
 
     **SndInfMsg**:   Send provided text as info message to the external message queue.
 
-    **JobLogMsg**:   Send provided text to the job log using Qp0zLprintf, a C function. For testing, convenient alternative to the DSPLY opcode.
+    **JobLogMsg**:   Send provided text to the job log using Qp0zLprintf, a C function. For testing, a convenient alternative to the DSPLY opcode for longer messages.
 
 * SRV_STR
 
@@ -26,7 +26,7 @@ Utility Service Programs.
   
   Helper procedures for RPG programs using embedded SQL.
 
-  **SqlProblem**:  For those "never should happen" SQL errors. Does DUMP(A) and dends escape message of provided text and SQL diagnostics.
+  **SQLProblem**:  For those "never should happen" SQL errors. Does DUMP(A) and sends escape message of the provided text and adds as much SQL diagnostics as will fit in a 512 byte message.
   
 * CRTBNDDIR
 
@@ -38,7 +38,7 @@ Utility Service Programs.
   
 * SRV_MSGTR
 
-     RPG program to test the procedures in SRV_MSG.
+  RPG program to test the procedures in SRV_MSG.
 
 * SRV_MSGTD
   
@@ -59,4 +59,4 @@ Utility Service Programs.
 
   SHOW_T
 
-    RPG program to test & exercise SHOW
+    RPG program to test & exercise SHOW.
