@@ -13,10 +13,21 @@
 
        //============================================================
      D SndEscMsg       pr                                                       Send ESC Msg
-     D piMsg                       1024a   Const Varying
+     D piMsg                        512a   Const Varying
 
        //============================================================
      D SndInfMsg       pr                                                       Send INF Msg
-     D piMsg                       1024a   Const Varying
+     D piMsg                        512a   Const Varying
+
+       //============================================================
+     D JobLogMsg       Pr
+     D piMsg                        512a   Value Varying                        Msg to job log
+
+       //============================================================
+     D Show            pr                  extpgm('SHOW')                       Show popup msg
+     D piPext                      8192a   Const Varying
+     D piMsgId                        7a   Const options(*NOPASS)
+     d piMsgFile                     21a   Const options(*NOPASS)
+
 
        //=== End of Prototypes forSRV_MSG Routines ==================

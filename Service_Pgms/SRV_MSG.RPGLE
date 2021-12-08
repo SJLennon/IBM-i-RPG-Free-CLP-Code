@@ -1,10 +1,16 @@
 
       //==============================================================
       //=== SRV_MSG service program contains prodcedure for sending
-      //=== messages with QMHSNDPM
+      //=== messages:
+      //   With QMHSNDPM
+      //   With Qp0zLprintf (to job log.)
       //==============================================================
       // CRTRPGMOD MODULE(SRV_MSG)
-      // CRTSRVPGM SRVPGM(SRV_MSG) EXPORT(*ALL)
+      //
+      // CRTSRVPGM SRVPGM(SRV_MSG)
+      //   SRCFILE(*LIBL/SRV_PGMS) SRCMBR(SRV_MSGBND)
+      //   TEXT('Messages service program')
+      //
       // ADDBNDDIRE BNDDIR(UTIL_BND) OBJ((SRV_MSG *SRVPGM *DEFER))
 
      h nomain option(*NoDebugIo: *srcstmt)
@@ -29,6 +35,10 @@
      d MsgKey                         4a
      d Remove                        10a
      D  apiErrorDS                   17a
+
+       //=== Qp0zLprintf =============================================
+     d printF          pr                  extproc('Qp0zLprintf')
+     d piMsg                           *   value options(*string)
 
       //=== SNDMSGPGMQ ===============================================
       //    SeND a MeSsaGe to a ProGraM message Queue.
@@ -178,7 +188,7 @@
      P SndEscMsg       B                   Export
 
      D SndEscMsg       PI
-     D piMsg                       1024a   Const Varying
+     D piMsg                        512a   Const Varying
 
        //--- Parameters for QMHSNDPM -------------------------
      D MsgId           c                   const('CPF9898')
@@ -216,12 +226,12 @@
        //=== SndInfMsg ===============================================
        // Sends CPF9898 Info message of the provided text to the
        // external message queue.
-       // Useful for debugging.
+       // Useful for debugging. See also JobLogMsg.
 
      P SndInfMsg       B                   Export
 
      D SndInfMsg       PI
-     D piMsg                       1024a   Const Varying
+     D piMsg                        512a   Const Varying
 
        //--- Parameters for QMHSNDPM -------------------------
      D MsgId           c                   const('CPF9898')
@@ -255,3 +265,23 @@
       /end-free
 
      P SndInfMsg       E
+
+       //=== JobLogMsg ===============================================
+       // Write arbitray message to the Job log.
+       // Uses Qp0zLprintf, which is a C function.
+       // Useful for debugging. See also SndInfMsg.
+
+     P JobLogMsg       B                   Export
+
+     D JobLogMsg       PI
+     D piMsg                        512a   Value Varying
+
+     d wkMsg           s             +1    like(piMSg)
+     d EOL             c                   x'25'
+
+      /FREE
+        wkMsg = piMsg + EOL;
+        printF(wkMsg);
+        return;
+      /end-free
+     P JobLogMsg       E

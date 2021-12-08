@@ -1,0 +1,8 @@
+             STRPGMEXP  PGMLVL(*CURRENT) SIGNATURE('Version 1.0')
+/********************************************************************/
+             EXPORT     SYMBOL(CLRMSGPGMQ)
+             EXPORT     SYMBOL(SNDESCMSG)
+             EXPORT     SYMBOL(SNDINFMSG)
+             EXPORT     SYMBOL(SNDMSGPGMQ)
+             EXPORT     SYMBOL(JOBLOGMSG)
+ENDPGMEXP
