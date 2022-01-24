@@ -50,6 +50,11 @@ Commands, CLLE, SQLRPGLE using SQL access to APIs.
 
 Sets up group jobs suitable for an IBM i developer.
 
+## USPS_Address
+
+SQL QSYS2.HTTP_GET call to the US Post Office webtools API AddressValidateRequest.
+RPG service program to call the API and parse the returned XML.
+
 ## Utils
 
 Developer Utilities.

@@ -1,0 +1,8 @@
+             PGM
+/* Create ADRVAL_BND binding directory in *CURLIB                */
+/*  Change next statement if needed                              */
+             CRTBNDDIR  BNDDIR(*CURLIB/ADRVAL_BND) TEXT('USADRVAL +
+                          Service PGM')
+             ADDBNDDIRE BNDDIR(ADRVAL_BND) OBJ((USADRVAL *SRVPGM +
+                          *DEFER))
+             ENDPGM

@@ -17,3 +17,11 @@ These are source files that will be copied into programs using /COPY or /INCLUDE
 * SRV_SQL_P
 
      Prorotype definitions for procedures in the SQL_SRV service program.
+
+* USADRVAL_P
+
+     Prototype for the USADRVAL service program.
+
+* USADRVALDS
+
+     Template Data Structure for the USADRVAL parameters.
