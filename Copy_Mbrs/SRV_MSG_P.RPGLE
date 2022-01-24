@@ -5,7 +5,7 @@
      D  pMsgQ                        10
      D  pMsgid                        7
      D  pMsgFile                     10
-     D  pMsgDta                      80    options(*NOPASS)
+     D  pMsgDta                     512    options(*NOPASS)
      D                                     Varying
        //============================================================
      D ClrMsgPgmQ      pr              N                                        Clear PGM Msg Q

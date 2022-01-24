@@ -67,7 +67,7 @@
      d  pMsgQ                        10
      d  pMsgid                        7
      d  pMsgFile                     10
-     d  pMsgDta                      80    options(*NOPASS)
+     d  pMsgDta                     512    options(*NOPASS)
      d                                     Varying
       //=== Calling Parameters =======================================
       // Parm        I/O/B  Description
