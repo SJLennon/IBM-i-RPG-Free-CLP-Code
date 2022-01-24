@@ -35,6 +35,9 @@
              ADDMSGD    MSGID(DEM1002) MSGF(CUSTMSGF) MSG('Someone else +
                           changed record.  Rewiew data.')
 
+             ADDMSGD    MSGID(DEM9898) MSGF(CUSTMSGF) MSG('USPS: +
+                          &1') FMT((*CHAR 500))
+
              ADDMSGD    MSGID(DEM9999) MSGF(CUSTMSGF) MSG('Program Error! +
                           Please contact IT now.')
              ENDPGM

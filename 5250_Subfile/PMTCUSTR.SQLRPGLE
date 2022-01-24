@@ -944,7 +944,7 @@
      d retField        S               N
      d wkMsgId         s              7a
      d wkMsgFile       s             10a
-     d wkMsgData       s             80a   varying
+     d wkMsgData       s            512a   varying
 
       /FREE
        if %parms >2;
