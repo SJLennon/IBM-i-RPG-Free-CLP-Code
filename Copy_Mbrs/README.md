@@ -25,3 +25,7 @@ These are source files that will be copied into programs using /COPY or /INCLUDE
 * USADRVALDS
 
      Template Data Structure for the USADRVAL parameters.
+
+* USPHDR
+
+     User Space Header Layout.
