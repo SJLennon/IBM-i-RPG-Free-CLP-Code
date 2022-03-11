@@ -12,6 +12,7 @@
      A                                      CF05
      A                                      CF06
      A                                      CF07
+     A                                      CF08
      A                                      CA12
      A                                      HELP
      A*===============================================================
@@ -30,10 +31,15 @@
      A                                  2 72TIME
      A                                  4  4'Message to send:'
      A            SH_MSG        69   B  5  4
+     A                                      CHECK(LC)
      A                                  8  4'F4 - SndMsgPgmQ'
      A                                  9  4'F5 - ClrMsgPgmQ'
      A                                 10  4'F6 - SndInfMsg'
      A                                 11  4'F7 - SndEscMsg'
+     A                                 11 30'Stack Count:'
+     A            SH_CNT         1Y 0B 11 43
+     A                                 11 47'(0 means used default)'
+     A                                 12  4'F8 - JobLogMsg'
      A  40                              6  4'Please enter a message.'
      A                                      DSPATR(RI)
      A*===============================================================

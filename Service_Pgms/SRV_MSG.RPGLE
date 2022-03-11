@@ -189,13 +189,14 @@
 
      D SndEscMsg       PI
      D piMsg                        512a   Const Varying
+     D piStackEnt                    10i 0 Const options(*Nopass)
 
        //--- Parameters for QMHSNDPM -------------------------
      D MsgId           c                   const('CPF9898')
      d MsgF            c                   const('QCPFMSG   *LIBL     ')
      d MsgType         c                   const('*ESCAPE   ')
      d PgmQue          c                   const('*         ')
-     d InvCount        c                   const(2)
+     d InvCount        s             10i 0 inz(2)
      d ApiError        s             17a   inz(X'00')
      d RetMsgKey       s              4a
      D DataLen         s             10i 0
@@ -207,6 +208,12 @@
 
           DataLen = %len(PiMSG);
           MsgData = piMsg;
+
+          if %parms = 2;
+            InvCount = piStackEnt;
+          else;
+            InvCount = 2;
+          endif;
 
           QMHSNDPM(MsgId
                   :MsgF

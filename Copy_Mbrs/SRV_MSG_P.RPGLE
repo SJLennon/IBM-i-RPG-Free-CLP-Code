@@ -14,6 +14,7 @@
        //============================================================
      D SndEscMsg       pr                                                       Send ESC Msg
      D piMsg                        512a   Const Varying
+     D pStackEnt                     10i 0 Const options(*nopass)
 
        //============================================================
      D SndInfMsg       pr                                                       Send INF Msg

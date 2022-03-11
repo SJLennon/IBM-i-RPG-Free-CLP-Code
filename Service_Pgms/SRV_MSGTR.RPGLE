@@ -24,6 +24,7 @@
      D dfIndDS         ds            99
      D SH_ERR                 40     40n
 
+
        //=== Global Switches =========================================
      D SflMsgSnt       s               n
      D CowsComeHome    c                   const('0')
@@ -41,6 +42,9 @@
        //=============================================================
        exsr init;
        SFT_KEYS='F3/F12=Exit';
+       SH_Cnt = 2;
+       SH_MSG = 'This is a fine pickle Ollie!';
+
        dou CowsComeHome;
          write SH_HDR;
          write SFT_FKEY;
@@ -80,12 +84,22 @@
 
          //--- F06 --------------------------------------------------
          when Key = F06;
-             SndInfMsg(SH_MSG);
+
+            SndInfMsg(SH_MSG);
            iter;
 
          //--- F07 --------------------------------------------------
          when Key = F07;
-             SndEscMsg(SH_MSG);
+            if SH_CNT = 0;
+               SndEscMsg(SH_MSG);
+            else;
+               SndEscMsg(SH_MSG : SH_CNT);
+            endif;
+           iter;
+
+         //--- F08 --------------------------------------------------
+         when Key = F08;
+             JobLogMsg(SH_MSG);
            iter;
 
          endsl;
@@ -137,7 +151,7 @@
      D retField        S               N
      D wkMsgId         s              7a
      D wkMsgFile       s             10a
-     D wkMsgData       s             80a   varying
+     D wkMsgData       s            512a   varying
 
       /FREE
        if %parms >2;
