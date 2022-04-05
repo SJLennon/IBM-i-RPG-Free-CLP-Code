@@ -1,6 +1,10 @@
 # DATEADJ - A command to add or subtract from a date in a CL program.
 
-Date arithmetic in CL programs is limited and lacks the simplicity and scope found in RPG. The DATEADJ command adds the functionality of RPG date handling to CL programs. DATEADJ adds or subtracts days, months or years from a date and returns an adjusted date. Input and output dates can be in almost any format that RPG recognizes.
+Date arithmetic in CL programs is limited and lacks the simplicity and scope found in RPG. 
+
+The DATEADJ command adds the functionality of RPG date handling to CL programs. 
+
+DATEADJ adds or subtracts days, months or years from a date and returns an adjusted date. Input and output dates can be in almost any format that RPG recognizes.
 
 A prompted DATEADJ command looks like this:
 
@@ -15,9 +19,8 @@ A prompted DATEADJ command looks like this:
 |Input Date format|Specifies the format of the input date. It allows nearly all the date formats that RPG allows, *YMD, *MDY, *DMY, *ISO, *JUL, etc., with or without delimiters. It also allows *JOBFMT for an input date in job format and *SYSTEM for an input date in system format. (Input date format does not apply if Input date is *JOBDATE or *SYSTEM, since these are predefined by the operating system.)|
 |Output Date Format|Defines the format of the returned date. It allows all the input formats, plus it defaults to *INFMT to specify the same format as the input date.
 
-## Simple DATEADJ Usage Example
+## Simple DATEADJ Usage Examples
 
-Simple DATEADJ Usage Examples
 ``` 
 /* Tomorrow */
     DATEADJ    INDATE(*SYSTEM) OUTDATE(&NEWDTE)
