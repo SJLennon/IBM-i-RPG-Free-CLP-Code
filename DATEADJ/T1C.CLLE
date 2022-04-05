@@ -1,0 +1,22 @@
+/* Use DATEADJR command with specified parameters                   */
+/* Called by T1R for extensive testing.                             */
+             PGM        PARM(&INDATE &ADJ &TYPE &INFMT &OUTFMT &OUTDATE +
+                          &OUTESC)
+             DCL        VAR(&INDATE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&ADJ) TYPE(*DEC) LEN(5 0)
+             DCL        VAR(&TYPE) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&INFMT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OUTFMT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OUTDATE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OUTESC) TYPE(*CHAR) LEN(100) VALUE(' ')
+             CHGVAR     VAR(&OUTESC) VALUE(' ')
+
+             DATEADJ    INDATE(&INDATE) OUTDATE(&OUTDATE) +
+                          ADJAMT(&ADJ) ADJTYPE(&TYPE) +
+                          INFMT(&INFMT) OUTFMT(&OUTFMT)
+             MONMSG     MSGID(CPF9898 CPF0001) EXEC(DO)
+             CHGVAR     VAR(&OUTDATE) VALUE('*Failed*')
+             RCVMSG     MSGTYPE(*EXCP) RMV(*YES) MSG(&OUTESC)
+             ENDDO
+
+             ENDPGM

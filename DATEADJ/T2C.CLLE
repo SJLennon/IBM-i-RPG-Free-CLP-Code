@@ -1,0 +1,46 @@
+    PGM
+    DCL        VAR(&NEWDTE) TYPE(*CHAR) LEN(10) +
+                VALUE('**dummy**')
+/* Tomorrow */
+    DATEADJ    INDATE(*SYSTEM) OUTDATE(&NEWDTE)
+    SNDMSG     MSG(&NEWDTE) TOUSR(*REQUESTER)
+
+    CHGVAR     VAR(&NEWDTE) VALUE('**dummy**')
+/* Yesterday*/
+    DATEADJ    INDATE(*JOBDATE) OUTDATE(&NEWDTE) ADJAMT(-1)
+    SNDMSG     MSG(&NEWDTE) TOUSR(*REQUESTER)
+
+    CHGVAR     VAR(&NEWDTE) VALUE('**dummy**')
+/* Day before arbitrary date & reformat */
+    DATEADJ    INDATE('2019-03-21') OUTDATE(&NEWDTE) +
+                ADJAMT(-1) INFMT(*ISO) OUTFMT(*JOBFMT)
+    SNDMSG     MSG(&NEWDTE) TOUSR(*REQUESTER)
+
+    CHGVAR     VAR(&NEWDTE) VALUE('**dummy**')
+/* Just reformat and output as Julian date */
+    DATEADJ    INDATE('2019-03-21') OUTDATE(&NEWDTE) +
+                ADJAMT(0) INFMT(*ISO) OUTFMT(*JUL)
+    SNDMSG     MSG(&NEWDTE) TOUSR(*REQUESTER)
+
+    CHGVAR     VAR(&NEWDTE) VALUE('**dummy**')
+/* Add a month and output in input format */
+    DATEADJ    INDATE('2024-02-28') OUTDATE(&NEWDTE) +
+                ADJAMT(1) ADJTYPE(*MONTHS) INFMT(*ISO) +
+                OUTFMT(*INFMT)
+    SNDMSG     MSG(&NEWDTE) TOUSR(*REQUESTER)
+
+    CHGVAR     VAR(&NEWDTE) VALUE('**dummy**')
+/* Add a year  and output in input format */
+    DATEADJ    INDATE('2024-02-29') OUTDATE(&NEWDTE) +
+                ADJAMT(2) ADJTYPE(*YEARS) INFMT(*ISO) +
+                OUTFMT(*INFMT)
+    SNDMSG     MSG(&NEWDTE) TOUSR(*REQUESTER)
+
+    CHGVAR     VAR(&NEWDTE) VALUE('**dummy**')
+/* Add a year  and output in input format */
+    DATEADJ    INDATE('03/21/99') OUTDATE(&NEWDTE) +
+                ADJAMT(2) ADJTYPE(*YEARS) INFMT(*SYSTEM) +
+                OUTFMT(*INFMT)
+    SNDMSG     MSG(&NEWDTE) TOUSR(*REQUESTER)
+
+    ENDPGM

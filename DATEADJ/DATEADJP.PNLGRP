@@ -1,0 +1,336 @@
+:pnlgrp.
+.************************************************************************
+.*  Help for command DATEADJ
+.************************************************************************
+:help name='DATEADJ'.
+Add/Sub from a Date - Help
+:p.The DATEADJ command adds or subtracts a number of days, months or years
+from the specified input date. The format of both input and output dates
+may be specified and may be different, allowing for reformatting.
+:ehelp.
+.*******************************************
+.*   Help for parameter INDATE
+.*******************************************
+:help name='DATEADJ/INDATE'.
+Input Date (INDATE) - Help
+:xh3.Input Date (INDATE)
+:p.Specifies the beginning date for the calculation.
+:parml.
+:pt.:pk def.*JOBDATE:epk.
+:pd.
+The job's date is used.
+:pt.:pv.*SYSTEM:epv.
+:pd.
+The system date is used.
+:pt.:pv.Character value:epv.
+:pd.
+Character date formatted as specified in INFMT parameter.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter OUTDATE
+.*******************************************
+:help name='DATEADJ/OUTDATE'.
+Output Date (OUTDATE) - Help
+:xh3.Output Date (OUTDATE)
+:p.The adjusted date is returned here.
+:parml.
+:pt.:pv.character-value:epv.
+:pd.
+Formatted as specified by the OUTFMT parameter.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter ADJAMT
+.*******************************************
+:help name='DATEADJ/ADJAMT'.
+Amount to adjust by (ADJAMT) - Help
+:xh3.Units to add or subtract (ADJAMT)
+:p.The unit amount by which to adjust the date. The type of
+unit is specified in the AMTTYPE parameter.
+:P.Positive number to add, negative number to subtract.
+:p.Zero is acceptable, allowing for date reformatting.
+:parml.
+:pt.:pk def.1:epk.
+:pd.
+Default is add one unit.
+:pt.:pv.decimal-number:epv.
+:pd.
+Number in the range of -99999 through 99999.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter ADJTYPE
+.*******************************************
+:help name='DATEADJ/ADJTYPE'.
+Adjustment type (ADJTYPE) - Help
+:xh3.Adjustment type (ADJTYPE)
+:p.The type of unit specified in the ADJAMT parameter.
+:parml.
+:pt.:pk def.*DAYS:epk.
+:pd.
+Default unit is days.
+:pt.:pv.*MONTHS:epv.
+:pd.
+Unit is months.
+:pt.:pv.*YEARS:epv.
+:pd.
+Unit is years.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter INFMT
+.*******************************************
+:help name='DATEADJ/INFMT'.
+Input Date Format (INFMT) - Help
+:xh3.Input Date Format (INFMT)
+:p.Specifies the format of the INDATE value.
+Ignored if INDATE(*JOBDATE) or INDATE(*SYSTEM) is specified, because
+these dates formats are determined by the Operating System.
+:parml.
+:pt.:pk def.*JOBFMT:epk.
+:pd.
+Formatted as per the Job's DATFMT value.
+:pt.:pk.*YMD:epk.
+:pd.
+yy/mm/dd
+:pt.:pk.*MDY:epk.
+:pd.
+mm/dd/yy
+:pt.:pk.*DMY:epk.
+:pd.
+dd/mm/yy
+:pt.:pk.*YMD0:epk.
+:pd.
+yymmdd
+:pt.:pk.*MDY0:epk.
+:pd.
+mmddyy
+:pt.:pk.*DMY0:epk.
+:pd.
+ddmmyy
+
+:pt.:pk.*CYMD:epk.
+:pd.
+Cyy/mm/dd
+:pt.:pk.*CMDY:epk.
+:pd.
+Cmm/dd/yy
+:pt.:pk.*CDMY:epk.
+:pd.
+Cdd/mm/yy
+:pt.:pk.*CYMD0:epk.
+:pd.
+Cyymmdd
+:pt.:pk.*CMDY0:epk.
+:pd.
+Cmmddyy
+:pt.:pk.*CDMY0:epk.
+:pd.
+Cddmmyy
+
+:pt.:pk.*ISO:epk.
+:pd.
+yyyy-mm-dd
+:pt.:pk.*ISO0:epk.
+:pd.
+yyyymmdd
+
+:pt.:pk.*USA:epk.
+:pd.
+mm/dd/yyyy
+:pt.:pk.*USA0:epk.
+:pd.
+mmddyyyy
+
+:pt.:pk.*EUR:epk.
+:pd.
+dd.mm.yyyy
+:pt.:pk.*EUR0:epk.
+:pd.
+ddmmyyyy
+
+:pt.:pk.*JIS:epk.
+:pd.
+yyyy-mm-dd
+:pt.:pk.*JIS0:epk.
+:pd.
+yyyymmdd
+
+:pt.:pk.*JUL:epk.
+:pd.
+yy/ddd
+:pt.:pk.*LONGJUL:epk.
+:pd.
+yyyy/ddd
+
+:pt.:pk.*SYSTEM:epk.
+:pd.
+As specified by QSYSVAL(QDATFMT): yy/mm/dd, mm/dd/yy, dd/mm/yy, yy/ddd
+
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter OUTFMT
+.*******************************************
+:help name='DATEADJ/OUTFMT'.
+Output Date Format (OUTFMT) - Help
+:xh3.Output Date Format (OUTFMT)
+:p.Specifies the format of the date returned in the OUTDATE paramater.
+:parml.
+:pt.:pk def.*INFMT:epk.
+:pd.
+Formatted as as specefied in the INFMT parameter.
+:pt.:pk.*JOBFMT:epk.
+:pd.
+Formatted as per the Job's DATFMT value.
+:pt.:pk.*YMD:epk.
+:pd.
+yy/mm/dd
+:pt.:pk.*MDY:epk.
+:pd.
+mm/dd/yy
+:pt.:pk.*DMY:epk.
+:pd.
+dd/mm/yy
+:pt.:pk.*YMD0:epk.
+:pd.
+yymmdd
+:pt.:pk.*MDY0:epk.
+:pd.
+mmddyy
+:pt.:pk.*DMY0:epk.
+:pd.
+ddmmyy
+
+:pt.:pk.*CYMD:epk.
+:pd.
+Cyy/mm/dd
+:pt.:pk.*CMDY:epk.
+:pd.
+Cmm/dd/yy
+:pt.:pk.*CDMY:epk.
+:pd.
+Cdd/mm/yy
+:pt.:pk.*CYMD0:epk.
+:pd.
+Cyymmdd
+:pt.:pk.*CMDY0:epk.
+:pd.
+Cmmddyy
+:pt.:pk.*CDMY0:epk.
+:pd.
+Cddmmyy
+
+:pt.:pk.*ISO:epk.
+:pd.
+yyyy-mm-dd
+:pt.:pk.*ISO0:epk.
+:pd.
+yyyymmdd
+
+:pt.:pk.*USA:epk.
+:pd.
+mm/dd/yyyy
+:pt.:pk.*USA0:epk.
+:pd.
+mmddyyyy
+
+:pt.:pk.*EUR:epk.
+:pd.
+dd.mm.yyyy
+:pt.:pk.*EUR0:epk.
+:pd.
+ddmmyyyy
+
+:pt.:pk.*JIS:epk.
+:pd.
+yyyy-mm-dd
+:pt.:pk.*JIS0:epk.
+:pd.
+yyyymmdd
+
+:pt.:pk.*JUL:epk.
+:pd.
+yy/ddd
+:pt.:pk.*LONGJUL:epk.
+:pd.
+yyyy/ddd
+
+:pt.:pk.*SYSTEM:epk.
+:pd.
+As specified by QSYSVAL(QDATFMT): yy/mm/dd, mm/dd/yy, dd/mm/yy, yy/ddd
+
+:pt.:pk def.*INFMT:epk.
+:pd.
+As specified by the INFMT parameter
+
+:eparml.
+:ehelp.
+.**************************************************
+.*
+.* Examples for DATEADJ
+.*
+.**************************************************
+:help name='DATEADJ/COMMAND/EXAMPLES'.
+Examples for DATEADJ - Help
+:xh3.Examples for DATEADJ
+:p.:hp2.Example 1: Calculate tomorrow:ehp2.
+:xmp.
+DATEADJ    INDATE(*SYSTEM) OUTDATE(&NEWDTE)
+:exmp.
+:p.Takes the default of 1 for DAYS and adds to the system date
+:p.:hp2.Example 2: Calculate yesterday:ehp2.
+:xmp.
+ DATEADJ    INDATE(*JOBDATE) OUTDATE(&NEWDTE) ADJAMT(-1)
+:exmp.
+:p.Subtracts 1 day from the job date.
+:p.:hp2.Example 3: Calculate and reformat:ehp2.
+:xmp.
+DATEADJ    INDATE('2019-03-21') OUTDATE(&NEWDTE) +
+             ADJAMT(-1) INFMT(*ISO) OUTFMT(*JOBFMT)
+:exmp.
+:p.Subtracts 1 day from the ISO input date and returns the date
+in the Job date format.
+:p.:hp2.Example 4: Calculate beginning and end of last month:ehp2.
+:xmp.
+        PGM
+/* Caclulate last month beginning and ending dates */
+        DCL        VAR(&THISDAY) TYPE(*CHAR) LEN(2)
+        DCL        VAR(&ADJ) TYPE(*CHAR) LEN(3)
+        DCL        VAR(&WKDATE) TYPE(*CHAR) LEN(10)
+        DCL        VAR(&EOML) TYPE(*CHAR) LEN(10)
+        DCL        VAR(&BOML) TYPE(*CHAR) LEN(10)
+/* Adjustment of minus the day value in the system date*/
+        RTVSYSVAL  SYSVAL(QDAY) RTNVAR(&THISDAY)
+        CHGVAR     VAR(&ADJ) VALUE('-' *TCAT &THISDAY)
+/* Last day of last month */
+        DATEADJ    INDATE(*SYSTEM) OUTDATE(&EOML) ADJAMT(&ADJ)
+/* 1st of this month */
+        DATEADJ    INDATE(&EOML) OUTDATE(&WKDATE) ADJAMT(1)
+/* 1st of last month */
+        DATEADJ    INDATE(&WKDATE) OUTDATE(&BOML) ADJAMT(-1) +
+                    ADJTYPE(*MONTHS) INFMT('*SYSTEM')
+        SNDMSG     MSG('Last month is' *BCAT &BOML *BCAT +
+                    'through' *BCAT &EOML) TOUSR(*REQUESTER)
+        ENDPGM
+:exmp.
+:p.Note that that when adjusting by months or years you should start at
+the first day of a month.
+:ehelp.
+.**************************************************
+.* Error messages for DATEADJ
+.**************************************************
+:help name='DATEADJ/ERROR/MESSAGES'.
+&msg(CPX0005,QCPFMSG). DATEADJ - Help
+:xh3.&msg(CPX0005,QCPFMSG). DATEADJ
+:p.:hp3.*ESCAPE &msg(CPX0006,QCPFMSG).:ehp3.
+:DL COMPACT.
+:DT.CPF9898
+:DD.Input date invalid or not compatible with input format.
+:DT.CPF9898
+:DD.Calculated date not compatible with output format.
+:EDL.
+:ehelp.
+:epnlgrp.
+

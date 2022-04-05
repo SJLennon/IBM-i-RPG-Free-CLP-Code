@@ -1,0 +1,20 @@
+PGM
+/* Calculate last month beginning and ending dates */
+    DCL        VAR(&THISDAY) TYPE(*CHAR) LEN(2)
+    DCL        VAR(&ADJ) TYPE(*CHAR) LEN(3)
+    DCL        VAR(&WKDATE) TYPE(*CHAR) LEN(10)
+    DCL        VAR(&EOML) TYPE(*CHAR) LEN(10)
+    DCL        VAR(&BOML) TYPE(*CHAR) LEN(10)
+/* Adjustment is minus day value of today in system date*/
+    RTVSYSVAL  SYSVAL(QDAY) RTNVAR(&THISDAY)
+    CHGVAR     VAR(&ADJ) VALUE('-' *TCAT &THISDAY)
+/* Last day of last month */
+    DATEADJ    INDATE(*SYSTEM) OUTDATE(&EOML) ADJAMT(&ADJ)
+/* 1st day of this month */
+    DATEADJ    INDATE(&EOML) OUTDATE(&WKDATE) ADJAMT(1)
+/* 1st day of last month */
+    DATEADJ    INDATE(&WKDATE) OUTDATE(&BOML) ADJAMT(-1) +
+                ADJTYPE(*MONTHS) INFMT('*SYSTEM')
+    SNDMSG     MSG('Last month is' *BCAT &BOML *BCAT +
+                'through' *BCAT &EOML) TOUSR(*REQUESTER)
+ENDPGM

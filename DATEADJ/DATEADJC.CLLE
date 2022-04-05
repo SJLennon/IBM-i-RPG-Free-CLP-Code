@@ -1,0 +1,11 @@
+/* ================================================================ */
+/* Helper program for DATEADJR to return:                           */
+/*   1) The job date format                                         */
+/*   2) The value of QSYSVAL(DATFMT)                                */
+/* ================================================================ */
+             PGM        PARM(&JOBFMT &SYSVALFMT)
+             DCL        VAR(&JOBFMT) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&SYSVALFMT) TYPE(*CHAR) LEN(3)
+             RTVJOBA    DATFMT(&JOBFMT)
+             RTVSYSVAL  SYSVAL(QDATFMT) RTNVAR(&SYSVALFMT)
+             ENDPGM
