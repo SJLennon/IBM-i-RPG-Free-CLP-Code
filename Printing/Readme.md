@@ -66,7 +66,6 @@ To skip to a new page or other wise control spacing, there are two options:
     sk_b4    char(3);   // Skip to line num before
     sk_aft   char(3);   // Skip to line num after
     linenum  char(3);
-
 ```
 You can find IBM [PRTCTL documentation here.](https://www.ibm.com/docs/en/i/7.4?topic=structcompat-extended-length-prtctl-data-structure)
 
