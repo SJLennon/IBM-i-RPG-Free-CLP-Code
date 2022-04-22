@@ -49,6 +49,7 @@ Once you've defined the columns, heading are easy. Add code like this:
     write QPRINT head;
 ```
 Run it, and voila, column headings:
+
 ![Sample with headings](images/Overview_2.jpg)
 
 To handle page overflow, you use the OFLIND on the printer file:
