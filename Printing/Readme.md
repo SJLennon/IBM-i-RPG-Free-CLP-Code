@@ -86,3 +86,9 @@ I think that FCFC is quicker to code for simple reports, but PRTCTL data structu
 For your perusal, I have provided demo code that produces the same report written both ways and produces a report like this:
 ![Demo 1](images/Overview_3.jpg)
 ![Demo 2](images/Overview_4.jpg)
+
+### DEMOFCFC.RPGLE
+Demo program to produce a report using First Character Form Control (FCFC)
+
+### DEMOPRTCTL.RPGLE
+Demo program to produce a report using a PRTCTL data structure.
