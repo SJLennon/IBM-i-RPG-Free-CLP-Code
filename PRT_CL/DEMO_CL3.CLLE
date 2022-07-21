@@ -1,0 +1,58 @@
+ /*=== Demo a complex report with breaks ============================*/
+ /* Contains heading lines and underscored headings & page number    */
+ /*  - Library is in the heading line                                */
+ /*  - File prints only when it changes                              */
+ PGM
+    DCL   (&LINE)    (*CHAR)  LEN(132)
+    /* Define data columns in &LINE */
+    DCL   (&FILE)    (*CHAR)  STG(*DEFINED) LEN(10)   DEFVAR(&LINE)
+    DCL   (&MBR)     (*CHAR)  STG(*DEFINED) LEN(10)   DEFVAR(&LINE 13)
+    DCL   (&RCDS)    (*CHAR)  STG(*DEFINED) LEN(8)    DEFVAR(&LINE 24)
+    DCL   (&TEXT)    (*CHAR)  STG(*DEFINED) LEN(50)   DEFVAR(&LINE 33)
+    DCL   (&UNDER)   (*CHAR) LEN(60) +
+            VALUe('____________________________________________________________')
+    DCL   (&THELIB)  (*CHAR) LEN(10) VALUE('LENNONS1')
+    DCL   (&LAST_FILE) (*CHAR)   LEN(10) VALUE(' ')
+    DCL   (&LINE_SPACE) (*CHAR)   LEN(2)
+   /* Create some data */
+    DCLF  FILE(QAFDMBRL)
+    DSPFD FILE(&THELIB/*ALL) TYPE(*MBRLIST) +
+            OUTPUT(*OUTFILE) FILEATR(*PF) +
+            OUTFILE(QTEMP/MBRLIST)
+    OVRDBF FILE(QAFDMBRL) TOFILE(QTEMP/MBRLIST)
+
+    /* Define heading lines.  Second is underscored */
+    PRTLN      LINE('File Member List - Library:' *BCAT &THELIB) HEADING(Y) HEAD(1 Y)
+    CHGVAR     (&FILE)  ('File')
+    CHGVAR     (&MBR)   ('Member')
+    CHGVAR     (&RCDS)  ('#Records')
+    CHGVAR     (&TEXT)  ('Description')
+    PRTLN      LINE(&LINE) SPACE(S2) HEADING(Y) HEAD(2)
+    CHGVAR     (&FILE)  (&UNDER)
+    CHGVAR     (&MBR)   (&UNDER)
+    CHGVAR     (&RCDS)  (&UNDER)
+    CHGVAR     (&TEXT)  (&UNDER)
+    PRTLN      LINE(&LINE) SPACE(S0) HEADING(Y) HEAD(3)
+
+/* Loop thru the data and print */
+ LOOP:
+   RCVF     RCDFMT(QWHFDML)
+      MONMSG   MSGID(CPF0864) EXEC(GOTO CMDLBL(EOF))
+      /* Print file just once */
+      IF (&MLFILE *NE &LAST_FILE) DO
+         CHGVAR   (&LAST_FILE) &MLFILE
+         CHGVAR   (&FILE)  (&LAST_FILE)
+         CHGVAR   (&LINE_SPACE) 'S2'
+         ENDDO
+      ELSE  DO
+         CHGVAR   (&FILE) ' '
+         ENDDO
+      CHGVAR   (&MBR)   (&MLNAME)
+      CHGVAR   (&RCDS)  (%CHAR(&MLNRCD))
+      CHGVAR   (&TEXT)  (&MLMTXT)
+      PRTLN LINE(&LINE) SPACE(&LINE_SPACE)
+      CHGVAR (&LINE_SPACE) 'S1'
+   GOTO    CMDLBL(LOOP)
+
+ EOF: PRTLN CONTROL(*CLOSE)
+    ENDPGM

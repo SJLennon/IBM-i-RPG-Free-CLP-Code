@@ -1,0 +1,41 @@
+PRTLNC:      PGM        PARM(&P_LINE &P_SPACE &P_DEFHEAD &P_HEAD +
+                          &P_CONTROL)
+/* ================================================================*/
+/*  VCP for the PRTLN command.                                     */
+/*  Checks consistency of paremeters:                              */
+/*    If doing a CONTROL function, LINE must be blank.             */
+/*    If doing a CONTROL function, you can't be defining headings. */
+/* ================================================================*/
+
+    DCL (&P_LINE) TYPE(*CHAR) LEN(132)      /* Line text */
+    DCL (&P_SPACE) TYPE(*CHAR) LEN(2)       /* Spacing */
+    DCL (&P_DEFHEAD) TYPE(*CHAR) LEN(1)     /* Defining Heading? */
+    DCL (&P_HEAD) TYPE(*CHAR) LEN(4)        /* Heading definition */
+    DCL (&P_CONTROL) TYPE(*CHAR) LEN(10)    /* Control field */
+
+    DCL (&ERR_MSG) TYPE(*CHAR) LEN(200)
+
+    IF (&P_CONTROL *NE ' ') DO
+        SELECT
+            WHEN (&P_LINE *NE ' ')   DO
+                CHGVAR &ERR_MSG +
+                ('If "CONTROL" is specified "LINE" should be blank')
+                GOTO SEND_ERR
+                ENDDO
+            WHEN (&P_DEFHEAD = 'Y')  DO
+                CHGVAR &ERR_MSG +
+                ('If "CONTROL" is specified "HEADING" should be "N"')
+                GOTO SEND_ERR
+                ENDDO
+        ENDSELECT
+    ENDDO
+
+    RETURN /* All Consistent */
+
+    /* Send the error back to the command                             */
+    /* Note the definition of CPD0006 is a bit funky. 1234 below is   */
+    /* needed but is ignored when the message is sent.                */
+    SEND_ERR: SNDPGMMSG MSGID(CPD0006) MSGF(QCPFMSG) +
+                MSGDTA('1234' *CAT &ERR_MSG) MSGTYPE(*DIAG)
+              SNDPGMMSG MSGID(CPF0002) MSGF(QCPFMSG) MSGTYPE(*ESCAPE)
+ ENDPGM

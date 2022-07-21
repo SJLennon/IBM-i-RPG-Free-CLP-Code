@@ -1,0 +1,221 @@
+:pnlgrp.
+.************************************************************************
+.*  Help for command PRTLN
+.************************************************************************
+:help name='PRTLN'.
+Print a line - Help
+:p.The Print a line (PRTLN) command provides report printing capabilities
+in a CLP or CLLE program. Heading lines may be defined and print when
+overflow occurs. A page number can also be printed in the headings.
+:ehelp.
+.*******************************************
+.*   Help for parameter LINE
+.*******************************************
+:help name='PRTLN/LINE'.
+Line text (LINE) - Help
+:xh3.Line text (LINE)
+:p.Specifies the text to print on this line, or if defining a header line,
+specifies the text of that header line.
+.* Describe the function provided by the parameter.
+:parml.
+:pt.:pv.character-value:epv.
+:pd.
+May be blank.
+.* Describe the function provided by the user-defined parameter value.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter SPACE
+.*******************************************
+:help name='PRTLN/SPACE'.
+Line spacing (SPACE) - Help
+:xh3.Line spacing (SPACE)
+:p.Specifies the spacing of the printed line or the header line.
+:parml.
+:pt.:pk def.S1:epk.
+:pd.
+Space 1 line and print.
+:pt.:pk.S2:epk.
+:pd.
+Space 2 lines and print.
+:pt.:pk.S3:epk.
+:pd.
+Space 3 lines and print.
+:pt.:pk.S0:epk.
+:pd.
+Overprint previous line.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter HEADING
+.*******************************************
+:help name='PRTLN/HEADING'.
+Defining heading line? (HEADING) - Help
+:xh3.Defining heading line? (HEADING)
+:p.Specifies if this execution is defining a heading line. No
+printing occurs.
+:parml.
+:pt.:pk.Y:epk.
+:pd.
+This is a header line definition. Additional fields open up
+to speicify which header line and if it should include a page number.
+:pt.:pk def.N:epk.
+:pd.
+This is not defining a heading.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter HEAD
+.*******************************************
+:help name='PRTLN/HEAD'.
+Heading definitions (HEAD) - Help
+:xh3.Heading definitions (HEAD)
+:p.:hp2.Element 1: Header line number:ehp2.
+:parml.
+:pt.:pv.1-9:epv.
+:pd.
+Which heading line is being defined.
+:ul.
+:li.
+Heading lines can be defined in any sequence. For example, you can define
+heading 9 then define heading 1, then define heading 3, etc.
+:li.
+Heading lines always print in ordinal order, not the order in which
+they were defined.
+:li.
+A heading line that is not defined does not print.
+:li.
+A heading line may be defined with blank text and will print a blank
+heading line.
+:li.
+Once defined, a heading line cannot be undefined.
+:li.
+A heading line may be redefined at any time and will take effect at the next
+page break.  Normally you would force a page break after redefining a heading line.
+:eul.
+:eparml.
+:p.:hp2.Element 2: Include page number:ehp2.
+:parml.
+:pt.:pk def.N:epk.
+:pd.
+Do not print a page number on this header line.
+:pt.:pk.Y:epk.
+:pd.
+Print a page number in the rightmost 8 positions of this header line.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter CONTROL
+.*******************************************
+:help name='PRTLN/CONTROL'.
+Non-printing control functions (CONTROL) - Help
+:xh3.Non-printing control functions (CONTROL)
+:p.Operations which are not related to printing a line or defining headings.
+:parml.
+:pt.:pk.*NEWPAGE:epk.
+:pd.
+Force a new page when the next line prints. (Page overflow and header printing is
+handled automatically, so you need to use this only if you have
+break handing logic in your program.)
+:pt.:pk.*CLOSE:epk.
+:pd.
+Close the print file.  Normally you do this at the end of the program.
+:eparml.
+:ehelp.
+.**************************************************
+.* Examples for PRTLN
+.**************************************************
+:help name='PRTLN/COMMAND/EXAMPLES'.
+Examples for PRTLN - Help
+:xh3.Examples for PRTLN
+:p.:hp2.Example 1: Simple Command Example:ehp2.
+:xmp.
+/* Demo a mimimal report - no headings */
+PGM
+DCL   (&LINE) (*CHAR)  LEN(132)
+DCL   VAR(&LC) TYPE(*DEC) LEN(5 0) VALUE(1)
+/* Loop thru the data and print */
+   DOWHILE COND(&LC *LT 70)
+       CHGVAR  VAR(&LINE) +
+         VALUE('Loop control =' *BCAT  %CHAR(&LC))
+       PRTLN   LINE(&LINE)
+      CHGVAR   VAR(&LC) VALUE(&LC + 1)
+   ENDDO
+   PRTLN CONTROL(*CLOSE)
+ENDPGM
+:exmp.
+.*
+:p.:hp2.Example 2: More Complex Command Example:ehp2.
+:xmp.
+ /* List files & members with record count and description.  */
+ /* Has heading lines, an underscored heading & page number. */
+ PGM
+    DCL (&LINE)  (*CHAR) LEN(132)
+    /* Define data columns in &LINE */
+    DCL (&LIB)   (*CHAR) STG(*DEFINED) LEN(10) DEFVAR(&LINE)
+    DCL (&FILE)  (*CHAR) STG(*DEFINED) LEN(10) DEFVAR(&LINE 12)
+    DCL (&MBR)   (*CHAR) STG(*DEFINED) LEN(10) DEFVAR(&LINE 33)
+    DCL (&RCDS)  (*CHAR) STG(*DEFINED) LEN(8)  DEFVAR(&LINE 44)
+    DCL (&TEXT)  (*CHAR) STG(*DEFINED) LEN(50) DEFVAR(&LINE 53)
+    DCL (&UNDER) (*CHAR) LEN(60) +
+         VALUe('____________________________________________________________')
+   /* Create some data */
+    DCLF  FILE(QAFDMBRL)
+    DSPFD FILE(*CURLIB/Q*) TYPE(*MBRLIST) +
+            OUTPUT(*OUTFILE) FILEATR(*PF) +
+            OUTFILE(QTEMP/MBRLIST)
+    OVRDBF FILE(QAFDMBRL) TOFILE(QTEMP/MBRLIST)
+
+    /* Define heading lines.  Second heading is underscored */
+    PRTLN      LINE('Member List') HEADING(Y) HEAD(1 Y)
+
+    CHGVAR     (&LIB)   ('Library')
+    CHGVAR     (&FILE)  ('File')
+    CHGVAR     (&MBR)   ('Member')
+    CHGVAR     (&RCDS)  ('#Records')
+    CHGVAR     (&TEXT)  ('Description')
+    PRTLN      LINE(&LINE) HEADING(Y) HEAD(2)
+
+    CHGVAR     (&LIB)   (&UNDER)
+    CHGVAR     (&FILE)  (&UNDER)
+    CHGVAR     (&MBR)   (&UNDER)
+    CHGVAR     (&RCDS)  (&UNDER)
+    CHGVAR     (&TEXT)  (&UNDER)
+    PRTLN      LINE(&LINE) SPACE(S0) HEADING(Y) HEAD(3)
+
+/* Loop thru the data and print */
+ LOOP:
+   RCVF     RCDFMT(QWHFDML)
+      MONMSG   MSGID(CPF0864) EXEC(GOTO CMDLBL(EOF))
+      CHGVAR   (&LIB)   (&MLLIB)
+      CHGVAR   (&FILE)  (&MLFILE)
+      CHGVAR   (&MBR)   (&MLNAME)
+      CHGVAR   (&RCDS)  (%CHAR(&MLNRCD))
+      CHGVAR   (&TEXT)  (&MLMTXT)
+      PRTLN   LINE(&LINE)
+   GOTO    CMDLBL(LOOP)
+ EOF: PRTLN CONTROL(*CLOSE)
+    ENDPGM
+:exmp.
+:ehelp.
+.**************************************************
+.*
+.* Error messages for PRTLN
+.*
+.**************************************************
+:help name='PRTLN/ERROR/MESSAGES'.
+&msg(CPX0005,QCPFMSG). PRTLN - Help
+:xh3.&msg(CPX0005,QCPFMSG). PRTLN
+:p.:hp3.*ESCAPE &msg(CPX0006,QCPFMSG).:ehp3.
+.************************************************************************
+.* List the *ESCAPE, *STATUS, and *NOTIFY messages signalled from the command.
+.* The following are generic messages defined in message file QCPFMSG.
+.* Modify this list to match the list of error messages for the command.
+.************************************************************************
+:DL COMPACT.
+.*:DT.CPF9801
+.*:DD.&MSG(CPF9801,QCPFMSG,*LIBL,nosub).
+:EDL.
+:ehelp.
+:epnlgrp.
+

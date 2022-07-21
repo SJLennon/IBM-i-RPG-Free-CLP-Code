@@ -1,0 +1,27 @@
+ /*=== Demo a simple report =================================*/
+PGM
+DCL   (&LC)    (*DEC) LEN(5 0) VALUE(1)
+DCL   (&UNDER) (*CHAR) LEN(20) VALUE('____________________')
+/* Define print line and columns */
+DCL   (&LINE)  (*CHAR)  LEN(132)
+DCL   (&COUNT) (*CHAR) STG(*DEFINED) LEN(5) DEFVAR(&LINE 5)
+DCL   (&STAMP) (*CHAR) STG(*DEFINED) LEN(20) DEFVAR(&LINE 20)
+/* Define heading 1 */
+PRTLN  LINE('Really Simple Report') HEADING(Y) HEAD(1 Y)
+/* Define heading 2 */
+CHGVAR &COUNT 'COUNT'
+CHGVAR &STAMP 'TIMESTAMP'
+PRTLN  LINE(&LINE) HEADING(Y) HEAD(2)
+/* Define hading 3 Underscoring heading 2 */
+CHGVAR &COUNT &UNDER
+CHGVAR &STAMP &UNDER
+PRTLN  LINE(&LINE) SPACE(S0) HEADING(Y) HEAD(3)
+/* Print a report showing count and timestamp */
+DOWHILE COND(&LC *LT 70)
+    CHGVAR &COUNT %CHAR(&LC)
+    RTVSYSVAL SYSVAL(QDATETIME) RTNVAR(&STAMP)
+     PRTLN   LINE(&LINE)
+    CHGVAR   VAR(&LC) VALUE(&LC + 1)
+ENDDO
+PRTLN CONTROL(*CLOSE)
+ENDPGM

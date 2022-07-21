@@ -1,9 +1,8 @@
-# Printing Techniques, from RPG and CL.
-# (Under construction)
+# Printing Techniques in RPG/**FREE
 ##  Printing without O-Specs or Externally Defined Printer Files
 IBM has made just about everything in free format RPG truly free format. Except O-specs. Instead of adding free format support for O-specs, IBM expects you to use a separately externally defined printer file. This can can do everything O-specs can, but is an extra object. 
 
-But you can print without needing an externally defined printer file.
+But you can easily print without needing an externally defined printer file. Following is an explanation and two demonstration programs.
 
 It turns out to be easy in free form RPG, writing from a data structure, with code like this:
 ```

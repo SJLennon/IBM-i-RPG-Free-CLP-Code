@@ -46,6 +46,10 @@ Commands, with CLP and RPG programs, calling IBM i APis.
 
 Commands, CLLE, SQLRPGLE using SQL access to APIs.
 
+## Printing Techniques in RPG/**FREE 
+
+Printing without O-Specs or Externally Defined Printer Files
+
 ## GRP_JOB
 
 Sets up group jobs suitable for an IBM i developer.

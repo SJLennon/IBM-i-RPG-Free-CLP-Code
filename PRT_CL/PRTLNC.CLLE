@@ -1,0 +1,47 @@
+PRTLNC:      PGM        PARM(&P_LINE &P_SPACE &P_DEFHEAD &P_HEAD +
+                          &P_CONTROL)
+/* ================================================================*/
+/*  CPP for the PRTLN command.                                     */
+/*  Maps the command parameters to what the PRT program expects    */
+/*  then calls PRT to print or process the line.                   */
+/* ================================================================*/
+/*  For RPG convenient usage, PRT has only two parms. PRTLN cmd    */
+/*  has more parms for more meaningful usage.                      */
+/* ================================================================*/
+
+    DCL (&P_LINE) TYPE(*CHAR) LEN(132)      /* Line text */
+    DCL (&P_SPACE) TYPE(*CHAR) LEN(2)       /* Spacing */
+    DCL (&P_DEFHEAD) TYPE(*CHAR) LEN(1)     /* Defining Heading? */
+    DCL (&P_HEAD) TYPE(*CHAR) LEN(4)        /* Heading definition */
+    DCL (&P_CONTROL) TYPE(*CHAR) LEN(10)    /* Control field */
+
+    DCL (&PRT_PARM2) TYPE(*CHAR) LEN(10)    /* Parm 2 for PRT pgm */
+    DCL (&HLINE_NUM) TYPE(*CHAR) LEN(1)
+    DCL (&HEADPAGE) TYPE(*CHAR) LEN(1)
+
+    /* PHEAD is a list of 2 elements. Just ignore the 2 byte length. */
+    CHGVAR  (&HLINE_NUM) VALUE(%SST(&P_HEAD 3 1))
+    CHGVAR  (&HEADPAGE)  VALUE(%SST(&P_HEAD 4 1))
+
+    /* If defining headings */
+    IF  (&P_DEFHEAD = 'Y') DO
+        /* Building either  "*Hn:*P:Sn" or "*Hn:Sn" */
+        CHGVAR VAR(&PRT_PARM2) VALUE('*H' *TCAT &HLINE_NUM)
+        IF  (&HEADPAGE = 'Y') DO
+            CHGVAR VAR(&PRT_PARM2) VALUE(&PRT_PARM2 *TCAT ':*P')
+        ENDDO
+        CHGVAR VAR(&PRT_PARM2) VALUE(&PRT_PARM2 *TCAT ':' *TCAT &P_SPACE)
+        /* Define the header and return */
+        CALL PGM(PRT) PARM(&P_LINE &PRT_PARM2)
+        RETURN
+    ENDDO
+    /* Handle other special control fields & return: *CLOSE & *NEWPAGE */
+    IF  (&P_CONTROL *NE ' ') DO
+        CALL PGM(PRT) PARM(&P_LINE &P_CONTROL)
+        RETURN
+    ENDDO
+    /* Else print the line and return */
+    CHGVAR  (&P_CONTROL) (&P_SPACE)
+    CALL    PGM(PRT) PARM(&P_LINE &P_CONTROL)
+    RETURN
+ ENDPGM
