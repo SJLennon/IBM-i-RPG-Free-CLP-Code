@@ -46,9 +46,13 @@ Commands, with CLP and RPG programs, calling IBM i APis.
 
 Commands, CLLE, SQLRPGLE using SQL access to APIs.
 
-## Printing Techniques in RPG/**FREE 
+## Printing  
 
-Printing without O-Specs or Externally Defined Printer Files
+Technique for easy printing  in RPG/** without O-Specs or Externally Defined Printer Files
+
+## PRT_CL
+
+The PRTLN command to print a line from a CL program, including page control and headings
 
 ## GRP_JOB
 

@@ -166,7 +166,7 @@ Parm 1 is the line text, either to print or to define a heading.
 Parm 2 is a multipart control parameter that qualifies Parm 1.
 - If blank or omitted. the line text in Parm 1 is printed with single spacing.
 - Spacing Control when printing Parm 1
-    - __S1__    Space one line and print. (Omitted or blank is the same as S1.
+    - __S1__    Space one line and print. (Omitted or blank is the same as S1.)
     - __S2__    Space two lines and print.
     - __S3__    Space three lines and print.
     - __S0__     Overprint current line.
@@ -180,10 +180,10 @@ Parm 2 is a multipart control parameter that qualifies Parm 1.
     -   __*CLOSE__ Close the print file. Must be done at the end of the report. Parm 1 is ignored.
     -   __*NEWPAGE__ Next line will print on a new page. Parm 1 is ignored.  
 
-Parm 2 values are separated by a "__:__" as in RPG. I used the new %SPLIT BIF to take apart Parm2 and put it into a variable length autosized array. 
+Parm 2 values are separated by a "__:__" as in RPG. I used the new %SPLIT BIF to take parse Parm2 into a variable length autosized array. 
 ```
 dcl-s   ctlValues   varchar(4) dim(*auto : 3);
 %elem(ctlValues) = 0;
 ctlValues = %split(wk_Ctl :':'); 
 ```
-It is very easy to split up parms this way. You do need to be aware that and leading and trailing blanks are included in the array elements and you need to %TRIM them.
+It is very easy to split up parms this way. You do need to be aware that any leading and trailing blanks are included in the array elements and you need to %TRIM them.
