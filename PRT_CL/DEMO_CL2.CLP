@@ -1,4 +1,4 @@
- /*=== Demo a complex report ================================*/
+ /*=== Demo a more complex report ================================*/
  /* List files & members with record count and description.  */
  /* Has heading lines, an underscored heading & page number. */
  PGM

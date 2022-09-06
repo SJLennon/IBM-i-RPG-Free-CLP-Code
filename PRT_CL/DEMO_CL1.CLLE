@@ -1,4 +1,4 @@
- /*=== Demo a simple report =================================*/
+ /*=== Demo a "Really Simple Report" ============================*/
 PGM
 DCL   (&LC)    (*DEC) LEN(5 0) VALUE(1)
 DCL   (&UNDER) (*CHAR) LEN(20) VALUE('____________________')

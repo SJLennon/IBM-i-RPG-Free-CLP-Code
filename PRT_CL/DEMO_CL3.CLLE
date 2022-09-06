@@ -1,7 +1,9 @@
  /*=== Demo a complex report with breaks ============================*/
- /* Contains heading lines and underscored headings & page number    */
- /*  - Library is in the heading line                                */
- /*  - File prints only when it changes                              */
+ /* Prints files, members and record counts in a library.            */
+ /* Contains heading lines and underscored headings & page number.   */
+ /*  - Library is in the heading line.                               */
+ /*  - File name prints only when it changes.                        */
+ /*  - Prints "End of Report" on a new page at the end.              */
  PGM
     DCL   (&LINE)    (*CHAR)  LEN(132)
     /* Define data columns in &LINE */
@@ -54,5 +56,8 @@
       CHGVAR (&LINE_SPACE) 'S1'
    GOTO    CMDLBL(LOOP)
 
- EOF: PRTLN CONTROL(*CLOSE)
+ EOF:
+   PRTLN CONTROL(*NEWPAGE)
+   PRTLN '*** End of Report ***' SPACE('S3')
+   PRTLN CONTROL(*CLOSE)
     ENDPGM

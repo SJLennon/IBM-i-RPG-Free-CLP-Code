@@ -147,9 +147,17 @@ Adjust the overflow or top of form line to suit your needs.
 
 MYPRT.CLLE is a simple CL program to create MYPRT.
 
-### DEMO_CL1.CLLE, DEMO2_CL2.CLP and DEMO_CL3.CLLE
+### DEMO_CL1.CLLE
 
-Demonstartion programs of PRTLN in use.
+ A "Really Simple Report" 
+
+### DEMO2_CL2.CLP
+
+A more complex report that lists the files, members, record count and description a set of files. Adjust the file set to suit your needs.
+
+### DEMO_CL3.CLLE
+
+Even more complex report printing a file member list for a library with the library name in the heading, breaking on file name and with an "End of Report" page at the end. To generalize, make the library name a parameter.
 
 ### DEMO_RPG1.SQLRPGLE
 
