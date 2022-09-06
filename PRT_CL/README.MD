@@ -153,7 +153,7 @@ MYPRT.CLLE is a simple CL program to create MYPRT.
 
 ### DEMO2_CL2.CLP
 
-A more complex report that lists the files, members, record count and description a set of files. Adjust the file set to suit your needs.
+A more complex report that lists the files, member names, member record count and member description for a set of files. Adjust the file set to suit your needs.
 
 ### DEMO_CL3.CLLE
 
