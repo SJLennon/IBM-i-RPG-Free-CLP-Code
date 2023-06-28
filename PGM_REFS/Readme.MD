@@ -1,14 +1,14 @@
 # SQL Procedure to find Program Usage recursively using DSPPGMREF
 
-Given a program (or any of the objects that DSPPGMREF handles), the PGM_REFS procedure will find all the obects that the program uses, and then recursively finds all that objects that they use, and so on, to an essentally unlimited depth.
+Given a program (or any of the objects that DSPPGMREF handles), the PGM_REFS stored procedure will find all the obects that the program uses, and then recursively finds all that objects that they use, and so on, to an essentally unlimited depth.
 
-This is the product of my experimentation with PL/SQL. It may be short on error handling, and it doesn't do any validity checking on the parameters.
+This is the product of my experimentation with PL/SQL. It may be short on error handling, and it doesn't do any validity checking on the parameters. But since I expect you are a developer, you can probaly live with that. Or improve it.
 
 If you have more experience than me, please feel free to suggest better coding techniques.
 
 So far I have not found a decent manual or turorial. If you know of any please pass them on. 
 
-My primary technique was trial and error, with help
+My primary approach was trial and error, with help
 from these articles on IT Jungle:
     [Ted HolT Article 1](https://www.itjungle.com/2017/06/12/guru-error-handling-sql-pl-part-1/) and 
     [Ted Holt Article 2](https://www.itjungle.com/2017/10/16/guru-error-handling-sql-pl-part-2/)
@@ -16,7 +16,7 @@ and browsing [Scott Forstie Gists on Github](https://gist.github.com/forstie
 )
 
 In no way does this replace a real cross reference utilily, such as Hawkeye
-or X-Analysis. If you don't have one, this might be somewhat useful.
+or X-Analysis. If you don't have one, this *might* be somewhat useful.
 
 ## pgm_refs_Tbl.sql
 
