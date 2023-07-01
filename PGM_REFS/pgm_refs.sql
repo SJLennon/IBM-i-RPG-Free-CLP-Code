@@ -2,6 +2,10 @@
 --  by calling itself recursively.
 --  Result is a file named REFS containing all the objects that 
 --  DSPPGMREF knows about an object, to an essentially unlimited depth.
+
+-- There are two places you need to change the library name, following
+-- a comment like this:  -- <<<<<< Change this table library >>>>>>>
+
 CREATE OR REPLACE PROCEDURE PGM_REFS (
      IN p_INLIB     varCHAR(10)
     ,IN p_INPGM     varCHAR(10)
@@ -13,7 +17,7 @@ CREATE OR REPLACE PROCEDURE PGM_REFS (
     MODIFIES SQL DATA
     SET OPTION dbgview = *source, commit = *none
 begin
-    -- Define DSPPGMREF library and file names
+    -- Define DSPPGMREF OUTFILE library and file names
     declare WrkLib          varchar(10) default 'QTEMP'; 
     declare WrkFileOS       varchar(20) default '/WRK' ;
     declare WrkFileSQL      varchar(20) default '.WRK';
@@ -22,7 +26,7 @@ begin
     declare my_sqlstate     char(5);
     declare no_more_data    char(5) default '02000';
     declare duplicate_key   char(5) default '23505';
-
+    declare error_msg        char(30) default ' ';
     declare Cmd             varchar(1024);
     declare ref_cursor_txt  varchar(512) default  
         'select WHLIB, WHPNAM, WHTEXT, WHLNAM, WHFNAM, WHOTYP 
@@ -36,17 +40,21 @@ begin
     declare USES_LIBRARY   varchar(10);
     declare USES_NAME      varchar(10);
     declare USES_TYPE      varchar(10);
-    declare USES_TEXT      varchar(30);
 
     declare duplicate_object condition for sqlstate '23505';
+    declare QCMDEXC_Failure condition for sqlstate '38501';
     declare ref_cursor cursor for ref_cursor_stmt;
 
     declare continue handler for duplicate_object
         begin
             set my_sqlstate = duplicate_key;
         end;            
+    declare continue handler for QCMDEXC_Failure
+        begin
+            set error_msg = 'QCMDEXC DSPPGMREF Failed';
+        end;            
       
-    -- Build pgm refs work  file from DSPPGMREF command.
+    -- Build pgm refs work file from DSPPGMREF command.
     set WrkFileOS = WrkLib 
         concat trim(WrkFileOS) 
         concat trim(char(p_Depth));
@@ -58,8 +66,26 @@ begin
         concat ' OUTFILE(' concat WrkFileOS concat ')'
         ;
     CALL QSYS2.QCMDEXC (Cmd);
-    
-    -- Open cursor over the outfile from DSPPGMREF 
+
+    -- If DSPGMREF failed, build a record showing error
+    -- occurred and return.
+    if error_msg <> ' ' then
+        -- <<<<<< Change this table library >>>>>>>
+        insert into lennonsb.refs values (
+            p_Depth,
+            p_INLIB,
+            p_inpgm,
+            p_INTYPE,
+            error_msg,
+            '*ERROR',
+            '*ERROR',
+            '*ERROR'
+        );
+        set error_msg = ' ';
+        return;
+    end if;
+
+        -- Open cursor over the outfile from DSPPGMREF 
     set WrkFileSQL = WrkLib 
         concat trim(WrkFileSQL) 
         concat trim(char(p_Depth));
@@ -79,7 +105,7 @@ begin
         if sqlstate = no_more_data then 
             leave Refs_Loop;
         end if;
-        -- <<<< Change this table library >>>>>
+        -- <<<<<< Change this table library >>>>>>>
         insert into lennonsb.refs values (
              p_Depth
             ,CALLER_LIBRARY
