@@ -2,7 +2,7 @@
 
 Given a program (or any of the objects that DSPPGMREF handles), the PGM_REFS stored procedure will find all the obects that the program uses, and then recursively finds all that objects that they use, and so on, to an essentally unlimited depth.
 
-This is the product of my experimentation with PL/SQL. It may be short on error handling, and it doesn't do any validity checking on the parameters. But since I expect you are a developer, you can probaly live with that. Or improve it.
+This is the product of my experimentation with SQL Procedures Language (SQL PL). It may be short on error handling, and it doesn't do any validity checking on the parameters. But since I expect you are a developer, you can probaly live with that. Or improve it.
 
 If you have more experience than me, please feel free to suggest better coding techniques.
 
