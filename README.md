@@ -52,7 +52,7 @@ SQL Procedure to find Program Usage recursively using DSPPGMREF
 
 ## Printing  
 
-Technique for easy printing  in RPG/** without O-Specs or Externally Defined Printer Files
+Technique for easy printing in RPG/**FREE without O-Specs or Externally Defined Printer Files
 
 ## PRT_CL
 
