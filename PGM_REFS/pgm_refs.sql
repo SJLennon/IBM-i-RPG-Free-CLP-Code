@@ -122,7 +122,7 @@ begin
                 iterate Refs_Loop;
             end if; 
             -- Don't expand IBM stuff further
-            if substr(USES_NAME, 1, 1) = 'Q' then
+            if substr(USES_LIBRARY, 1, 1) = 'Q' then
                 iterate Refs_Loop;
             end if; 
             -- No further expansion if DSPPGMREF doesn't handle object 
