@@ -45,7 +45,8 @@ Since many objects will have a library of `*LIBL`, that is what will get passed 
 
 ### DSPPGMREF Failure
 
-If DSPPGMREF failsinternally, `*ERROR` will appear in the three `USES_*` fields in the REFS file. If you get a lot of these check you have your library list correct.
+If DSPPGMREF fails internally, `*ERROR` will appear in the three `USES_*` fields in the REFS file. If you get a lot of these check you have your library list correct.
+
 ## Sample Output File Contents
 
 ![Sample ](Images/Sample1.png)
