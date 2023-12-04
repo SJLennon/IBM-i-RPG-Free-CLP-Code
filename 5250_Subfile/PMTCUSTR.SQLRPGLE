@@ -593,9 +593,16 @@
            write DUMMY; // Supposed to help restore SFL display
        endsr;
 
-       //=== ProcessSearchCriteria====================================
-       // Examinethe data entered in the search fields and build an
-       // SQL statement.
+       //=== ProcessSearchCriteria ===================================
+       // Examine the data entered in the search fields and build an
+       // SQL statement. Note that NAME and CITY search use a LIKE
+       // predicate with a % on the end to match any string.
+       // You can also use _ to match any single character. For example,
+       // NEC_C would find NEC CORP but not NEC FOUNDATION.
+       // Putting % at the beginning will also work, for example,
+       // %LLC will find all Customers with LLC in their name,
+       // but likely will be quite slow depending on file size..
+
        // Success:
        //    NewSearchCriteria is set off
        //    SQL Cursor is open
@@ -760,7 +767,7 @@
        // === Sanatize ===============================================
        // Sanatize an entered search string field.
        //  - Remove any single quotes, otherwise the built SQL prepare
-       //    will fail, or it could allow SQL Injection.
+       //    will fail.
        //    Double quotes are OK.
 
      pSanatize         b
