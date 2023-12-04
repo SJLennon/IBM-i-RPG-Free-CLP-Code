@@ -633,8 +633,8 @@
                 from    CUSTMAST +
                 where   NAME LIKE ? +
                    and  CITY like ? ';
-         wkName =  Sanatize(%trim(SC_NAME) + '%') ;
-         wkCity = Sanatize(%trim(SC_CITY) + '%');
+         wkName =  %trim(SC_NAME) + '%';
+         wkCity = %trim(SC_CITY) + '%';
 
          if SC_STATE <> ' ';
              if %len(%trim(SC_STATE)) <> 2;
@@ -765,7 +765,8 @@
      p                 e
        //=============================================================
        // === Sanatize ===============================================
-       // Sanatize an entered search string field.
+       // Sanatize an entered search string field that is not using
+       // parameter markers.
        //  - Remove any single quotes, otherwise the built SQL prepare
        //    will fail.
        //    Double quotes are OK.
