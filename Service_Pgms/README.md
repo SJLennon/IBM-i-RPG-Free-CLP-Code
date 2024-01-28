@@ -2,7 +2,7 @@
 
 Utility Service Programs.
 
-* SRV_MSG
+## SRV_MSG
 
     Contains procedures to send messages from an RPG program.
 
@@ -16,13 +16,21 @@ Utility Service Programs.
 
     **JobLogMsg**:   Send provided text to the job log using Qp0zLprintf, a C function. For testing, a convenient alternative to the DSPLY opcode for longer messages.
 
-* SRV_STR
+## SRV_RANDON
+
+    Convenience procedures relating to pseudo random number generation.
+
+    **Rand_Int**
+    
+     Return a random integer with a specified range.
+
+## SRV_STR
 
     Contains procedures to manipulate strings in an RPG program.
 
     **CenterStr**:  Center a string.
   
-* SRV_SQL
+## SRV_SQL
   
   Helper procedures for RPG programs using embedded SQL.
 
@@ -52,11 +60,9 @@ Utility Service Programs.
 
      RPG program to test the procedures in SRV_STR.
 
-* SHOW
+## SHOW
 
   RPG program to display a 5250 message using the QUILNGTX API. Useful for testing, but possibly
   JobLogMsg in SRV_MSG is more useful. Really should be part of SRV_MSG, but it is totally *FREE for and I have left SRV_MSG partially fixed.
 
-  SHOW_T
-
-    RPG program to test & exercise SHOW.
+  **SHOW_T**:   RPG program to test & exercise SHOW.
