@@ -1,34 +1,34 @@
-### Service Programs
+# Service Programs
 
-Utility Service Programs.
+Utility Service Programs that are used in various places.
 
 ## SRV_MSG
+  
+Contains procedures to send messages from an RPG program.
 
-    Contains procedures to send messages from an RPG program.
+  **SndMSgPgmQ**: Send message to a provided program queue. (Interactive programming.)
 
-    **SndMSgPgmQ**: Send message to a provided program queue. (Interactive programming.)
+  **ClrMsgPgmQ**:  Clear all messages from the provided program queue. (Interactive programming.)
 
-    **ClrMsgPgmQ**:  Clear all messages from the provided program queue. (Interactive programming.)
+  **SndEscMsg**:    Send provided text as an escape message.
 
-    **SndEscMsg**:    Send provided text as an escape message.
+  **SndInfMsg**:   Send provided text as info message to the external message queue.
 
-    **SndInfMsg**:   Send provided text as info message to the external message queue.
-
-    **JobLogMsg**:   Send provided text to the job log using Qp0zLprintf, a C function. For testing, a convenient alternative to the DSPLY opcode for longer messages.
+  **JobLogMsg**:   Send provided text to the job log using Qp0zLprintf, a C function. For testing, a convenient alternative to the DSPLY opcode for longer messages.
 
 ## SRV_RANDON
 
-    Convenience procedures relating to pseudo random number generation.
+Convenience procedures relating to pseudo random number generation.
 
-    **Rand_Int**
+**Rand_Int**
     
-     Return a random integer with a specified range.
+ Return a random integer with a specified range.
 
 ## SRV_STR
 
-    Contains procedures to manipulate strings in an RPG program.
+Contains procedures to manipulate strings in an RPG program.
 
-    **CenterStr**:  Center a string.
+**CenterStr**:  Center a string.
   
 ## SRV_SQL
   
@@ -65,4 +65,4 @@ Utility Service Programs.
   RPG program to display a 5250 message using the QUILNGTX API. Useful for testing, but possibly
   JobLogMsg in SRV_MSG is more useful. Really should be part of SRV_MSG, but it is totally *FREE for and I have left SRV_MSG partially fixed.
 
-  **SHOW_T**:   RPG program to test & exercise SHOW.
+  * SHOW_T   RPG program to test & exercise SHOW.
