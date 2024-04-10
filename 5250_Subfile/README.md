@@ -39,7 +39,7 @@ The display file uses a private set of indicators, something I started doing to 
   
   Conceptually, you can call this program from almost anywhere and control access to it  by whatever menuing or security system you have in place. The general user population would progably get Inquiry and Sales would have Maintenance. Selection could be used for any in-house program that needed to prompt for  a customer id number. 
   
-  Note that this version uses a static SQL cursor, where City and State selection criteria use a "between" predicate. This differs from [the originally posted version](https://github.com/SJLennon/IBM-i-RPG-Free-CLP-Code/blob/master/5250_Subfile/PMTCUSTR.SQLRPGLE) which used a dynamic cursor which had to be prepared when the selection criteria changed. I think a static cursor makes coding easier and can improve performance since it doesn't need a "prepare". Conversely, on large files this approach may hurt performance. However, I tested the program on PUB400.COM with 1 million records and there was no discernable performance hit.
+  Note that this version uses a static SQL cursor, where City and State selection criteria use a "between" predicate. This differs from the originally posted version which used a dynamic cursor which had to be prepared when the selection criteria changed. I think a static cursor makes coding easier and can improve performance since it doesn't need a "prepare". Conversely, on large files this approach may hurt performance. However, I tested the program on PUB400.COM with 1 million records and there was no discernable performance hit.
 
 ### MTNCUSTR/MTNCUSTD
 

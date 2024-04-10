@@ -1,5 +1,5 @@
 # Printing from a CL program (The PRTLN command)
-# (Under Construction)
+
 Generating a report from an IBM i CL program isn’t straight forward, because in CL there is no direct way to write to a spool file.  Here I  provide the CL PRTLN command, which allows simple, direct printing from a CL or CLLE program, including page control and headings.
 
 (Note: I'm not suggesting you should do your payroll checks or month-end general ledger from CL--use RPG for that. But sometimes it is just convenient to print from CL without bothering with extra objects, like Query/400, or STRQMQRY or an RPG program.)
