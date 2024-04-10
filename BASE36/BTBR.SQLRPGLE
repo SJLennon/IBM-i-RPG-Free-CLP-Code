@@ -17,7 +17,7 @@
 ctl-opt debug  option(*nodebugio: *srcstmt) dftactgrp(*no)
         actgrp(*caller) bnddir('SRV_BASE36')
         main(Main);
-/include base36,base36_p
+/include ../base36/base36_p.rpgle
 
 dcl-proc Main ;
 dcl-pi *N extpgm('BTBR');

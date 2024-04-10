@@ -42,8 +42,8 @@ ctl-opt debug option(*nodebugio: *srcstmt)
     bnddir('UTIL_BND':'SQL_BND')
     main(Main);
 //=== Prototypes =====================================================
-/include copy_mbrs,Srv_Msg_P
-/include copy_mbrs,Srv_SQL_P
+/include ../Copy_Mbrs/SRV_MSG_P.RPGLE
+/include ../Copy_Mbrs/SRV_SQL_P.RPGLE
 
 // Gets job type entry for this job.
 // Returns:  JobType has the job type. I=interactive, B=batch, etc.
@@ -56,8 +56,7 @@ end-pr;
 // Input Parameters
 //   1) pObject is object name (10c) + object library (10c)
 //   2) pObjType is *FILE, *DTAARA, etc., standard OS/400 type
-//   3) pObjMem is the member for files, or *NONE if just want users
-//           of the file.
+//   3) pObjMem is the member for files
 //   4) pMsgYN is *YES to create a message.
 //   5) pFileYN is *YES if file GETOBJUP is to be created in QTEMP
 // Output Parameter
@@ -65,18 +64,18 @@ end-pr;
 
 //=== Global Definitions =============================================
 dcl-s JobName28 char(28);   // like '580065/JOBNM/USER''
-dcl-c SQLSuccess       '00000';
-dcl-c SQLNoData        '02000';
-dcl-c SQLNoMoreData    '02000';
-dcl-c SQLProcWarning   '01548';
-dcl-c SQLFileNotFound  '42704';
+dcl-c SQLSUCCESS       '00000';
+dcl-c SQLNODATA        '02000';
+dcl-c SQLNOMOREDATA    '02000';
+dcl-c SQLPROCWARNING   '01548';
+dcl-c SQLFILENOTFOUND  '42704';
 
 //====================================================================
 dcl-proc Main ;
 
     //=== Misc Field Definitions =====================================
     dcl-s NumJobs packed(5);
-    dcl-c MaxJobs const(4); //Maximum jobs for detailed reporting.
+    dcl-c MAXJOBS const(4); //Maximum jobs for detailed reporting.
     // If you increase MaxJobs, increase the message parameter by 30 bytes
     // for each additional job.
     dcl-s JobName26 char(26);   // is name(10) User(10) number(6)
@@ -96,6 +95,7 @@ dcl-proc Main ;
     dcl-s theLibrary char(10);
     dcl-s theObject char(10);
     dcl-s j int(10);
+    dcl-s wkMem like(pObjMem);
     // ---------------------------------------------------------
     dcl-pi *n extpgm('GETOBJUR');
         pObject char(20);
@@ -117,7 +117,7 @@ dcl-proc Main ;
 
     if pFileYN='*YES';
         exec sql drop table qtemp.GETOBJUP;
-        if SQLSTATE <> SQLSuccess and SQLSTATE <> SQLFileNotFound;
+        if SQLSTATE <> SQLSUCCESS and SQLSTATE <> SQLFILENOTFOUND;
             SQLProblem('Delete GETOBJUP');
         endif;
         exec sql declare global temporary table GETOBJUP (
@@ -131,8 +131,8 @@ dcl-proc Main ;
             OUOBJTYPE CHAR(10),
             OUOBJMBR CHAR(10)
         );
-        if SQLSTATE <> SQLSuccess;
-            SQLProblem('Declare global tempory table GETOBJUP');
+        if SQLSTATE <> SQLSUCCESS;
+            SQLProblem('Declare global temporary table GETOBJUP');
         endif;
     endif;
 
@@ -146,28 +146,38 @@ dcl-proc Main ;
     JobOBJTYPE = pObjType;
     JobOBJMBR = pObjMem;
 
+    // *FIRST doesn't work with SQL services. ALCOBJ puts a lock on
+    // the *FIRST member if you don't specify one and if the file
+    // is locked *EXCL then we can't get the first member name, so
+    // we leave it blank. Shouldn't matter because we're looking for
+    // any lock by any job.
+    if pObjMem = '*FIRST';
+        wkMem = ' ';
+    else;
+        wkMem = pObjMem;
+    endif;
 
     // === Find the locks ============================================
     exec sql declare Lock_Cursor cursor for
         select distinct JOB_NAME
         from QSYS2.OBJECT_LOCK_INFO
-        where SYSTEM_OBJECT_SCHEMA = :thelibrary
-          and SYSTEM_OBJECT_NAME = :theobject
-          and OBJECT_TYPE = :pobjtype
+        where SYSTEM_OBJECT_SCHEMA = :theLibrary
+          and SYSTEM_OBJECT_NAME = :theObject
+          and OBJECT_TYPE = :pObjType
           and ifnull(SYSTEM_TABLE_MEMBER,' ') =
-            case when :pobjtype = '*FILE' and :pobjmem <> '*ALL' then  :pobjmem
+            case when :pObjType = '*FILE' and :wkMem <> ' ' then  :wkMem
                  else ' '
             END
         order by JOB_NAME
     ;
     exec sql open Lock_Cursor ;
-    if SQLSTT <> SQLSuccess;
+    if SQLSTT <> SQLSUCCESS;
         SQLProblem('open Lock_Cursor');
     endif;
 
     // Loop through the cursor, building requested outputs
     fetchNext();
-    dow SQLSTT <> SQLNoData;
+    dow SQLSTT <> SQLNODATA;
         NumJobs += 1;
         if pFileYN='*YES';
             // Build JobName26, parm for GetJobType
@@ -192,11 +202,11 @@ dcl-proc Main ;
     // === End of Program ============================================
     if pMsgYN='*YES';
         select;
-            when NumJobs >= 1 and NumJobs <=MaxJobs;
-                pMsgfld=%trimr(pMsgFld) + '.';
-            when NumJobs > MaxJobs;
-                pMsgfld=%trimr(pMsgFld) + ' plus '
-                  +  %trim(%editc(NumJobs-MaxJobs:'J'))
+            when NumJobs >= 1 and NumJobs <= MAXJOBS;
+                pMsgFld = %trimr(pMsgFld) + '.';
+            when NumJobs > MAXJOBS;
+                pMsgFld = %trimr(pMsgFld) + ' plus '
+                  +  %trim(%editc(NumJobs-MAXJOBS:'J'))
                   + ' more.';
             other;
         endsl;
@@ -215,8 +225,8 @@ dcl-proc Main ;
                 %trimr(pObjType) +
                 ' is in use by ' +
                 JobName28;
-            when NumJobs >= 2 and NumJobs <=MaxJobs;
-                pMsgFld=%trimr(pMsgfld) + ', ' +
+            when NumJobs >= 2 and NumJobs <=MAXJOBS;
+                pMsgFld=%trimr(pMsgFld) + ', ' +
                 JobName28;
         endsl;
     endsr;
@@ -226,7 +236,7 @@ dcl-proc Main ;
     begsr WriteRec;
         JobNM28 = JobName28;
         exec sql insert into qtemp.GETOBJUP values(:JobSQLDS);
-        if SQLSTT <> SQLSuccess;
+        if SQLSTT <> SQLSUCCESS;
             sqlProblem('Insert into GETOBJUP');
         endif;
     endsr;
@@ -235,9 +245,9 @@ end-proc;
 // === fetchNext =====================================================
 dcl-proc fetchNext;
     exec sql fetch next from Lock_Cursor into :JobName28;
-    if SQLSTT <> SQLSuccess
-        and SQLSTT <> SQLNOData
-        and SQLSTT <> SQLProcWarning;
+    if SQLSTT <> SQLSUCCESS
+        and SQLSTT <> SQLNODATA
+        and SQLSTT <> SQLPROCWARNING;
         SQLProblem('fetchNext');
     endif;
 end-proc;

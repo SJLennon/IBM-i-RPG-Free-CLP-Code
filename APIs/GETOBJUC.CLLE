@@ -16,6 +16,8 @@ GETOBJUC: +
 /*            message fails. If this occurs, just continue and      */
 /*            *LIBL may appear in the message.                      */
 /* -----------------------------------------------------------------*/
+/* 02/--/2024 CPF7306 to allow for SQL created GETOBJUP member      */
+/* -----------------------------------------------------------------*/
 
 /* Input parameters */
   DCL VAR(&OBJECT)     TYPE(*CHAR) LEN(20)    /* Obj & lib */
@@ -58,6 +60,7 @@ GETOBJUC: +
       CRTDUPOBJ OBJ(GETOBJUP) FROMLIB(&FRMOBJLIB) OBJTYPE(*FILE) +
          TOLIB(QTEMP)
       ADDPFM FILE(QTEMP/GETOBJUP) MBR(GETOBJUP)
+      MONMSG MSGID(CPF7306)
       OVRDBF FILE(GETOBJUP) TOFILE(QTEMP/GETOBJUP) SECURE(*YES)
   ENDDO
 

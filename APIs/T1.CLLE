@@ -1,0 +1,6 @@
+PGM
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(200)
+             GETOBJUSR  OBJECT(QSYS/LENNONS2) TYPE(*LIB) MSGFLD(&MSG)
+             SNDMSG     MSG(&MSG) TOUSR(*REQUESTER)
+
+             ENDPGM

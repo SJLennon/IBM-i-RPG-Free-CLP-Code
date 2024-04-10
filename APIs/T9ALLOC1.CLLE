@@ -1,0 +1,4 @@
+             PGM                                                  
+             ALCOBJ     OBJ((QIWS/QCUSTCDT *FILE *SHRRD)) WAIT(0) 
+             DLYJOB     DLY(90)                                   
+             ENDPGM                                               

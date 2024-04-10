@@ -1,0 +1,19 @@
+/* === Loads CUSTMAST with as many random records as specified === */
+/*     Submits job to batch  */
+
+             PGM        PARM(&NUM)
+             DCL        VAR(&NUM) TYPE(*DEC)  LEN(15 5)
+             CHKOBJ     OBJ(CUSTMAST) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(GOTO CMDLBL(SUBMIT))
+
+             ALCOBJ     OBJ((CUSTMAST *FILE *EXCLRD)) WAIT(5) +
+                          CONFLICT(*RQSRLS)
+             MONMSG     MSGID(CPF1002) EXEC(DO)
+             SNDMSG     MSG('Cannot allocate CUSTMAST') +
+                          TOUSR(*REQUESTER)
+             RETURN
+             ENDDO
+
+             DLCOBJ     OBJ((CUSTMAST *FILE *EXCLRD))
+ SUBMIT:     SBMJOB     CMD(CALL PGM(LOADCUSTR) PARM((&NUM))) JOB(LOADCUST2)
+             ENDPGM

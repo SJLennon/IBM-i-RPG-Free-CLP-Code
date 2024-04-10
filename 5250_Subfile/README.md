@@ -18,13 +18,11 @@ This is a working application that allows display, selection and maintenance of 
 
 ## General Notes
 
-Some of the programs use /Include statements, which are found in the Copy_Mbrs directory.  So to compile you will need to create and populate a source file named COPY_MBRS.
+Some of the programs use /Include statements, which are found in the Copy_Mbrs directory.
 
-The RPG code is free form, except that the D-Specs are fixed form. This probably allows more  developers who are still on older versions of the OS, or are still using the out of date SEU, to more easily use the code.  The code can be converted to totally free format using the free _**"JCRHFD - Rpg H,F,D to free form syntax"**_ command available at [JCRCMDS.COM](http://www.jcrcmds.com/jcrdown2.html#JCRHFD_tag). If there is interest I may post totally free form versions.
+The genesis of these programs was code that I wrote in RPG IV for a Fortune 500 retailer circa 2002-2004. The code was then cloned as a standard approach by another team leader. This code is a more modern version that I cleaned up in 2020 and restructured again in late 2023.
 
-The genesis of these programs was code that I wrote in RPG IV for a Fortune 500 retailer circa 2002-2004. The code was then cloned as a standard approach by another team leader.  This code is a more modern version that I cleaned up in 2020.
-
-The style tries to have consistent naming and I do not share field names between the RPG and the display files--I've seen too many accidental modifications in my support career.
+My style tries to have consistent naming and I do not share field names between the RPG and the display files--I've seen too many accidental modifications in my support career.
 
 The display file uses a private set of indicators, something I started doing to try to educate coworkers who were struggling with monolithic code where all 99 indicators were in use. You can also reset indicators and such in display files, but I prefer to do it myself.
 
@@ -39,8 +37,10 @@ The display file uses a private set of indicators, something I started doing to 
         - S gives 1=select 5=Display
   If the cursor is in a field  with a + in the field name (ST+ here) you can press F4 to prompt the field.
   
-  Conceptually, you can call this program from almost anywhere and control access to it  by whatever menuing or security system you have in place. The general user population would progably get Inquiry and Sales would have Maintenance. Selection could be used for any in-house program that needed to prompt for  a customer id number.
+  Conceptually, you can call this program from almost anywhere and control access to it  by whatever menuing or security system you have in place. The general user population would progably get Inquiry and Sales would have Maintenance. Selection could be used for any in-house program that needed to prompt for  a customer id number. 
   
+  Note that this version uses a static SQL cursor, where City and State selection criteria use a "between" predicate. This differs from [the originally posted version](https://github.com/SJLennon/IBM-i-RPG-Free-CLP-Code/blob/master/5250_Subfile/PMTCUSTR.SQLRPGLE) which used a dynamic cursor which had to be prepared when the selection criteria changed. I think a static cursor makes coding easier and can improve performance since it doesn't need a "prepare". Conversely, on large files this approach may hurt performance. However, I tested the program on PUB400.COM with 1 million records and there was no discernable performance hit.
+
 ### MTNCUSTR/MTNCUSTD
 
   RPG program that maintains a customer.  Customer id is provided as the first parameter. It also adds or displays a customer. Function is controlled by the second parameter. It is called from PMTCUSTR, but it could be called from any program that has a customer id available, or which needs to add a customer.
@@ -74,3 +74,35 @@ The window has a blue border of reverse image blanks. This will display consiste
 ### States.SQL
 
 SQL Code to create and populate the STATES table, which is a table of USA state names and their 2-character abbreviations.
+
+### Creating a large CUSTMAST
+
+I have provided a program that will create as large number of fairly realistic random CUSTMAST records. To get a decent distribution of City, State, ZIP values I used a USPS file which you will have to upload from the USPS site.
+
+#### LOADCUSTR.SQLRPGLE
+
+This clears CUSTMAST and repopulates it with an many randon records are you specify. It requires the CSZ file, below. Typical usage is `call loadcustr 1000` to load 1,000 records. 
+
+#### CSZ (City/State/ZIP) File
+
+This file contains real data, over 40,000 records, dowloaded from the USPS website.
+
+To create the CSZ file: 
+
+- Download  the City, State and Zip database from USPS as an Excel spreadsheet. It is a free download at this [link](https://www.unitedstateszipcodes.org/zip-code-database/).
+
+- Delete all columns except zip, type, primary city and state. Raname primary_city to city, save, but leave the spreadsheet open.
+
+- Select all data in the speadsheet (this will fill in starting and ending colums and rows later).
+
+- Using iACS "Data transfer to IBM i" upload the spreadsheet to file CSZ. 
+
+    - In the Actions tab choose "Create IBM i Database file" and follow the prompts.
+
+    - In "Change Data Options" set defaults of VARCHAR and INTEGER.
+
+    - Keep following the prompts. 
+
+    - Set Library/file to *yourlib*/CSZ.
+
+Read this [IBM article](https://www.ibm.com/support/pages/transferring-data-excel-using-access-client-solutions) on uploading data from Excel using Access Client Solutions if you need more help.

@@ -10,8 +10,10 @@ So far I have not found a decent manual or turorial. If you know of any please p
 
 My primary approach was trial and error, with help
 from these articles on IT Jungle:
-    [Ted HolT Article 1](https://www.itjungle.com/2017/06/12/guru-error-handling-sql-pl-part-1/) and 
-    [Ted Holt Article 2](https://www.itjungle.com/2017/10/16/guru-error-handling-sql-pl-part-2/)
+    [Ted Holt Article 1](https://www.itjungle.com/2016/09/27/fhg092716-story02/) and
+    [Ted Holt Article 2](https://www.itjungle.com/2016/10/18/fhg101816-story03/) and
+    [Ted HolT Article 3](https://www.itjungle.com/2017/06/12/guru-error-handling-sql-pl-part-1/) and 
+    [Ted Holt Article 4](https://www.itjungle.com/2017/10/16/guru-error-handling-sql-pl-part-2/)
 and browsing [Scott Forstie Gists on Github](https://gist.github.com/forstie
 )
 
@@ -41,7 +43,7 @@ You need to supply library and name. The type will default to `*PGM` and the dep
 
 ### Library list
 
-Since many objects will have a library of `*LIBL`, that is what will get passed to DSPPGMREF for expansion. So you need to have your library list contain all libraries whose objects you want expanded.
+Since many objects will have a library of `*LIBL`, that is what will get passed to DSPPGMREF for expansion. So you need to make sure your library list contain all libraries whose objects you want expanded.
 
 ### DSPPGMREF Failure
 

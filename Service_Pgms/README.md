@@ -10,13 +10,13 @@ Contains procedures to send messages from an RPG program.
 
   **ClrMsgPgmQ**:  Clear all messages from the provided program queue. (Interactive programming.)
 
-  **SndEscMsg**:    Send provided text as an escape message.
+  **SndEscMsg**:    Send provided text as an escape message. (Note that the SND-MSG opcode can replace this in newer compiler versions.)
 
-  **SndInfMsg**:   Send provided text as info message to the external message queue.
+  **SndInfMsg**:   Send provided text as info message to the external message queue. (Note that the SND-MSG opcode can replace this in newer compiler versions.)
 
   **JobLogMsg**:   Send provided text to the job log using Qp0zLprintf, a C function. For testing, a convenient alternative to the DSPLY opcode for longer messages.
 
-## SRV_RANDON
+## SRV_RANDOM
 
 Convenience procedures relating to pseudo random number generation.
 
@@ -63,6 +63,6 @@ Contains procedures to manipulate strings in an RPG program.
 ## SHOW
 
   RPG program to display a 5250 message using the QUILNGTX API. Useful for testing, but possibly
-  JobLogMsg in SRV_MSG is more useful. Really should be part of SRV_MSG, but it is totally *FREE for and I have left SRV_MSG partially fixed.
+  JobLogMsg in SRV_MSG is more useful. Really should be part of SRV_MSG.
 
   * SHOW_T   RPG program to test & exercise SHOW.

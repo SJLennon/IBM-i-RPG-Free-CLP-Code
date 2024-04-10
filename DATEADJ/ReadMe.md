@@ -4,7 +4,7 @@ Date arithmetic in CL programs is limited and lacks the simplicity and scope fou
 
 The DATEADJ command adds the functionality of RPG date handling to CL programs. 
 
-DATEADJ adds or subtracts days, months or years from a date and returns an adjusted date. Input and output dates can be in almost any format that RPG recognizes.
+DATEADJ adds or subtracts days, months or years from a date and returns an adjusted date. Input and output dates can be in almost any format that RPG recognizes. It can also be used to just change the format of a date by specifying an adjustment of 0.
 
 A prompted DATEADJ command looks like this:
 

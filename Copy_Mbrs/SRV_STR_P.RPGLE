@@ -1,8 +1,7 @@
-
-       //=== Prototypes for SRV_STR routines ========================
-       //============================================================
-     d CenterStr       pr           256a   varying
-     d InStr                        256a   varying const
-     d
-
-       //=== End of Prototypes forSRV_STR Routines ==================
+**FREE
+//=== Prototypes for SRV_STR routines ========================
+//============================================================
+dcl-pr CenterStr varchar(256);
+    *n varchar(256) const; // InStr
+end-pr;
+//=== End of Prototypes forSRV_STR Routines ==================

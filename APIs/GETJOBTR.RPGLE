@@ -20,11 +20,12 @@
 //            It was origially a standalone program. Perhaps it should
 //            be a service program and perhaps some of the diract API
 //            call should be in a service program.
+// 02/--/2024 Set for soource in IFS
 // -------------------------------------------------------------------
 ctl-opt debug option(*nodebugio: *srcstmt)
     dftactgrp(*no) actgrp(*caller)
     main(Main);
-/copy copy_mbrs,USPHDR
+/copy ../Copy_Mbrs/USPHDR.RPGLE
 //=== CRTUSRSPC (QUSCTRUS) Parameters ================================
 dcl-s CusName char(20) inz('GETJOBTR  QTEMP');
 dcl-s CusAttr char(10) inz('GETJOBTR  ');

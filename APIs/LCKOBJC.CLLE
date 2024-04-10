@@ -1,0 +1,229 @@
+LCKOBJC: +
+  PGM PARM(&P_OBJ &P_WAIT &P_OPMAYCAN)
+/* -----------------------------------------------------------------*/
+/* Program attemps to lock an object with the requested lock state, */
+/* *EXCL, EXCLRD, etc.                                              */
+/* If it fails to obtain the lock in the specified time it talks to */
+/* the system operator, telling him which job are causing the       */
+/* ALCOBJ to fail. Operator can opt to cancel, or retry the ALCOBJ  */
+/* for 5, 10, 0r 30 minutes, or the default class wait time.        */
+/* -----------------------------------------------------------------*/
+/* Use the LCKOBJ command to invoke this program                    */
+/* -----------------------------------------------------------------*/
+/* 11/24/97 LENNON Original writing                                 */
+/* -----------------------------------------------------------------*/
+/* 10/05/2001 Sam Lennon. If a non file object is locked *EXCL then */
+/*            RTVOBJD to get real library name to put in the        */
+/*            message fails. If this occurs, just continue and      */
+/*            *LIBL may appear in the message.                      */
+/*            Change retry logic to allow entry of varying times.   */
+/*            Installed 9/2002.                                     */
+/* -----------------------------------------------------------------*/
+/* 02/--/2024 Build ALCOBJ commands for *FILE and all other to      */
+/*            handle Member being specified.                        */
+/*            Ignore *FIRST for member because it won't work        */
+/*            with the SQL service.                                 */
+/*            Add CONFLICT(*RQSRLS) to the ALCOBJ command.          */
+/* -----------------------------------------------------------------*/
+/* Input parameters */
+  DCL VAR(&P_OBJ)      TYPE(*CHAR) LEN(48)    /* Obj & lib */
+  DCL VAR(&P_WAIT)     TYPE(*DEC)  LEN(5)     /* Seconds */
+  DCL VAR(&P_OPMAYCAN) TYPE(*CHAR) LEN(4)     /* *YES *NO */
+
+/* Variables used in this program */
+  DCL VAR(&ORGWAIT)    TYPE(*DEC)  LEN(7)     /* Original wait*/
+  DCL VAR(&ELEMC)      TYPE(*CHAR) LEN(2)     /* # elements */
+  DCL VAR(&ELEMP)      TYPE(*DEC)  LEN(5)     /* # elements */
+  DCL VAR(&JOBTYPE)    TYPE(*CHAR) LEN(1)     /* 1=interactive */
+  DCL VAR(&LCKSTATE)   TYPE(*CHAR) LEN(8)     /* *SHRRD, etc */
+  DCL VAR(&KEYVAR)     TYPE(*CHAR) LEN(4)     /* messages */
+  DCL VAR(&MEMBER)     TYPE(*CHAR) LEN(10)    /* if *FILE */
+  DCL VAR(&OBJNAM)     TYPE(*CHAR) LEN(10)    /* Obj name  */
+  DCL VAR(&OBJLIB)     TYPE(*CHAR) LEN(10)    /* Obj lib   */
+  DCL VAR(&OPMSG)      TYPE(*CHAR) LEN(500)   /* No msg fld passed */
+  DCL VAR(&REPLY)      TYPE(*CHAR) LEN(2)     /* Oper Reply */
+  DCL VAR(&RETMSG)     TYPE(*CHAR) LEN(200)   /* From GETOBJUSR */
+  DCL VAR(&TYPE)       TYPE(*CHAR) LEN(8)     /* Obj type  */
+  DCL VAR(&WAIT)       TYPE(*DEC)  LEN(5)     /* Wait as num */
+  DCL VAR(&WAITC)      TYPE(*CHAR) LEN(5)     /* Wait as char */
+  DCL VAR(&WAITMIN)    TYPE(*DEC)  LEN(5)     /* Wait in mins */
+  DCL VAR(&WAITMSG)    TYPE(*CHAR) LEN(20)    /* temp field */
+  DCL VAR(&ALC_CMD)    TYPE(*CHAR) LEN(200)   /* ALLOBJ Command */
+
+ /* Error Handling Variables */
+  DCL VAR(&E_MSGID)    TYPE(*CHAR) LEN(7)
+  DCL VAR(&E_MSGF)     TYPE(*CHAR) LEN(10)
+  DCL VAR(&E_MSGFLIB)  TYPE(*CHAR) LEN(10)
+  DCL VAR(&E_MSGDTA)   TYPE(*CHAR) LEN(100)
+
+/* Catch unmonitored errors */
+  MONMSG MSGID(CPF0000) EXEC(GOTO CMDLBL(ERROR))
+
+/*==== Pre processing of input parameters =========================*/
+  /* &P_OBJ is a mixed list:                          */
+  /*    1 L2   binary # elements                      */
+  /*    3 L10  object name                            */
+  /*   13 L10  library                                */
+  /*   23 L8   object type                            */
+  /*   31 L8   lock state, *EXCL etc.                 */
+  /*   39 L10  member, if data base file              */
+
+  /* Get number of elements */
+  CHGVAR VAR(&ELEMC) VALUE(%SST(&P_OBJ 1 2))
+  CHGVAR VAR(&ELEMP) VALUE(%BIN(&ELEMC))
+
+  /* Extract elements from list.  First 3 are required. */
+  /* Obj and lib are considered 1 element */
+  CHGVAR VAR(&OBJNAM) VALUE(%SST(&P_OBJ 3 10))
+  CHGVAR VAR(&OBJLIB) VALUE(%SST(&P_OBJ 13 10))
+  CHGVAR VAR(&TYPE) VALUE(%SST(&P_OBJ 23 8))
+  CHGVAR VAR(&LCKSTATE) VALUE(%SST(&P_OBJ 31 8))
+
+  /* Member is optional */
+  IF COND(&ELEMP *GT 3) THEN(DO)
+      CHGVAR VAR(&MEMBER) VALUE(%SST(&P_OBJ 39 10))
+  ENDDO
+
+/* Set the default wait value                                */
+/* Wait 99999 means use *CLS as the wait value on the ALCOBJ */
+  IF COND(&P_WAIT = 99999) THEN(DO)
+      RTVJOBA TYPE(&JOBTYPE) DFTWAIT(&ORGWAIT)
+  ENDDO
+  ELSE CMD(DO)
+      CHGVAR VAR(&ORGWAIT) VALUE(&P_WAIT)
+  ENDDO
+  CHGVAR VAR(&WAIT) VALUE(&ORGWAIT)
+
+/*=== Attempt to allocate the object ==============================*/
+RETRY: +
+/* Convert *LIBL/*CURLIB into a real name, if possible,        */
+/* for clarity in operator message. This may fail if the object*/
+/* is already allocated *EXCL.  If so, we just continue.       */
+  IF COND(&OBJLIB *EQ '*LIBL') THEN(DO)
+      RTVOBJD OBJ(&OBJLIB/&OBJNAM) OBJTYPE(&TYPE) RTNLIB(&OBJLIB)
+      MONMSG MSGID(CPF9803) /* Cannot Allocate */
+  ENDDO
+
+/* Blank member is syntax error in ALLOBJ, but if you do        */
+/* not specify a member it is the same as specifying *FIRST     */
+/* so get the *FIRST actual name.                               */
+/* If not available just put in *FIRST and GETOBJUR will sort   */
+/* it out.                                                      */
+  IF COND((&TYPE *EQ '*FILE') *AND (&MEMBER *EQ ' ') ) THEN(DO)
+    RTVMBRD FILE(&OBJLIB/&OBJNAM) RTNMBR(&MEMBER)
+    MONMSG MSGID(CPF3018)  EXEC(DO) /* Not available */
+      CHGVAR VAR(&MEMBER) VALUE('*FIRST')
+    ENDDO
+  ENDDO
+
+  CHGVAR VAR(&WAITC) VALUE(&WAIT)
+  IF COND(&TYPE *NE '*FILE') THEN(DO)
+    /* Not a file: build command like this, without MEMBER */         
+    /* ALCOBJ OBJ((&OBJLIB/&OBJNAM &TYPE &LCKSTATE &MEMBER)) WAIT(&WAITC) +
+         CONFLICT(*RQSRLS) */
+    CHGVAR VAR(&ALC_CMD) +
+      VALUE('ALCOBJ OBJ(('  +
+        *TCAT &OBJLIB *TCAT '/' *TCAT &OBJNAM *TCAT ' ' +
+        *CAT &TYPE *TCAT ' ' *CAT &LCKSTATE +
+        *TCAT ')) WAIT(' *TCAT &WAITC *TCAT ')' +
+        *TCAT ' CONFLICT(*RQSRLS) ' +
+      )
+  ENDDO
+  ELSE CMD(DO)
+    /* Is a file: build command like this, with MEMBER */         
+    /* ALCOBJ OBJ((&OBJLIB/&OBJNAM &TYPE &LCKSTATER)) WAIT(&WAITC) +
+         CONFLICT(*RQSRLS) */
+  
+    CHGVAR VAR(&ALC_CMD) +
+    VALUE('ALCOBJ OBJ(('  +
+      *TCAT &OBJLIB *TCAT '/' *TCAT &OBJNAM *TCAT ' ' +
+      *CAT &TYPE *TCAT ' ' *CAT &LCKSTATE + 
+      *TCAT ' ' *CAT &MEMBER +
+      *TCAT ')) WAIT(' *TCAT &WAITC *TCAT ')' +
+      *TCAT ' CONFLICT(*RQSRLS) ' +
+    )
+  ENDDO
+
+  /* If fail to obtain lock, then we must analyse the situation */
+  /* SNDUSRMSG MSG(&ALC_CMD) MSGTYPE(*INFO) TOMSGQ(*EXT) */
+  CALL PGM(QCMDEXC) PARM(&ALC_CMD 200)
+  MONMSG MSGID(CPF1002) EXEC(DO) /* Not allocated */
+
+      /* If wait is longer than 60 seconds, make minutes for */
+      /* message and round up to next minute.                */
+      IF COND(&WAIT > 60 *AND &WAIT *NE 0) THEN(DO)
+          CHGVAR VAR(&WAITMIN) VALUE((&WAIT + 59) / 60)
+      /*  EDTVAR CHROUT(&WAITMSG) NUMINP(&WAITMIN) */
+          CHGVAR VAR(&WAITMSG) VALUE(&WAITMIN)
+          CHGVAR VAR(&WAITMSG) VALUE(%TRIML(&WAITMSG '0'))
+          IF (&WAITMSG = ' ') CHGVAR &WAITMSG ('0')
+          CHGVAR VAR(&WAITMSG) VALUE(&WAITMSG *TCAT ' minutes. ')
+      ENDDO
+      ELSE CMD(DO)
+      /*  EDTVAR CHROUT(&WAITMSG) NUMINP(&WAIT)*/
+          CHGVAR VAR(&WAITMSG) VALUE(&WAIT)
+          CHGVAR VAR(&WAITMSG) VALUE(%TRIML(&WAITMSG '0'))
+          IF (&WAITMSG = ' ') CHGVAR &WAITMSG ('0')
+          CHGVAR VAR(&WAITMSG) VALUE(&WAITMSG *TCAT ' seconds. ')
+      ENDDO
+
+      /* Find out who is using the object.  By now all the   */
+      /* locks may have been freed.  If so, retry the ALCOBJ */
+      GETOBJUSR OBJECT(&OBJLIB/&OBJNAM) TYPE(&TYPE) MEMBER(&MEMBER) +
+         MSGFLD(&RETMSG)
+      IF COND(&RETMSG *EQ ' ') THEN(GOTO CMDLBL(RETRY))
+
+      /* Build a message for the operator. */
+      CHGVAR VAR(&OPMSG) VALUE(&RETMSG *TCAT '  Waited for ' *CAT +
+         &WAITMSG *TCAT '  Please attempt to resolve the conflict, +
+         then enter R to retry, or 5 to retry for 5 minutes, 10 to +
+         retry for 10 minutes or 30 to retry for 30 minutes.')
+
+      /* If he may cancel the job, let him know */
+      IF COND(&P_OPMAYCAN *EQ '*YES') THEN(DO)
+          CHGVAR VAR(&OPMSG) VALUE(&OPMSG *TCAT ' (Or enter C to +
+             cancel.)')
+      ENDDO
+
+      /* Talk to the operator */
+TALKTOOP: +
+      SNDUSRMSG MSG(&OPMSG) MSGTYPE(*INQ) TOUSR(*REQUESTER) +
+         MSGRPY(&REPLY) VALUES(5 10 30 R C)
+
+      /* R = retry for originally specified time  */
+      IF COND(&REPLY *EQ 'R') THEN(DO)
+          CHGVAR VAR(&WAIT) VALUE(&ORGWAIT)
+          GOTO CMDLBL(RETRY)
+      ENDDO
+
+      /* Send a CPF9898 escape message if operator cancels */
+      IF COND(&REPLY *EQ 'C') THEN(DO)
+          IF COND(&P_OPMAYCAN *EQ '*YES') THEN(DO)
+              SNDPGMMSG MSGID(CPF9898) MSGF(QCPFMSG) MSGDTA('PGM +
+                 was canceled by a response of C') MSGTYPE(*ESCAPE)
+          ENDDO
+          ELSE (DO)
+             GOTO CMDLBL(TALKTOOP)
+          ENDDO
+      ENDDO
+
+      /* Else set new specified wait time and retry */
+      CHGVAR VAR(&WAIT) VALUE(&REPLY)
+      CHGVAR VAR(&WAIT) VALUE(&WAIT * 60)
+
+      GOTO CMDLBL(RETRY)
+
+  ENDDO /* MONMSG CPF1002 */
+
+/*=== If we get this far we have the object locked as requested.===*/
+
+/* End of program */
+  GOTO CMDLBL(ENDPGM)
+
+/*=== Error handler - resend diagnostic & escape messages =========*/
+ERROR: +
+  MOVPGMMSG  MSGTYPE(*DIAG)
+  RSNESCMSG
+  
+ENDPGM: +
+ENDPGM

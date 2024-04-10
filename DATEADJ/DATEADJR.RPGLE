@@ -13,7 +13,7 @@ ctl-opt option(*nodebugio: *srcstmt)
   actgrp(*new)
   main(Main);
 ctl-opt BndDir('UTIL_BND');
-/COPY copy_mbrs,Srv_Msg_P
+/COPY ../Copy_Mbrs/SRV_MSG_P.RPGLE
 dcl-pr getSpecFmts extpgm('DATEADJC');
   jobfmt char(4);
   sysvalfmt char(3);

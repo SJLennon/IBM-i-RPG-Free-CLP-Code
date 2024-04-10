@@ -1,179 +1,171 @@
+**free
+//=== Tests procedures in SRV_MSG service program =============
+ctl-opt dftactgrp(*no) actgrp(*caller) option(*nodebugio: *srcstmt)
+       bnddir('UTIL_BND');
 
-       //=== Tests procedures in SRV_MSG service program =============
-     H DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt)
-     H BndDir('UTIL_BND')
+//=== Display File ============================================
+dcl-f SRV_MSGTD workstn infds(dfInfDS) indds(dfIndDS) usropn;
 
-       //=== Display File ============================================
-     FSRV_MSGTD CF   E             WorkStn INFDS(dfInfDS)
-     F                                     INDDS(dfIndDS)
-     F                                     USROPN
+//=== Service Program Prototypes ==============================
+/INCLUDE ../Copy_Mbrs/SRV_MSG_P.RPGLE
 
-       //=== Service Program Prototypes ==============================
-      /include copy_mbrs,Srv_Msg_P
+//=== Named hexadecimal constants for function keys ===========
+/INCLUDE ../Copy_Mbrs/AIDBYTES.RPGLE
 
-       //=== Named hexadecimal constants for function keys ===========
-      /include copy_mbrs,##AIDBYTES
+//=== Display File Information Data Structure =================
+//    Allows us to determine which function key was pressed
+dcl-ds dfInfDS;
+  Key char(1) pos(369);
+end-ds;
+//=== Display File Indicator Data Structure ===================
+// This is a "private" indicator area for the display file.
+dcl-ds dfIndDS len(99);
+  SH_ERR ind pos(40);
+end-ds;
 
-       //=== Display File Information Data Structure =================
-       //    Allows us to determine which function key was pressed
-     D dfInfDS         DS
-     D Key                   369    369
-       //=== Display File Indicator Data Structure ===================
+//=== Global Switches =========================================
+dcl-s SflMsgSnt ind;
+dcl-c COWSCOMEHOME const('0');
 
-       // This is a "private" indicator area for the display file.
-     D dfIndDS         ds            99
-     D SH_ERR                 40     40n
+//=== Work Fields =============================================
+dcl-s inx int(10);
 
 
-       //=== Global Switches =========================================
-     D SflMsgSnt       s               n
-     D CowsComeHome    c                   const('0')
+//=== Program Status Data Structure ===========================
+dcl-ds ProgStatus PSDS;
+  PgmName *PROC;
+end-ds;
 
-       //=== Work Fields =============================================
-     D inx             s             10i 0
+//=============================================================
+// === Main Program Loop ======================================
+//=============================================================
+Init();
+SFT_KEYS='F3/F12=Exit';
+SH_Cnt = 2;
+SH_MSG = 'This is a fine pickle Ollie!';
 
-       //=== Program Status Data Structure ===========================
-     D ProgStatus     sds
-     D PgmName           *PROC
+dou COWSCOMEHOME;
+  write SH_HDR;
+  write SFT_FKEY;
+  if SflMsgSnt = *on;
+    write MSGCTL;
+  endif;
 
-      /FREE
-       //=============================================================
-       // === Main Program Loop ======================================
-       //=============================================================
-       exsr init;
-       SFT_KEYS='F3/F12=Exit';
-       SH_Cnt = 2;
-       SH_MSG = 'This is a fine pickle Ollie!';
+  exfmt SH_HDR;
+  SH_ERR = *off;
 
-       dou CowsComeHome;
-         write SH_HDR;
-         write SFT_FKEY;
-         if SflMsgSnt = *on;
-           write MSGCTL;
-         endif;
+  if key = F03 or Key = F12;
+    CloseDownPgm();
+    return;
+  endif;
 
-         exfmt SH_HDR;
-         SH_ERR = *off;
+  if SH_MSG = ' ';
+    SH_ERR = *ON; // Please enter a message
+    iter;
+  endif;
 
-         if key = F03 or Key = F12;
-             exsr CloseDownPgm;
-             return;
-         endif;
-
-         if SH_MSG = ' ';
-             SH_ERR = *ON; // Please enter a message
-             iter;
-         endif;
-
-         select;
+  select;
          //-- Enter Key ---------------------------------------------
-         when Key = Enter;
+    when Key = Enter;
 
          //--- F04 --------------------------------------------------
-         when Key = F04;
-             SflMsgSnt= SndSflMsg('CPF9898' : SH_MSG);
-           iter;
+    when Key = F04;
+      SflMsgSnt= SndSflMsg('CPF9898' : SH_MSG);
+      iter;
 
          //--- F05 --------------------------------------------------
-         when Key = F05;
-         if SflMsgSnt = *on;
-           SflMsgSnt = ClrMsgPgmQ(PgmName);
-           write MSGCTL;
-           iter;
-         endif;
+    when Key = F05;
+      if SflMsgSnt = *on;
+        SflMsgSnt = ClrMsgPgmQ(PgmName);
+        write MSGCTL;
+        iter;
+      endif;
 
          //--- F06 --------------------------------------------------
-         when Key = F06;
+    when Key = F06;
 
-            SndInfMsg(SH_MSG);
-           iter;
+      SndInfMsg(SH_MSG);
+      iter;
 
          //--- F07 --------------------------------------------------
-         when Key = F07;
-            if SH_CNT = 0;
-               SndEscMsg(SH_MSG);
-            else;
-               SndEscMsg(SH_MSG : SH_CNT);
-            endif;
-           iter;
+    when Key = F07;
+      if SH_CNT = 0;
+        SndEscMsg(SH_MSG);
+      else;
+        SndEscMsg(SH_MSG : SH_CNT);
+      endif;
+      iter;
 
          //--- F08 --------------------------------------------------
-         when Key = F08;
-             JobLogMsg(SH_MSG);
-           iter;
+    when Key = F08;
+      JobLogMsg(SH_MSG);
+      iter;
+    other;
 
-         endsl;
-       enddo;
+  endsl;
+enddo;
 
-       //=============================================================
-       //=== End of Main Program Loop ================================
-       //=============================================================
+//=============================================================
+//=== End of Main Program Loop ================================
+//=============================================================
 
+//=== CloseDownPgm ============================================
+// Things to do before we issue a return to the caller
+Dcl-Proc CloseDownPgm;
+  *inlr = *on;
+  close SRV_MSGTD;
+End-Proc;
 
-       //=== CloseDownPgm ============================================
-       // Things to do before we issue a return to the caller
-       begsr CloseDownPgm;
-           *inlr = *on;
-           close SRV_MSGTD;
-       endsr;
+//=== Init ====================================================
+Dcl-Proc Init;
+  MSGPGMQ = PgmName;
+  SH_PGM = PgmName;
+  if not %open(SRV_MSGTD);
+    open SRV_MSGTD;
+  endif;
+End-Proc;
 
-       //=== Init ====================================================
-       begsr Init;
-         MSGPGMQ = PgmName;
-         SH_PGM = PgmName;
-         if not %open(SRV_MSGTD);
-           open SRV_MSGTD;
-         endif;
-       endsr;
+//=============================================================
+//   S u b  P r o c e d u r e s
+//=============================================================
+//=== SndSflMsg ===============================================
+// Send a message to the Error Subfile
+// Returns:        *ON
+// Parameter:      ErrMsgId => Msg Id to Send
+// Parameter:      ErrMsgData => Optional Error Message Data
+// Parameter:      ErrMsgFile => Optional Error Message File
+//                 Defaults to CUSTMSGF
+//------------------------------------------------------------
+dcl-proc SndSflMsg;
+  dcl-pi SndSflMsg ind;
+    ErrMsgId char(7) const;
+    ErrMsgData char(80) const options(*nopass:*varsize);
+    ErrMsgFile char(10) const options(*nopass);
+  end-pi;
 
-       //=============================================================
-       //   S u b  P r o c e d u r e s
-       //=============================================================
+    // Local fields
+  dcl-s retField ind;
+  dcl-s wkMsgId char(7);
+  dcl-s wkMsgFile char(10);
+  dcl-s wkMsgData varchar(512);
 
-       //=== SndSflMsg ===============================================
-       // Send a message to the Error Subfile
-       // Returns:        *ON
-       // Parameter:      ErrMsgId => Msg Id to Send
-       // Parameter:      ErrMsgData => Optional Error Message Data
-       // Parameter:      ErrMsgFile => Optional Error Message File
-       //                 Defaults to CUSTMSGF
-       //------------------------------------------------------------
-      /END-FREE
-     P SndSflMsg       B
-     D SndSflMsg       PI              N
-     D  ErrMsgId                      7A   CONST
-     D  ErrMsgData                   80A   CONST
-     D                                     OPTIONS(*NOPASS:*VARSIZE)
-     D  ErrMsgFile                   10A   CONST
-     D                                     OPTIONS(*NOPASS)
-
-       // Local fields
-     D retField        S               N
-     D wkMsgId         s              7a
-     D wkMsgFile       s             10a
-     D wkMsgData       s            512a   varying
-
-      /FREE
-       if %parms >2;
-         wkMsgFile = ErrMsgFile;
-       else;
-         wkMsgFile = 'QCPFMSG';
-       ENDIF;
-       if %parms > 1;
-         wkMsgData = ErrMsgData;
-       else;
-         wkMsgData = ' ';
-       ENDIF;
-       wkMsgId = ErrMsgId;
-       SNDMSGPGMQ(PgmName:
-             wkMsgid:
+  if %parms >2;
+    wkMsgFile = ErrMsgFile;
+  else;
+    wkMsgFile = 'QCPFMSG';
+  ENDIF;
+  if %parms > 1;
+    wkMsgData = ErrMsgData;
+  else;
+    wkMsgData = ' ';
+  ENDIF;
+  wkMsgId = ErrMsgId;
+  SndMsgPgmQ(PgmName:
+             wkMsgId:
              wkMsgFile:
              wkMsgData);
 
-        retField = *on;
-        RETURN retField;
+  retField = *on;
+  RETURN retField;
 
-      /END-FREE
-     P SndSflMsg       E
-
-
+end-proc;

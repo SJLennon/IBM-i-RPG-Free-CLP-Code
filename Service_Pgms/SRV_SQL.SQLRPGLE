@@ -9,7 +9,8 @@
 
 ctl-opt nomain
       bnddir('UTIL_BND')
-      option(*NoDebugIo: *srcstmt);
+      option(*NoDebugIo: *srcstmt)
+;
 
 //=== SQLProblem ===============================================
 // For those "Never should happen" SQL errors.
@@ -21,7 +22,7 @@ dcl-proc SQLProblem export;
     piSQLDebug varchar(200) const;
   end-pi;
 
-  /include copy_mbrs,Srv_Msg_P
+  /include ../Copy_Mbrs/SRV_MSG_P.RPGLE
 
   //--- Local Variables ---------------------------------
   dcl-s myDebugMsg varchar(512); //Max CPF9898 supports

@@ -40,4 +40,4 @@ This program is called from GRP to establish each group job. The command it runs
 
 ## GRP_ATN
 
-This is called when the Attn key is pressed. **Shift+Esc is the Attn keys in most 5250 emulators.** It pops up a very functional but effective IBM menu to pick another group job.
+This is called when the Attn key is pressed. **Shift+Esc is the Attn keys in most 5250 emulators.** It pops up a very functional but effective IBM menu to pick another group job. You can add your own menu to make this more friendly.

@@ -1,6 +1,9 @@
 -- Build table of US State code and names
--- RUNSQLSTM SRCSTMF(states.sql) COMMIT(*NONE) ERRLVL(40)
-set schema lennons1;
+--  To run from the green screen, adjust the path below:
+-- RUNSQLSTM SRCSTMF('/home/LENNONS/IBMi_IFS_Dev/5250_Subfile/States.sql') COMMIT(*NONE) ERRLVL(40) 
+-- Our paste into Run SQL Scripts in iACS.
+-- Or run directly in VS Code with Code for IBM i extension.                                                 
+set schema lennonsb;   -- Change to your desired library
 drop table states;
 CREATE TABLE STATES ( 
 	STATE CHAR(2) CCSID 273 NOT NULL , 

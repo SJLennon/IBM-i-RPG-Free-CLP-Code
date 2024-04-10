@@ -1,14 +1,44 @@
-# RPGLE free format, SQL and CLP Code for the IBM i
+# RPGLE free format, SQL & CLP Code for the IBM i
 
-More developers are learning about the **IBM i** as a wonderful business platform. (It was formerly known as the **AS/400**.)
-
-This repository contains *working* example code, using RPGLE free-format, enbedded SQL and CLP for the IBM i.
-
-My intent is to provide real programs that help you learn and/or improve your current understanding. Explore and adapt the code to your needs. Some of the code may be of use "as is" but no guarantee is provided.
+**This repository contains *working* example code, using RPGLE free-format, enbedded SQL and CLP for the IBM i. All RPG code here is totally free form.**.
 
 **Each folder has its own ReadMe with additional infomation/documentation.**
 
+My intent is to provide real programs that help you learn and/or improve your current understanding. Explore and adapt the code to your needs. Some of the code may be of use "as is" but no guarantee is provided.
+
 Feel free to provide comments and feedback as issues.
+
+# Source Control Philosophy 
+
+This code in this repository is based on having source in the file system (IFS) rather than the traditional approach of members in a PF-SRC file.
+
+For these personal projects I use the free IBM i [PUB400.COM](https://pub400.com/). 
+
+I edit and compile using [VS Code](https://code.visualstudio.com/) with the ["Code for IBM i"](https://codefori.github.io/docs/#/) extension. My source is/was in PF-SRC members and for backup I created a SAVF file of my PF-SRC files and downloaded it to my PC. But  I didn't do it regularly.
+
+Now that ["Code for IBM i"](https://codefori.github.io/docs/#/) supports local development on a PC and will push code to the IFS, I am using Github as a permanent repository. Doing editing on my PC and pushing changes to Github and the IFS is easier than creating a save file and downloading it.
+
+This means that on the IBM i, code is in directories in the IFS instead of being in PF-SRC file members.
+
+This is my setup:
+
+ - Github contains my personal "production" source. 
+ - My PC has Git installed and the PC files are where I make changes. 
+ - I deploy to the IFS to compile with ["Code for IBM i"](https://codefori.github.io/docs/#/).
+ 
+My PC has a directory structure like this:
+
+| Directory shown in VS CODE                   |Directory shown in File Explorer                       |
+|----------------------------------------|---------------------------------------|
+|     ![Directory Structure](image.png)  | ![Directory Structure](image-2.png)   |
+
+The IFS directory after deployment looks like this:
+
+ ![Directory Structure](image-1.png)
+ 
+The primary difference from moving away from PF-SRC file members is that COPY and INCLUDE statements must now reference an IFS file. I do not want to hard code directory names so I am using relative addressing, such as
+
+ ``/INCLUDE ../Copy_Mbrs/SRV_MSG_P.RPGLE``. 
 
 ## Copy_Mbrs
 
@@ -74,3 +104,4 @@ Developer Utilities.
     QRY - Qry (List) Contents of a file
     
     RC - Display File Record count
+

@@ -2,10 +2,10 @@
 //=== Tests JobLogMsg procedures in SRV_MSG service program ========
 ctl-opt  option(*NoDebugIo: *SrcStmt :*NoUnref) indent(' |')
     ActGrp('QILE') DftActGrp(*no)
-    BndDir('UTIL_BND':'SQL_BND')
+    BndDir('UTIL_BND')
     Main(Main);
 
-/include copy_mbrs,Srv_Msg_P
+/INCLUDE ../Copy_Mbrs/SRV_MSG_P.RPGLE
 
 dcl-proc Main  ;
     dcl-pi *n extpgm('SRV_MSGTL');
@@ -36,5 +36,5 @@ dcl-proc Main  ;
     // JobLogMsg(scale );
 
     SndInfMsg('SndInfMsg - to compare to JobLogMsg');
-    JobLogmsg('JobLogMsg - to compare to SndInfMsg');
+    JobLogMsg('JobLogMsg - to compare to SndInfMsg');
 end-proc;

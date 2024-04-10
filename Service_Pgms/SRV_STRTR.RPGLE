@@ -1,78 +1,82 @@
+**free
+// === Test the SRV_STR service program========================
 
-       //=== Test the SRV_STR service program========================
+ctl-opt dftactgrp(*no) actgrp(*caller) option(*nodebugio: *srcstmt)
+       bnddir('UTIL_BND');
 
-     H DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt)
-     H BndDir('UTIL_BND')
+dcl-s X1 char(1) inz('1');
+dcl-s X2 char(2) inz('2 ');
+dcl-s X3 char(3) inz('3  ');
+dcl-s X4 char(4) inz('4   ');
+dcl-s X5 char(5) inz('5    ');
+dcl-s X6 char(6) inz('6     ');
+dcl-s X7 char(7) inz('    7  ');
+dcl-s X8 char(8) inz('   8    ');
+dcl-s X0 char(5) inz('     '); // all blank
+dcl-s XL char(20) inz(' 20-chars'); // longer
+dcl-s XM char(21) inz(' 21-Chars'); // longer
+dcl-s XV varchar(20) inz('20-vary');                // Varying-fails
+dcl-s XW varchar(21) inz(' 21-vary             ');  // Varying-fails
 
-     d X1              S              1A   inz('A')                             One char
-     d X2              S              2A   inz('B ')                            Two char
-     d X3              S              4A   inz('C   ')                          3 blanks
-     d X4              S              5A   inz('D    ')                         4 blanks
-     d X5              S              6A   inz('E    ')                         5 blanks
-     d X0              S              5A   inz('     ')                         all blank
-     d Xl              S             20A   inz('20-chars  ')                    longer
-     d Xm              S             21A   inz('       21-Chars')               longer
-     d Xv              S             24    inz('    24-varying  ') varying      Varying-note result
-     d l1              S             20A   inz('           ABCDE  ')            Left align
-     d l2              S             20A   inz('Left already      ')            Left align
-     d r1              S             20A   inz('abc')                           Right align
-     d r2              S             20A   inz('   defgh  ')                    Right align
-      /include copy_mbrs,SRV_STR_P
-      /free
-         x1 = tst(x1);
-         dsply ('-' + x1 + '-');
+// dcl-s l1 char(20) inz('           ABCDE  '); // Left align
+// dcl-s l2 char(20) inz('Left already      '); // Left align
+// dcl-s r1 char(20) inz('abc'); // Right align
+// dcl-s r2 char(20) inz('   defgh  '); // Right align
 
-         x2 = tst(x2);
-         dsply ('-' + x2 + '-');
+/include ../Copy_Mbrs/SRV_STR_P.RPGLE
+/include ../Copy_Mbrs/PRT_P.RPGLE
 
-         x3 = tst(x3);
-         dsply ('-' + x3 + '-');
+PRT('*** Testing SRV_STR Service Program ***' : '*H1');
+CenterIt(X1);
+CenterIt(X2);
+CenterIt(X3);
+CenterIt(X4);
+CenterIt(X5);
 
-         x4=tst(x4);
-         dsply ('-' + x4 + '-');
+CenterIt(X6);
+CenterIt(X7);
+CenterIt(X8);
 
-         x5 = tst(x5);
-         dsply ('-' + x5 + '-');
+CenterIt(X0);
 
-         x0 = tst(x0);
-         dsply ('-' + x0 + '-');
+CenterIt(XL);
 
-         xl = tst(xl);
-         dsply ('-' + xl + '-');
+CenterIt(XM);
 
-         xm = tst(xm);
-         dsply ('-' + xm + '-');
+CenterIt(XV);
+CenterIt(XW);
 
-         xv = tst(xv);
-         dsply ('-' + xv + '-');
+// dsply ('---- Left Justify ---');
+// dsply ('-' + l1 + '-');
+// l1 =%trim(l1);
+// dsply ('-' + l1 + '-');
 
-         dsply ('---- Left Justify ---');
-         dsply ('-' + l1 + '-');
-         l1 =%trim(l1);
-         dsply ('-' + l1 + '-');
+// dsply ('-' + l2 + '-');
+// l2 =%trim(l2);
+// dsply ('-' + l2 + '-');
 
-         dsply ('-' + l2 + '-');
-         l2 =%trim(l2);
-         dsply ('-' + l2 + '-');
+// dsply ('---- Right Justify ---');
+// dsply ('-' + r1 + '-');
+// evalr r1 = %trim(r1);
+// dsply ('-' + r1 + '-');
 
-         dsply ('---- Right Justify ---');
-         dsply ('-' + r1 + '-');
-         evalr r1 = %trim(r1);
-         dsply ('-' + r1 + '-');
+// dsply ('-' + r2 + '-');
+// evalr r2 = %trim(r2);
+// dsply ('-' + r2 + '-');
 
-         dsply ('-' + r2 + '-');
-         evalr r2 = %trim(r2);
-         dsply ('-' + r2 + '-');
+PRT(' ' :'*CLOSE');
+*inlr = *on;
+return;
 
-         *inlr = *on;
-         return;
-      /END-FREE
-     p tst             b
-     d tst             pi            50a   varying
-     d II                            50a   varying const
-      /free
-       dsply '---------------------';
-         DSPLY ('-' + ii + '-');
-         return CenterStr(ii);
-      /end-free
-     p tst             e
+dcl-proc CenterIt;
+    dcl-pi CenterIt;
+        II varchar(50) const;
+    end-pi;
+    dcl-s wk varchar(50) inz;
+    wk = CenterStr(II);
+    %len(wk) = %len(II);
+    PRT('-1234567890123456789012345');
+    PRT('-' + II + '-');
+    PRT('-' + wk + '-');
+    return;
+end-proc;

@@ -1,8 +1,13 @@
              PGM
-             DLTMSGF    MSGF(LENNONS1/CUSTMSGF)
+             /* === Set your target library here ================ */
+             DCL VAR(&TGT_LIB) TYPE(*CHAR) LEN(10) + 
+                 VALUE('LENNONS1')              
+             /* ================================================= */
+            
+             DLTMSGF    MSGF(&TGT_LIB/CUSTMSGF)
              MONMSG     MSGID(CPF0000)
 
-             CRTMSGF    MSGF(LENNONS1/CUSTMSGF) TEXT('Customer +
+             CRTMSGF    MSGF(&TGT_LIB/CUSTMSGF) TEXT('Customer +
                           Related Messages')
              ADDMSGD    MSGID(DEM0000) MSGF(CUSTMSGF) MSG('Press Enter to +
                           update. F12 to Cancel.')

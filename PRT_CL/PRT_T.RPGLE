@@ -1,7 +1,7 @@
 **free
 // === Test program to exercise the PRT program =====================
 ctl-opt option(*srcstmt: *nodebugio) actgrp(*new) main(Main);
-/COPY copy_mbrs,prt_p
+/COPY ../Copy_Mbrs/PRT_P.RPGLE
 dcl-proc Main;
   dcl-pi Main;
     // pi_head   char(132);
@@ -216,6 +216,5 @@ dcl-proc Main;
   PRT(' ' :'*CLOSE');
 
   *inlr = *on;
-
 
 end-proc;

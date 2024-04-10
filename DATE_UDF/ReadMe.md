@@ -10,7 +10,7 @@ Legacy databases on the IBM i stored dates in numeric (or character) fields. Doi
 
 ## Development
 
-What these functions do can also be done, with some work, directly in SQL. And I'm aware there are other open source date UDFs avaliable, e.g. [iDate](https://www.think400.dk/downloads.htm).
+What these functions do can also be done, *with some work*, directly in SQL. And I'm aware there are other open source date UDFs avaliable, e.g. [iDate](https://www.think400.dk/downloads.htm).
 
 However...
 
@@ -41,15 +41,15 @@ An invalid input value will return a null value and give a 01H99 SQLSTATE warnin
 
 ## DATE_SQL
 
-The RPG code for the DATE_SQL service program, which contains the functions.  It is free format but the D-Specs are still fixed, and it can be edited in SEU. (When I originally wrote it, it was in fixed form RPGIV.)
+The RPG code for the DATE_SQL service program, which contains the functions.  
 
-## DATE_SQLFR
+## DATE_SQLFX
 
-This is DATE_SQL but converted to totally free form. I converted it using [RpgFreeWeb](https://github.com/worksofbarry/rpgfreeweb), which does a nice job.
+This is DATE_SQL with the D-Specs in fixed form, as a convenience for any who might still be on older releases.
 
 ## DATECRTFN
 
-This is SQL "Create Function" code that tells SQL where the functions are.
+This is SQL "Create Function" code that tells SQL where the functions are. Use the RUNSQLSTM command or iACS Run SQL Scripts. 
 
 ## TEST_CYMD/TEST_MDY/TEST_YMD
 

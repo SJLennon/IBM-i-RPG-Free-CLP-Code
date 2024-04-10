@@ -2,8 +2,8 @@
 ctl-opt DftActGrp(*NO) ActGrp(*new) option(*nodebugio: *srcstmt)
 main(Main);
 ctl-opt BndDir('UTIL_BND');
-/COPY copy_mbrs,Srv_Msg_P
-/COPY copy_mbrs,Prt_p
+/COPY ../Copy_Mbrs/SRV_MSG_P.RPGLE
+/COPY ../Copy_Mbrs/PRT_P.RPGLE
 
 dcl-proc Main;
 
@@ -48,7 +48,7 @@ dcl-proc Main;
   head.inType = 'Type';
   head.outDate = 'OutDate';
   head.outFmt = 'OutFmt';
-  PRT(head :'*HEAD') ;
+  PRT(head :'*H1') ;
 
   // === Test default stuff ====
   inType = '*DAYS';

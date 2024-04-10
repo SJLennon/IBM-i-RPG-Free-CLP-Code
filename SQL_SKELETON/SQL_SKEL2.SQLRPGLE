@@ -26,14 +26,14 @@
     main(SQL_SKEL);
 
 //=== Prototypes ======================================
-/include copy_mbrs,srv_sql_p
+/include ../Copy_Mbrs/SRV_SQL_P.RPGLE
 
 //=== SQL State Constants =============================
-dcl-c SQLSuccess    '00000';
-dcl-c SQLNoData     '02000';
-dcl-c SQLNoMoreData '02000';
-dcl-c SQLDupRecd    '23505';
-dcl-c SQLRowLocked  '57033';
+dcl-c SQLSUCCESS    '00000';
+dcl-c SQLNODATA     '02000';
+dcl-c SQLNOMOREDATA '02000';
+dcl-c SQLDUPRECD    '23505';
+dcl-c SQLROWLOCKED  '57033';
 
 //=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 //    Main Program                                    =
@@ -47,7 +47,7 @@ dcl-proc SQL_SKEL;
   dcl-ds InTbl extname('QIWS/QCUSTCDT') template
   end-ds;
 
-  dcl-s MyCusnum like(cusnum);
+  dcl-s MyCusNum like(cusnum);
   dcl-s MyLstNam like(lstnam);
   dcl-s MyInit like(init);
   dcl-s MyState like(state);
@@ -73,12 +73,12 @@ dcl-proc SQL_SKEL;
       ;
 //=== Initialization ================================
   exec sql open  DemoCursor;
-  if SQLSTT <> SQLSuccess;
+  if SQLSTT <> SQLSUCCESS;
     SQLProblem('open DemoCursor');
   endif;
 //=== Main Logic ====================================
   exsr FetchCur;
-  dow SQLSTT = SQLSuccess;
+  dow SQLSTT = SQLSUCCESS;
     RecordsRead += 1;
      // Real program logic goes here <<<<<<<<<<
     exsr FetchCur;
@@ -89,7 +89,7 @@ dcl-proc SQL_SKEL;
   // ---- Deliberate bug to exercise SQLProblem -----
   exec sql close DemoCursor;
   // ------------------------------------------------
-  if SQLSTT <> SQLSuccess;
+  if SQLSTT <> SQLSUCCESS;
     SQLProblem('close DemoCursor');
   endif;
   *inlr = *on;
@@ -111,8 +111,8 @@ dcl-proc SQL_SKEL;
                 :MyState,
                 :MyBalDue
       ;
-    if SQLSTT <> SQLSuccess
-      and SQLSTT <> SQLNoMoreData;
+    if SQLSTT <> SQLSUCCESS
+      and SQLSTT <> SQLNOMOREDATA;
       SQLProblem('fetch DemoCursor');
     endif;
   endsr;

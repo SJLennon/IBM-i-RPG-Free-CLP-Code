@@ -1,0 +1,15 @@
+PGM
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(200)
+             GETOBJUSR  OBJECT(QSYS/QSYS) TYPE(*LIB) MSGFLD(&MSG) +
+                          RETFILE(*YES)
+             SNDMSG     MSG(&MSG) TOUSR(*REQUESTER)
+             QRY        FILE(QTEMP/GETOBJUP)
+
+
+             GETOBJUSR  OBJECT(QSYS/LENNONS2) TYPE(*LIB) MSGFLD(&MSG)
+             SNDMSG     MSG(&MSG) TOUSR(*REQUESTER)
+
+             GETOBJUSR  OBJECT(QSYS/LENNONS1) TYPE(*LIB) MSGFLD(&MSG)
+             SNDMSG     MSG(&MSG) TOUSR(*REQUESTER)
+
+             ENDPGM

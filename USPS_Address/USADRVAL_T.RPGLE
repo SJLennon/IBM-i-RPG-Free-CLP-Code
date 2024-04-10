@@ -7,9 +7,9 @@ ctl-opt debug option(*nodebugio: *srcstmt)
 // Program to exercise USADRVAL.
 // Results are printed to QSYSPPRT.
 //====================================================================
-/copy copy_mbrs,USAdrValDS
-/copy copy_mbrs,Srv_Msg_P
-/copy copy_mbrs,USAdrVal_p
+/copy ../Copy_Mbrs/USADRVALDS.RPGLE
+/copy ../Copy_Mbrs/SRV_MSG_P.RPGLE
+/copy ../Copy_Mbrs/USADRVAL_P.RPGLE
 
 dcl-f qsysprt printer(132) usropn;
 

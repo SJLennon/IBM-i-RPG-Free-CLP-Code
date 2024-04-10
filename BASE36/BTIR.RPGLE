@@ -11,7 +11,7 @@
 ctl-opt debug  option(*nodebugio: *srcstmt) dftactgrp(*no)
         actgrp(*caller) bnddir('SRV_BASE36')
         main(Main);
-/include base36,base36_p
+/include ../base36/base36_p.rpgle
 
 dcl-f   BTID    WORKSTN     INFDS(dfInfDS) Usropn;
 dcl-ds dfInfDS;
@@ -20,7 +20,7 @@ end-ds;
 
 dcl-c   F03     x'33';
 dcl-c   F05     x'35';
-dcl-s   ValVar  varchar(20);
+dcl-s   valVar  varchar(20);
 dcl-s   j       int(10);
 
 dcl-ds  *N;     // Rolling screen fields
@@ -61,14 +61,14 @@ dow Key <> F03;
 
     // Roll values up the screen
     for j = 1 to %elem(Values)-1;
-        Values(j) = Values(J+1);
+        Values(j) = Values(j+1);
     endfor;
     Val18 = Val;
 
     // Increment by 1
     valVar = %trim(val);
-    valVar = BASE36ADD(ValVar);
-    Val = ValVar;
+    valVar = BASE36ADD(valVar);
+    Val = valVar;
     exfmt SCREEN;
 enddo;
 

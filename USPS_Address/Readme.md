@@ -32,4 +32,4 @@ If ADDRESS2 is non blank, then you have a valid address.  Otherwise find a descr
 
 ### USADRVAL_T
 
-A program to exercise USADRVAL with a some addresses, writing the input and output side by side to QSYSPRT.
+A program to exercise USADRVAL with some addresses, writing the input and output side by side to QSYSPRT.

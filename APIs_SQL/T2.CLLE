@@ -1,5 +1,5 @@
 PGM
-/* Masic test, using a library as the oject of choice. */
+/* Basic test, using a library as the oject of choice. */
 /* Return just a file. Message will be blank.          */
 
              DCL        VAR(&MSG) TYPE(*CHAR) LEN(200)

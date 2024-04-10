@@ -1,0 +1,20 @@
+             /*=== Creates CUSTMAST & Indexes and 300 records ===*/
+             PGM
+             CHKOBJ     OBJ(CUSTMAST) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(GOTO CMDLBL(SUBMIT))
+
+             ALCOBJ     OBJ((CUSTMAST *FILE *EXCLRD)) WAIT(5) +
+                          CONFLICT(*RQSRLS)
+             MONMSG     MSGID(CPF1002) EXEC(DO)
+             SNDMSG     MSG('Cannot allocate CUSTMAST') +
+                          TOUSR(*REQUESTER)
+             RETURN
+             ENDDO
+
+             DLCOBJ     OBJ((CUSTMAST *FILE *EXCLRD))
+ SUBMIT:     SBMJOB     CMD(RUNSQLSTM +
+                          SRCSTMF('/home/LENNONS/IBMi_IFS_DEV/5250_Subfile/+
+                          custmast.sql')  + 
+                          COMMIT(*NONE) ERRLVL(40) DECMPT(*PERIOD)) +
+                          JOB(LOADCUST)
+             ENDPGM

@@ -4,7 +4,7 @@ Ctl-Opt DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt);
 Ctl-Opt BndDir('UTIL_BND');
 
 //=== Service Program Prototypes ==============================
-/include copy_mbrs,Srv_Msg_P
+/include ../Copy_Mbrs/SRV_MSG_P.RPGLE
 
 dcl-s short1 char(30) inz('A typical short msg.');
 

@@ -3,7 +3,7 @@
 // writing them to file RNUM.
 ctl-opt DftActGrp(*NO) ActGrp(*CALLER) option(*nodebugio: *srcstmt)
       BndDir('UTIL_BND');
-/COPY copy_mbrs,srv_rand_p
+/COPY ../Copy_Mbrs/SRV_RAND_P.RPGLE
 exec sql set  option datfmt=*iso,
               commit=*none,
               closqlcsr=*endmod;

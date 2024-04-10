@@ -24,7 +24,7 @@
 
 ctl-opt debug nomain option(*nodebugio: *srcstmt) ;
 
-/include BASE36,BASE36_P
+/include ../BASE36/BASE36_P.RPGLE
 
 dcl-proc BASE36ADD export ;
     dcl-pi BASE36ADD varchar(50);
@@ -35,8 +35,8 @@ dcl-s wkValue like(PI_Value);
 dcl-s inx int(10);
 
 // Ascending values of a postion is A,B,...,Y,Z,0,1,2,...,7,8,9.
-dcl-c From 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-dcl-c To   'BCDEFGHIJKLMNOPQRSTUVWXYZ0123456789A';
+dcl-c FROM 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+dcl-c TO   'BCDEFGHIJKLMNOPQRSTUVWXYZ0123456789A';
 
 wkValue = PI_Value;
 // Increment the last position in the input value. If it now is
@@ -44,9 +44,9 @@ wkValue = PI_Value;
 // so move to the prior input value field and repeat.
 inx = %len(PI_Value);
 dow inx > 0;
-    %subst(wkValue:inx:1) = %xlate(From:To:%subst(wkValue:inx:1));
+    %subst(wkValue:inx:1) = %xlate(FROM:TO:%subst(wkValue:inx:1));
     // if %subst(wkValue:inx:1) <> 'A';  // Not rolled over
-    if %subst(wkValue:inx:1) <> %subst(To:%size(To):1) ;  // Not rolled over
+    if %subst(wkValue:inx:1) <> %subst(TO:%size(TO):1) ;  // Not rolled over
         leave;
     endif;
     inx -= 1;

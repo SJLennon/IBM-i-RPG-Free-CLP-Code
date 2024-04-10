@@ -2,6 +2,6 @@
 
 /* Create a lock and delay. Called by T9ALLOCMNY        */
 
-             ALCOBJ     OBJ((QIWS/QCUSTCDT *FILE *SHRRD)) WAIT(0)
-             DLYJOB     DLY(90)
+             ALCOBJ     OBJ((lennons1/qclsrc *FILE *SHRRD)) WAIT(0)
+             DLYJOB     DLY(180)
              ENDPGM

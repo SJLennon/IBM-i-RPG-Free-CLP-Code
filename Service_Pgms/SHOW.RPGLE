@@ -8,7 +8,7 @@
 //
 //  Uses the Display Long Text (QUILNGTX) API to display a pop-up
 //  window containing the passed string.
-//  API doesn't display  bidirectional right to left text.
+//  API doesn't display bidirectional right to left text.
 //
 // Error Messages
 // Message ID Error Message Text

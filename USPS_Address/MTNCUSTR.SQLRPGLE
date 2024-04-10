@@ -40,21 +40,22 @@
 //=============================================================
 
 ctl-opt dftactgrp(*no) actgrp(*caller) option(*nodebugio: *srcstmt)
-bnddir('UTIL_BND':'ADRVAL_BND') main(main);
+bnddir('UTIL_BND': 'ADRVAL_BND': 'SRV_BASE36') main(Main);
 
 //=== Display File =============================================
-dcl-f MTNCUSTD workstn infds(dfinfds) indds(dfindds) usropn;
+dcl-f MTNCUSTD workstn infds(dfInfDS) indds(dfIndDS) usropn;
 
 //=== Service Program Prototypes ===============================
-/include copy_mbrs,Srv_Msg_P
-/include copy_mbrs,Srv_Str_P
-/include usps,USAdrVal_p
+/include ../Copy_Mbrs/SRV_MSG_P.RPGLE
+/include ../Copy_Mbrs/SRV_STR_P.RPGLE
+/include ../Copy_Mbrs/USADRVAL_P.RPGLE
+/include ../Copy_Mbrs/BASE36_P.RPGLE
 
 //=== Named hexadecimal constants for function keys ============
-/include copy_mbrs,##AIDBYTES
+/include ../Copy_Mbrs/AIDBYTES.RPGLE
 
 //=== USAdrVal Paramter DS ======================================
-/include usps,USAdrvalDS
+/include ../Copy_Mbrs/USADRVALDS.RPGLE
 dcl-ds AdrIn  likeds (USAdrValDS);
 dcl-ds AdrOut likeds (USAdrValDS);
 
@@ -133,12 +134,9 @@ dcl-s NoErrors      ind;
 // === Global Fields ===========================================
 dcl-s Orig_CHGTIME timestamp;
 
-//=== Work Fields ==============================================
-dcl-s wkInt int(10);
-dcl-s wkMsgText varchar(256);
-
 // === Next available customer number ==========================
-dcl-s Cust_Next packed(4) dtaara('CUSTNEXT');
+dcl-s Cust_Next char(4) dtaara('CUSTNEXT');
+dcl-s varCust_Next varchar(4);
 
 //=== Program Status Data Structure ============================
 dcl-ds ProgStatus PSDS;
@@ -617,7 +615,9 @@ dcl-proc Main;
   begsr AddRecd;
     NoErrors = *on;
     in *LOCK Cust_Next;
-    Cust_Next += 1;
+    varCust_Next = Cust_Next;
+    varCust_Next = BASE36ADD(varCust_Next);
+    Cust_Next = varCust_Next;
     Out Cust_Next;
     CUSTID= Cust_Next;
     CHGTIME = %timestamp();
@@ -702,7 +702,7 @@ dcl-proc Main;
       write MSGCTL;
     endif;
 
-    exfmt Details;
+    exfmt DETAILS;
 
     // Clear most display file indicators
     clear dfIndClr;

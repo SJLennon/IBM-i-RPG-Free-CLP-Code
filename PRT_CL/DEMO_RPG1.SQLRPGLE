@@ -20,8 +20,8 @@
 ctl-opt option(*srcstmt: *nodebugio)
     bnddir('SQL_BND')
     actgrp(*new) main(Main);
-/COPY copy_mbrs,prt_p
-/COPY copy_mbrs,srv_sql_p
+/COPY ../Copy_Mbrs/PRT_P.RPGLE
+/COPY ../Copy_Mbrs/SRV_SQL_P.RPGLE
 
 dcl-proc Main;
     dcl-pi Main;
@@ -205,4 +205,4 @@ dcl-proc Main;
         endif;
     endsr;
 
-end-proc main;
+end-proc Main;

@@ -16,7 +16,7 @@ The top half of the window is information for the current user of the interactiv
 
 The bottom half provides information for the IT Department should the need arise.
 
-## RCDLCKDSP
+## RCDLCKDSP.RPGLE
 
 This is the standalone RPG program that handles the window display. It is passed two parameters:
 

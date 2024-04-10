@@ -24,12 +24,13 @@
 //            1997. This code probably performs better than existing
 //            SQL interfaces. For most use cases performance may not
 //            be a consideration.
+// 02/--/2024 Set for source in IFS
 //--------------------------------------------------------------------
 ctl-opt debug option(*nodebugio: *srcstmt)
     dftactgrp(*no) actgrp(*caller)
     main(Main);
 dcl-f GETOBJUP usage(*output) usropn block(*yes);
-/copy copy_mbrs,USPHDR
+/copy ../Copy_Mbrs/USPHDR.RPGLE
 //=== CRTUSRSPC (QUSCTRUS) Parameters ================================
 dcl-ds *n;
     CusQName char(20);
@@ -51,7 +52,7 @@ dcl-s MSNStackE char(10) inz('*CTLBDY');
 dcl-s MSNStackC int(10) inz(1);
 dcl-s MSNMsgKey char(4);
 //=== List Object Locks List Entry Layout ============================
-dcl-ds LOLEntry based(loptr);
+dcl-ds LOLEntry based(LOPtr);
     LOJobName char(10);
     LOJobUser char(10);
     LOJobNum char(6);
@@ -74,17 +75,17 @@ dcl-ds APIError len(272);
 end-ds;
 //=== Misc Field Definitions =========================================
 dcl-s LolFmt char(8) inz('OBJL0100');
-dcl-s ObjMEM char(10);
+dcl-s ObjMem char(10);
 dcl-s NumJobs packed(5);
-dcl-c MaxJobs const(4); //Maximum jobs for detailed reporting.
-// If you increase MaxJobs, increase the message parameter by 30 bytes
+dcl-c MAXJOBS const(4); //Maximum jobs for detailed reporting.
+// If you increase MAXJOBS, increase the message parameter by 30 bytes
 // for each additional job.
 dcl-ds JobName26;
     SavJobName like(lojobname);
     SavJobUser like(lojobuser);
     SavJobNum like(lojobnum);
 end-ds;
-dcl-s Jobname28 char(28);
+dcl-s JobName28 char(28);
 dcl-s JobType char(1);
 //=== Parameters for SRTUSRSPC =======================================
 // SKeyStart - Array of key starting positions
@@ -193,7 +194,7 @@ dcl-proc Main ;
             pObjType:
             ObjMem:
             APIError);
-    exsr srtusrspc;
+    exsr SrtUsrSpc;
     // === Main Program Loop =========================================
     // Loop through the entries in the list
     exsr NxtJob;
@@ -213,11 +214,11 @@ dcl-proc Main ;
     endif;
     if pMsgYN='*YES';
         select;
-            when NumJobs >= 1 and NumJobs <=MaxJobs;
-                pMsgfld=%trimr(pMsgFld) + '.';
-            when NumJobs > MaxJobs;
-                pMsgfld=%trimr(pMsgFld) + ' plus ' +
-                %trim(%editc(NumJobs-MaxJobs:'J'))  +
+            when NumJobs >= 1 and NumJobs <=MAXJOBS;
+                pMsgFld=%trimr(pMsgFld) + '.';
+            when NumJobs > MAXJOBS;
+                pMsgFld=%trimr(pMsgFld) + ' plus ' +
+                %trim(%editc(NumJobs-MAXJOBS:'J'))  +
                 ' more.';
             other;
         endsl;
@@ -256,7 +257,7 @@ dcl-proc Main ;
     endsr;
     // === BldMsg ====================================================
 
-    // Adds current job to the message until MaxJobs have been added.
+    // Adds current job to the message until MAXJOBS have been added.
     begsr BldMsg;
         JobName28=%trimr(SavJobName) + '/' +
         %trimr(SavJobUser) + '/' +
@@ -269,8 +270,8 @@ dcl-proc Main ;
                 %trimr(pObjType) +
                 ' is in use by ' +
                 JobName28;
-            when NumJobs >= 2 and NumJobs <=MaxJobs;
-                pMsgFld=%trimr(pMsgfld) + ', ' +
+            when NumJobs >= 2 and NumJobs <=MAXJOBS;
+                pMsgFld=%trimr(pMsgFld) + ', ' +
                 JobName28;
         endsl;
     endsr;
@@ -298,10 +299,10 @@ dcl-proc Main ;
     // === Sort User Space ===========================================
 
     begsr SrtUsrSpc;
-        p_SRTUSRSPC(
+        p_srtusrspc(
             CusName:
             CusLib:
-            S#keys:
+            S#Keys:
             SKeyStart:
             SKeyLgth:
             SKeyAorD:
@@ -335,14 +336,14 @@ dcl-proc Main ;
         // === Create User Space =====================================
         // Allow for 100,000 entries, which should be more than enough
         APIEProv = 0;
-        CusIntSize=%size(UspHdr) + (%size(LOLentry)*100000);
+        CusIntSize=%size(UspHdr) + (%size(LOLEntry)*100000);
         UsrSpcCrt(
             CusQName:
             CusAttr:
             CusIntSize:
             CusIntVal:
             CusAut:
-            Custext);
+            CusText);
         // === Get Pointer to User Space =============================
         UsrSpcPointer(CusQName: UspPtr);
         // === Initialize requested outputs ==========================

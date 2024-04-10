@@ -27,10 +27,10 @@ ctl-opt
     option(*nodebugio: *srcstmt)
 ;
 //=== Prototypes =====================================================
-/copy copy_mbrs,Srv_SQL_P
+/copy ../Copy_Mbrs/SRV_SQL_P.RPGLE
 
 //=== Parameter Data Structure Template ==============================
-/copy copy_mbrs,USAdrValDS
+/copy ../Copy_Mbrs/USADRVALDS.RPGLE
 
 // === Data area containing your USPS supplied User id. ==============
 // (The USPS supplied USER ID length is not clear, so I made it

@@ -1,34 +1,33 @@
 
        //=== Prototypes for SRV_MSG routines ========================
        //============================================================
-     D SndMsgPgmQ      pr                                                       Send Msg to PGM Q
-     D  pMsgQ                        10
-     D  pMsgid                        7
-     D  pMsgFile                     10
-     D  pMsgDta                     512    options(*NOPASS)
-     D                                     Varying
+       dcl-pr SndMsgPgmQ;   // Send Msg to PGM Q
+        *n char(10);                      // pMsgQ
+        *n char(7);                       // pMsgid
+        *n char(10);                      // pMsgFile
+        *n varchar(512) options(*nopass); // pMsgDta
+       end-pr;
        //============================================================
-     D ClrMsgPgmQ      pr              N                                        Clear PGM Msg Q
-     D pPgmMsgQ                      10
-
+       dcl-pr ClrMsgPgmQ ind; // Clear PGM Msg Q
+        *n char(10);            // pPgmMsgQ
+       end-pr;
        //============================================================
-     D SndEscMsg       pr                                                       Send ESC Msg
-     D piMsg                        512a   Const Varying
-     D pStackEnt                     10i 0 Const options(*nopass)
-
+       dcl-pr SndEscMsg;        // Send ESC Msg
+        *n varchar(512) const;             // piMsg
+        *n int(10) const options(*nopass); // pStackEnt
+       end-pr;
        //============================================================
-     D SndInfMsg       pr                                                       Send INF Msg
-     D piMsg                        512a   Const Varying
-
+       dcl-pr SndInfMsg;        // Send INF Msg
+        *n varchar(512) const;    // piMsg
+       end-pr;
        //============================================================
-     D JobLogMsg       Pr
-     D piMsg                        512a   Value Varying                        Msg to job log
-
+       dcl-pr JobLogMsg;
+        *n varchar(512) value; // piMsg  Msg to job log
+       end-pr;
        //============================================================
-     D Show            pr                  extpgm('SHOW')                       Show popup msg
-     D piPext                      8192a   Const Varying
-     D piMsgId                        7a   Const options(*NOPASS)
-     d piMsgFile                     21a   Const options(*NOPASS)
-
-
+       dcl-pr Show extpgm('SHOW'); // Show popup msg
+        *n varchar(8192) const; // piPext
+        *n char(7) const options(*nopass); // piMsgId
+        *n char(21) const options(*nopass); // piMsgFile
+       end-pr;
        //=== End of Prototypes forSRV_MSG Routines ==================

@@ -1,0 +1,17 @@
+             PGM
+/* === Create UTIL_BND binding directory ======================== */
+
+             /* === Set your target library here ================ */
+             DCL VAR(&TGT_LIB) TYPE(*CHAR) LEN(10) + 
+                 VALUE('*CURLIB')              
+             /* ================================================= */
+            
+             DLTBNDDIR BNDDIR(&TGT_LIB/UTIL_BND)
+             MONMSG     MSGID(CPF0000)
+          
+             CRTBNDDIR  BNDDIR(&TGT_LIB/UTIL_BND) TEXT('Utilities +
+                          Service PGMs')
+
+             ADDBNDDIRE BNDDIR(UTIL_BND) OBJ((SRV_MSG *SRVPGM *DEFER))
+             ADDBNDDIRE BNDDIR(UTIL_BND) OBJ((SRV_STR *SRVPGM *DEFER))
+             ENDPGM

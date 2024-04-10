@@ -1,0 +1,171 @@
+     A*===============================================================
+     A* This is a full screen expanding subfile to search for
+     A* a customer.
+     A*   - There are filters limit selection.
+     A*   - A message subfile is included.
+     A*===============================================================
+     A*  CRTDSPF FILE(PMTCUSTD) SRCFILE(...) RSTDSP(*YES)
+     A*==============================================================
+     A* There is a naming convention for the fields in each record.
+     A*  -- Screen Header:   Fields begin with SH_
+     A*  -- Subfile:         Fields begin with SF_
+     A*  -- Subfile Control: Fields begin with SC_
+     A*  -- Screen footer:   Fields begin with SFT_
+     A*===============================================================
+     A* Indicator usage:
+     A*   01-20 Are not routinely cleared after an EXFMT.  Some
+     A*         of these are used in subfile & subfile control for
+     A*         highlighting, etc., which does not change unless
+     A*         explicitly requested.
+     A*   21-99 Are routinely cleared after an EXFMT.
+     a*         79    SC_NAME Position Cursor
+     A*         80-89 Subfile record
+     A*         90    Nessage Subfile end
+     A*         91-99 Subfile Control Record
+     A* Note: INDARA is specified here and in the program and this
+     A*       means that the display file indicators are in a
+     A*       data structure separate from the program indicators.
+     A*       This makes it easy to name the indicators in the DS.
+     A*==============================================================
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      PRINT
+     A                                      INDARA
+     A                                      ALTHELP
+     A                                      CA03
+     A                                      CF04
+     A                                      CA05
+     A                                      CA06
+     A                                      CA09
+     A                                      CA42
+     A                                      HELP
+     A*===============================================================
+     A*=== Screen Header:  Fields begin with SH_ =====================
+     A*
+     A          R SH_HDR
+     A                                      OVERLAY
+     A                                      TEXT('Screen Header')
+     A            SH_PGM        10A  O  1  2
+     A                                  1 33'Customer Master'
+     A                                  1 72DATE
+     A                                      EDTCDE(Y)
+     A            SH_FUNCT      50A  O  2 16DSPATR(HI)
+     A                                  2 72TIME
+     A                                  2  2USER
+     A*===============================================================
+     A*=== Subfile:  Fields begin with SF_ ===========================
+     A*
+     A          R SFL                       SFL
+     A                                      TEXT('SubFile')
+     A  80                                  SFLNXTCHG
+     A            SF_ACT_H       1D  H
+     A            SF_CUST_H      4D  H
+     A            SF_OPT         1A  B  9  3
+     A  81                                  DSPATR(RI)
+     A  82                                  DSPATR(PC)
+     A            SF_NAME       40A  O  9  6
+     A  83                                  COLOR(RED)
+     A            SF_CITY       20A  O  9 47
+     A  83                                  COLOR(RED)
+     A            SF_STATE       2A  O  9 69
+     A  83                                  COLOR(RED)
+     A            SF_ZIP         5A  O  9 74
+     A  83                                  COLOR(RED)
+     A*===============================================================
+     A*=== Subfile Control: Fields begin with SC_ ====================
+     A*
+     A          R SFLCTL                    SFLCTL(SFL)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      TEXT('Subfile Control')
+     A                                      PAGEDOWN
+     A                                      RTNCSRLOC(&SC_PMT_RCD &SC_PMT_FLD)
+     A                                      BLINK
+     A                                      OVERLAY
+     A N98                                  ERASE(SFL)
+     A  98                                  SFLDSP
+     A                                      SFLDSPCTL
+     A  99                                  SFLCLR
+     A  97                                  SFLEND(*MORE)
+     A                                  4  2'Name starts with:'
+     A                                  4 31'City Starts with:'
+     A                                  4 60'State+'
+     A                                  4 71'Including'
+     A                                      COLOR(RED)
+     A N03                                  DSPATR(ND)
+     A            SC_NAME       13A  B  5  6
+     A  79                                  DSPATR(PC)
+     A            SC_CITY       13A  B  5 35
+     A            SC_STATE       2A  B  5 62
+     A                                  5 71'Inctives'
+     A                                      COLOR(RED)
+     A N03                                  DSPATR(ND)
+     A                                  6  2'Type options, press Enter.'
+     A                                      COLOR(BLU)
+     A            SC_OPTIONS    69A     7  2COLOR(BLU)
+     A                                  8  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  8  6'Customer Name'
+     A                                      DSPATR(UL)
+     A                                      COLOR(WHT)
+     A                                  8 47'City               '
+     A                                      DSPATR(UL)
+     A                                      COLOR(WHT)
+     A                                  8 69'St'
+     A                                      DSPATR(UL)
+     A                                      COLOR(WHT)
+     A                                  8 74'ZIP  '
+     A                                      COLOR(WHT)
+     A                                      DSPATR(UL)
+     A            SC_PMT_RCD    10A  H
+     A            SC_PMT_FLD    10A  H
+     A            SC_CSR_RCD     4S 0H      SFLRCDNBR(CURSOR)
+     A*===============================================================
+     A*=== Screen footer & function keys:  Fields begin with SFT_ ====
+     A*
+     A          R SFT_FKEY
+     A                                      TEXT('Screen Footer')
+     A                                      OVERLAY
+     A                                 22  2'                          Demo Cor-
+     A                                      p of America                       -
+     A                                               '
+     A                                      DSPATR(UL)
+     A            SFT_KEYS      78A  O 23  2COLOR(BLU)
+     A*===============================================================
+     A*=== Message Subfile:  No fields ===============================
+     A*
+     A          R MSGSFL                    SFL
+     A                                      TEXT('Message Subfile')
+     A                                      SFLMSGRCD(24)
+     A            MSGKEY                    SFLMSGKEY
+     A            MSGPGMQ                   SFLPGMQ(10)
+     A*===============================================================
+     A*=== Message Subfile Control: No fields ========================
+     A*
+     A          R MSGCTL                    SFLCTL(MSGSFL)
+     A                                      TEXT('Message Subfile Control')
+     A                                      PAGEDOWN
+     A                                      PAGEUP
+     A                                      OVERLAY
+     A                                      SFLDSP
+     A                                      SFLDSPCTL
+     A                                      SFLINZ
+     A N90                                  SFLEND
+     A                                      SFLSIZ(0002)
+     A                                      SFLPAG(0001)
+     A            MSGPGMQ                   SFLPGMQ(10)
+     A*===============================================================
+     A*=== Dummy Record ==============================================
+     A*
+     A          R DUMMY
+     A                                 24 79'*'
+     A*%%RS+<record-sequences>
+     A*%%RS+ <sequence name="TOP">
+     A*%%RS+  <device type="display" width="80" height="24" />
+     A*%%RS+  <record-write record-format="SH_HDR" />
+     A*%%RS+  <record-write record-format="SFT_FKEY" />
+     A*%%RS+  <record-write record-format="SFL" />
+     A*%%RS+  <record-write record-format="SFLCTL" />
+     A*%%RS+  <record-write record-format="MSGSFL" />
+     A*%%RS+  <record-write record-format="MSGCTL" />
+     A*%%RS+ </sequence>
+     A*%%RS </record-sequences>

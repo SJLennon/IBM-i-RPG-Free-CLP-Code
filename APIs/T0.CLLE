@@ -1,0 +1,5 @@
+             PGM
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(200)
+             GETOBJUSR  OBJECT(QIWS/QCUSTCDT) TYPE(*FILE) MSGFLD(&MSG)
+             SNDMSG     MSG(&MSG) TOUSR(*REQUESTER)
+             ENDPGM
