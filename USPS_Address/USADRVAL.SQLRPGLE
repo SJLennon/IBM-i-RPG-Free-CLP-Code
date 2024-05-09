@@ -20,6 +20,10 @@
 // input and output, but it doesn't have to be the same memory
 // in the caller. Use copy member USAdrValDS.
 //====================================================================
+// 04/2024 LENNON
+//  Change to HTTPS
+//  Provide password, even though it currently seems to be ignored. 
+//====================================================================
 
 ctl-opt
     nomain
@@ -35,7 +39,10 @@ ctl-opt
 // === Data area containing your USPS supplied User id. ==============
 // (The USPS supplied USER ID length is not clear, so I made it
 // longer than the 12-char one supplied to me..)
-dcl-ds USPS_ID   dtaara  len(20) qualified;
+// Ditto for password, though password seems to be ignored.
+dcl-ds USPS_ID    dtaara  len(20) qualified;
+end-ds;
+dcl-ds USPS_PWD   dtaara  len(20) qualified;
 end-ds;
 
 //=== USAdrVal =======================================================
@@ -54,20 +61,24 @@ dcl-proc USAdrVal   export;
   dcl-ds  po  likeds(USAdrValDS);
 
   dcl-s ID        varchar(20);
-  // Get USPS UserID.
+  dcl-s PWD       varchar(20);
+  // Get USPS UserID & Password
   in USPS_ID;
   ID = %trim(USPS_ID);
+  in USPS_PWD;
+  PWD = %trim(USPS_PWD);
 
   clear po;
 
   // Call USPS Address Validate API. It returns an XML document.
   exec sql
     values  QSYS2.HTTP_GET(
-      'http://production.shippingapis.com/ShippingAPI.dll'
+      'https://secure.shippingapis.com/ShippingAPI.dll'
       concat '?API=Verify&XML=' concat
       url_encode(
-      '<AddressValidateRequest ' concat
-        'USERID="' concat :ID concat '">' concat
+        '<AddressValidateRequest ' concat
+        'USERID="' concat :ID concat '"' 
+          concat ' PASSWORD="' concat :PWD concat '">' concat
         '<Revision>1</Revision>' concat
         '<Address ID="0">' concat
             '<Address1>' concat :pi.Address1 concat '</Address1>' concat
@@ -77,7 +88,7 @@ dcl-proc USAdrVal   export;
             '<Zip5>' concat :pi.Zip5 concat  '</Zip5>' concat
             '<Zip4>' concat :pi.Zip4 concat '</Zip4>' concat
         '</Address>' concat
-      '</AddressValidateRequest>'
+        '</AddressValidateRequest>'
       )
     ) into :retXML;
   if (SQLSTATE <> SQLSUCCESS);

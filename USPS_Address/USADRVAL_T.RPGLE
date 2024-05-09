@@ -1,6 +1,6 @@
 **free
 ctl-opt debug option(*nodebugio: *srcstmt)
-    dftactgrp(*no) actgrp(*caller)
+    dftactgrp(*no) actgrp('USPS')
     bnddir('UTIL_BND':'SQL_BND':'ADRVAL_BND')
     main(Main);
 //====================================================================
@@ -83,7 +83,7 @@ dcl-proc Main;
   return;
 end-proc Main;
 
-//=== Routine to print input and outpur side by side =================
+//=== Routine to print input and output side by side =================
 dcl-proc DspAdr;
   dcl-pi DspAdr;
     pi likeds(USAdrValDS);

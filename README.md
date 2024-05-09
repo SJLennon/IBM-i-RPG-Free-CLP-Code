@@ -60,6 +60,10 @@ Many shops are still using 5250 "green screen" applications and these need to be
 
 A service program to add 1 to an alpha-numeric string of any length.
 
+## DATEADJ
+
+A command to add or subtract from a date in a CL program
+
 ## DATE_UDF
 
 SQL User Defined Functions to convert legacy dates to true dates.  Written in RPG.
