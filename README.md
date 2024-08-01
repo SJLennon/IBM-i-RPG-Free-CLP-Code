@@ -40,13 +40,27 @@ The primary difference from moving away from PF-SRC file members is that COPY an
 
  ``/INCLUDE ../Copy_Mbrs/SRV_MSG_P.RPGLE``. 
 
-## Copy_Mbrs
+# Using the Source
 
-Code to be copied into other programs.
+The easiset way to get the source is to clone this project to your personal computer and create the objects using the ["Code for IBM i"](https://codefori.github.io/docs/#/) extension of [VS Code](https://code.visualstudio.com/).
+
+## Service programs
+
+Some of the code uses services program and binding directories. Thus you may need to  explore the Service_pgms folder and create those objects. 
+
+The 5250-Subile folder also requires a service program from the BASE36 folder.
+
+# Folders
+
+Each folder has a "readme" file that provides more information on the source files it contains. Following is a high level list of the folders.
 
 ## Service_Pgms
 
 Utility support routines that are called from other code.
+
+## Copy_Mbrs
+
+Code to be copied into other programs.
 
 ## SQL_SKELETON
 
