@@ -1,4 +1,4 @@
-/* Convenience pgm that creates CUSTNEXT data area in *CUURLIB */
+/* Convenience pgm that creates CUSTNEXT data area in *CURLIB */
 /* This is a really high number that I don't expect in test data */
 /* Strictly it should be set to CUSTMAST COUNT(*) + 1            */
              PGM

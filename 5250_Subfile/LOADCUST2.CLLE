@@ -1,4 +1,5 @@
 /* === Loads CUSTMAST with as many random records as specified === */
+/* === See program LOADCUSTR                                   === */
 /*     Submits job to batch  */
 
              PGM        PARM(&NUM)
