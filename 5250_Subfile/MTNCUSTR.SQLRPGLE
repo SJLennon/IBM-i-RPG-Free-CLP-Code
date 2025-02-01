@@ -34,8 +34,6 @@
 //==============================================================
 // Compilation
 //    Use CRTSQLRPGI command.
-//    Note that /INCLUDEs expects to find code in DEMO library,
-//    not the default of QRPGLESRC. Change as needed.
 //=============================================================
 // 12/2023 Convert to totally **FREE
 // 02/2024 Change CUSTID to character for alpha-numeric keys

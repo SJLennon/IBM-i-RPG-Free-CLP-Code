@@ -64,6 +64,9 @@
 //============================================================
 // 12/2023 Converted to totally **FREE
 //         Changed to use SQLPROBLEM service pgm
+// 01/2025 Require at least one parameter.
+//         Remove commented SQLPROBLEM code.
+//         Fix some issues with "Return selected customer" 
 //============================================================
 
 ctl-opt dftactgrp(*no) actgrp(*caller) option(*nodebugio: *srcstmt)
@@ -222,9 +225,17 @@ for fetch only
 //=============================================================
 // === Program Starts Here ====================================
 //=============================================================
+// Check at least one parameter. Calling from the command line
+// without a parm caused confusion for newer developers.       
+// In a production environment, this would be called from a 
+// tested menu or some program that enforced security.
+if %parms() = 0;
+    snd-msg *DIAG (%trim(PgmName) + ': There must be at least one parameter'); 
+    snd-msg *ESCAPE 'See previous diagnostic (*DIAG) message ';
+endif;
 
 // === Set up for the first screen IO =========================
-Init();
+Init(pParmType : pCustID);
 BldFkeyText();
 SflClear();
 
@@ -265,6 +276,9 @@ dou COWSCOMEHOME;
             SflFirstPage();
         else;
             ProcessOption();
+        endif;
+        if Quit_Pgm = *on;
+            leave;
         endif;
         iter;
     endif;
@@ -331,7 +345,7 @@ Dcl-Proc ScreenIO;
         write MSGCTL;
     endif;
 
-End-Proc;
+End-Proc ScreenIO;
 
 //=== ProcessFunctionKey ======================================
 // Process whatever keyboard entry was made.
@@ -403,7 +417,7 @@ Dcl-Proc ProcessFunctionKey;
             SflMsgSnt= SndSflMsg('DEM0003');
     endsl;
 
-End-Proc;
+End-Proc ProcessFunctionKey;
 
 //=== ProcessOption ===========================================
 // Did user enter one or more options?  Loop through the
@@ -427,6 +441,7 @@ Dcl-Proc ProcessOption;
                     // Return customer number to caller
                     pCustID = SF_CUST_H;
                     CloseDownPgm();
+                    Quit_Pgm = *on;
                     return;
                 //--- 2 = Edit with external program -----------------
                 when SF_OPT = '2' and Maint_OK = *on;
@@ -497,7 +512,7 @@ Dcl-Proc ProcessOption;
                ) + 1;
     endif;
 
-End-Proc;
+End-Proc ProcessOption;
 
 //=== SflFirstPage ============================================
 // Processes the Search fields in the Sub file control, then
@@ -527,7 +542,7 @@ Dcl-Proc SflFirstPage;
         endif;
 
     endif;
-End-Proc;
+End-Proc SflFirstPage;
 
 //=== SflFillPage =============================================
 // Adds a page worth of records to the subfile.
@@ -582,7 +597,7 @@ Dcl-Proc SflFillPage;
                 endIf;
             endfor;
     endsl;
-End-Proc;
+End-Proc SflFillPage;
 
 
 //=== Update Subfile Recd =====================================
@@ -594,7 +609,7 @@ Dcl-Proc UpdSflRecd;
     update SFL;
     sfInAct = *off;
     write DUMMY; // Supposed to help restore SFL display
-End-Proc;
+End-Proc UpdSflRecd;
 
 //=== ProcessSearchCriteria ====================================
 // Examine the data entered in the search fields and build an
@@ -647,7 +662,7 @@ Dcl-Proc ProcessSearchCriteria;
         endif;
         CursorOpen = *on;
     endif;
-End-Proc;
+End-Proc ProcessSearchCriteria ;
 
 //=== SetCursorPostion ========================================
 // If Invalid Option, position screen cursor on first error,
@@ -656,7 +671,7 @@ Dcl-Proc SetCursorPosition;
     if OptError = *off;
         SC_CSR_RCD=SflRRN;
     endif;
-End-Proc;
+End-Proc SetCursorPosition;
 
 //=== BldFKeyText =============================================
 // Build the Function key text for the bottom of the screen.
@@ -684,7 +699,7 @@ Dcl-Proc BldFkeyText;
     endif;
     SFT_KEYS = CatB(SFT_KEYS : F9Text);
     SFT_KEYS = CatB(SFT_KEYS : F12TEXT);
-End-Proc;
+End-Proc BldFkeyText ;
 
 //=== CloseDownPgm ============================================
 // Things to do before we issue a return to the caller
@@ -692,12 +707,17 @@ Dcl-Proc CloseDownPgm;
     CloseCursor();
     close PMTCUSTD;
     CustDsp(); // Close Window display file.
-End-Proc;
+End-Proc CloseDownPgm;
 
 //=== Init ====================================================
 // Must be executed each time program is entered, because F12
 // and Enter key leave with LR off.
 Dcl-Proc Init;
+    dcl-pi *n;
+        pParmType char(1);
+        pCustID like(CUSTID);     
+    end-pi;
+
     //=== Options Text ========================================
     dcl-c OPT1TEXT '1=Select';
     dcl-c OPT2TEXT '2=Edit';
@@ -744,7 +764,7 @@ Dcl-Proc Init;
         SH_FUNCT = CenterStr(HdrMaint);
     endif;
     SC_OPTIONS = CatB(SC_OPTIONS : OPT5TEXT);
-End-Proc;
+End-Proc Init;
 
 //=============================================================
 // ===  S u b  P r o c e d u r e s ============================
@@ -765,34 +785,14 @@ dcl-proc CatB;
     else;
         return %trimr(ToStr) + ' ' + AddStr;
     endif;
-end-proc;
-
-// //=== SQLProblem ==============================================
-// // For those "Never should happen" SQL errors.
-// // Issues DUMP(A) to dump memory, then ends program by
-// // sending an *ESCAPE message of the supplied debugging text.
-// dcl-proc SQLProblem;
-//     dcl-pi SQLProblem;
-//         piSQLDebug varchar(1024) value;
-//     end-pi;
-
-//        //--- Local Variables ----------------------------------------
-//     dcl-s wkSQLDebug varchar(1024);
-
-//     wkSQLDebug = 'SQLSTT ' + SQLSTT
-//                     + ' << Unexpected SQL Return Code: '
-//                     + piSQLDebug;
-//     dump(a);
-//     SndEscMsg(wkSQLDebug);
-//     return;
-// end-proc;
+end-proc CatB;
 
 //=== FetchNextData ===========================================
 // Fetch the next row from the cursor
 // Returns:        End of data Indicator:
 //                   *ON   No more data, nothing returned
 //                   *OFF  Data returned
-       //------------------------------------------------------------
+//------------------------------------------------------------
 dcl-proc FetchNextData;
     dcl-pi FetchNextData ind;
         TheRecd likeds(CustMast);
@@ -819,7 +819,7 @@ dcl-proc FetchNextData;
 
     RETURN wkEof;
 
-end-proc;
+end-proc FetchNextData;
 
 //=== ReadByKey ===============================================
 // Read the record by key into the specified data record
@@ -846,7 +846,7 @@ dcl-proc ReadByKey;
                 from     CUSTMAST
                 where    CUSTID = :TheKey
     ;
-end-proc;
+end-proc ReadByKey;
 
 //=== BuildSFLRecd ============================================
 // Builds a SFL record from the specified data record
@@ -868,7 +868,7 @@ dcl-proc BuildSflRecd;
     endif;
       // Save Active status in case we update subfile
     SF_ACT_H = CustRecd.ACTIVE;
-end-proc;
+end-proc BuildSflRecd;
 
 //=== CloseCursor =============================================
 // Closes the SQL Cursor if open
@@ -883,7 +883,7 @@ dcl-proc CloseCursor;
         CursorOpen = *off;
     endif;
     RETURN;
-end-proc;
+end-proc CloseCursor;
 
 //=== SndSflMsg ===============================================
 // Send a message to the Error Subfile
@@ -925,7 +925,7 @@ dcl-proc SndSflMsg;
     retField = *on;
     RETURN retField;
 
-end-proc;
+end-proc SndSflMsg;
 
 //=== SflClear ================================================
 // Clears the Subfile
@@ -937,4 +937,4 @@ dcl-proc SflClear;
     write SFLCTL;
     scSflClr = *OFF;
     return;
-end-proc;
+end-proc SflClear;
