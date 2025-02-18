@@ -1,0 +1,31 @@
+                                            DSPSIZ(24 80 *DS3)
+                                            ERRSFL
+                                            MSGLOC(24)
+                                            CA03(03 'Exit')
+                R FMT01
+     A            F1             2Y 0B  3 03SNGCHCFLD
+     A                                      CHOICE(1 'Choice 1   ')
+     A                                      CHOICE(2 '>Choice 2   ')
+     A                                      CHOICE(3 'Choice 3   ')
+     A                                      CHOICE(4 'Choice 4   ')
+     A                                      CHOICE(5 'Choice 5   ')
+     A  01                                  CHOICE(6 'Choice 6   ')
+     A                                      CHOICE(7 'Choice 7   ')
+     A                                      CHCCTL(1 &CHGCTL1)
+     A                                      CHCCTL(2 &CHGCTL2)
+     A                                      CHCCTL(3 &CHGCTL3)
+     A                                      CHCCTL(4 &CHGCTL4)
+     A                                      CHCCTL(5 &CHGCTL5)
+     A                                      CHCCTL(6 &CHGCTL6)
+     A                                      CHCCTL(7 &CHGCTL7)
+     A                                      CHCUNAVAIL((*COLOR WHT))
+     A            CHGCTL1        1Y 0H
+     A            CHGCTL2        1Y 0H
+     A            CHGCTL3        1Y 0H
+     A            CHGCTL4        1Y 0H
+     A            CHGCTL5        1Y 0H
+     A            CHGCTL6        1Y 0H
+     A            CHGCTL7        1Y 0H
+     A            F2            30A  O 11 03COLOR(WHT)
+     A            F3            30A  O 12 03COLOR(WHT)
+                                       23  3'F3=Exit' COLOR(BLU)

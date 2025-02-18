@@ -123,3 +123,6 @@ Developer Utilities.
     
     RC - Display File Record count
 
+## SNGCHCFLD/MLTCHCFLD DSPF Keywords
+
+A demo program to show how to protect such fields.
