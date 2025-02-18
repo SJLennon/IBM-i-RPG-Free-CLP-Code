@@ -15,7 +15,7 @@ When program BOOTH is called, the display looks like this, with Choice 7 already
 
 ![alt text](./Images/booth1.png)
 
-Select a choice with your mouse of using the down and up arrow keys and the space bar.
+Select a choice with your mouse, or using the down and up arrow keys and the space bar.
 
 Selecting Choice 2 and pressing enter show this: 
 
@@ -24,6 +24,7 @@ Selecting Choice 2 and pressing enter show this:
 Every other time you press enter Choice 6 appears or disappears, by flipping *IN01.
 
 If you clear the default selection and make no selection, then zero is returned for that choice:
+
 ![alt text](./Images/booth3.png)
 
 ### Booth.DSPF
