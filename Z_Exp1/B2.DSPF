@@ -1,0 +1,52 @@
+     A                                      DSPSIZ(24 80 *DSP3)
+     A                                      CHGINPDFT(HI UL)
+     A                                      CA03(03 'Exit')
+     A                                      CA12(12 'Cancel')
+     A          R TESTR
+     A*%%TS  SD  20250329  154927  LENNONS     REL-V7R5M0  5770-WDS
+     A*
+     A            A#SNG1         1Y 0H
+     A            A#SNG2         1Y 0H
+     A            A#SNG3         1Y 0H
+     A            A#SNG1T        5A  P
+     A            A#SNG2T        5A  P
+     A            A#SNG3T        5A  P
+     A            A#MLT1         1Y 0H
+     A            A#MLT3         1Y 0H
+     A            A#MLT2         1Y 0H
+     A            A#MLT1T        5A  P
+     A            A#MLT2T        5A  P
+     A            A#MLT3T        5A  P
+     A                                 11 50'Status'
+     A                                 11 64'Ship'
+     A                                 12  3'Product:'
+     A            PRODUCT       30A  B 12 12DSPATR(UL)
+     A*
+     A  02        P1DESC         5A  O 12 51
+     A N02        P1ANR          2Y 0B 12 51SNGCHCFLD(*RSTCSR *AUTOSLT *SLTIND -
+     A                                      (*NUMROW 3))
+     A N01                                  CHCAVAIL((*COLOR TRQ) (*DSPATR HI))
+     A  01                                  CHCUNAVAIL((*COLOR WHT) (*DSPATR HI-
+     A                                      ))
+     A                                      CHOICE(1 &A#SNG1T)
+     A                                      CHCCTL(1 &A#SNG1)
+     A                                      CHOICE(2 &A#SNG2T)
+     A                                      CHCCTL(2 &A#SNG2)
+     A                                      CHOICE(3 &A#SNG3T)
+     A                                      CHCCTL(3 &A#SNG3)
+     A*
+     A  02        P2DESC1        5A  O 12 65
+     A  02        P2DESC2        5A  O 13 65
+     A  02        P2DESC3        5A  O 14 65
+     A N02        P2INT          2Y 0B 12 65MLTCHCFLD(*RSTCSR *SLTIND (*NUMROW -
+     A                                      3))
+     A N01                                  CHCAVAIL((*COLOR PNK) (*DSPATR HI))
+     A  01                                  CHCUNAVAIL((*COLOR WHT) (*DSPATR HI-
+     A                                      ))
+     A                                      CHOICE(1 &A#MLT1T)
+     A                                      CHCCTL(1 &A#MLT1)
+     A                                      CHOICE(2 &A#MLT2T)
+     A                                      CHCCTL(2 &A#MLT2)
+     A                                      CHOICE(3 &A#MLT3T)
+     A                                      CHCCTL(3 &A#MLT3)
+     A  02        MSG           70A  O 17 10

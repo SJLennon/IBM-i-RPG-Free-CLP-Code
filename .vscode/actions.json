@@ -36,24 +36,6 @@
     ]
   },
   {
-    "name": "Create C Program",
-    "command": "CRTBNDC PGM(&CURLIB/&NAME) SRCSTMF('&RELATIVEPATH') OPTION(*EVENTF) DBGVIEW(*SOURCE) TGTCCSID(*JOB)",
-    "deployFirst": true,
-    "environment": "ile",
-    "extensions": [
-      "C"
-    ]
-  },
-  {
-    "name": "Create C Module",
-    "command": "CRTCMOD MODULE(&CURLIB/&NAME) SRCSTMF('&RELATIVEPATH') OPTION(*EVENTF) DBGVIEW(*SOURCE) TGTCCSID(*JOB)",
-    "deployFirst": true,
-    "environment": "ile",
-    "extensions": [
-      "C"
-    ]
-  },
-  {
     "extensions": [
       "CLP",
       "CLLE"
@@ -91,38 +73,11 @@
   },
   {
     "name": "Create DSPF",
-    "command": "CRTDSPF FILE(&CURLIB/&NAME) SRCFILE(&SRCFILE) RSTDSP(*YES) OPTION(*EVENTF)",
+    "command": "CRTDSPF FILE(&CURLIB/&NAME) SRCFILE(&SRCFILE) RSTDSP(*NO) OPTION(*EVENTF)",
     "environment": "ile",
     "deployFirst": true,
     "extensions": [
       "dspf"
     ]
-  },
-  {
-    "name": "Create Panel Group (CRTPNLGRP)",
-    "command": "?CRTPNLGRP PNLGRP(&CURLIB/&NAME) SRCFILE(&SRCFILE)  OPTION(*EVENTF)",
-    "environment": "ile",
-    "deployFirst": true,
-    "extensions": [
-      "pnlgrp"
-    ]
-  },
-  {
-    "extensions": [
-      "GLOBAL"
-    ],
-    "name": "Create Service Program (CRTSRVPGM EXPORT(*ALL))",
-    "command": "CRTSRVPGM SRVPGM(&CURLIB/&NAME) EXPORT(*ALL) BNDSRVPGM(*NONE) BNDDIR(*NONE) ACTGRP(*CALLER)",
-    "environment": "ile"
-  },
-  {
-    "extensions": [
-      "BND",
-      "BINDER"
-    ],
-    "deployFirst": true,
-    "name": "Create Service Program (CRTSRVPGM with source)",
-    "command": "CRTSRVPGM SRVPGM(&CURLIB/&NAME) SRCSTMF('&RELATIVEPATH') BNDSRVPGM(*NONE) BNDDIR(*NONE) ACTGRP(*CALLER)",
-    "environment": "ile"
   }
 ]
