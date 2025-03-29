@@ -1,5 +1,5 @@
 # Experimental Stuff
-This is code that may come and go. It is usually minimal and may reflect my usual standards and approach.
+This is code that may come and go. It is usually minimal and may not reflect my usual standards and approach.
 
 ## Protection of SNGCHCFLD & MLTCHCFLD Display File keywords
 
@@ -24,8 +24,12 @@ Press enter and see this confirmation screen:
 
 ![Confirmation](./Screen_3.png)
 
-Press F12 and you are back to the original entry. Enter exits the program.
+Press F12 and you are back to the original entry. 
+
+![Redisplayed](./Screen_4.png)
+
+Enter exits the program.
 
 ## B2.RPGLE
 
-The driving RPGLE. The choice fields are in an array and can easily be changed with minimal effort.
+The driving RPGLE. There are comments in the code. The choice fields are in an array and can easily be changed with minimal effort. 
