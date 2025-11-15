@@ -66,3 +66,32 @@ Contains procedures to manipulate strings in an RPG program.
   JobLogMsg in SRV_MSG is more useful. Really should be part of SRV_MSG.
 
   * SHOW_T   RPG program to test & exercise SHOW.
+
+## STATEVAL
+
+  A service program to validate a 2-character USA state code.
+
+  This demonstrates several techniques:
+   
+  - Using a variable sized array.
+  
+  - Loading the array with SQL on the first call.
+  
+  - In the first and subsequent calls using the array for the lookup.
+
+  - Use of static variables
+
+  - Passing an optional parameter.
+
+### Couple or caveats:
+
+  - Any program that call this service *must not* be in the default activation group, otherwise the arrary will be loaded every call. So code `ctl-opt DftActGrp(*NO) ActGrp(...)`.
+
+  - %LOOKUP does a binary search, so the data loaded must be in sorted--note that I have an ORDER BY on the SQL select. In practical terms, a binary search of this size of table might be less efficent than just plain old LOOKUP. Theory says it is a tradeoff until you get to 100 or more items in the table.
+
+  - You can find SQL to create/load the STATES table in the *5250 Subfile* folder.
+
+#### STATEV_T
+A program to test STATEVAL. Note the 'ActGrp(*new)'.
+
+
