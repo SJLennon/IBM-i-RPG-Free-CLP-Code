@@ -1,3 +1,8 @@
+-- DEPRECATED in this fork: PGM_REFS_INIT (pgm_refs_init.sql) now
+-- creates this table (and a PGM_REFS_VISITED table) in the library
+-- you pass as a parameter, so you no longer need to hand-edit this
+-- file or the procedure. Kept here for reference only.
+--
 -- Table created by the PGM_REFS SQL procedure
 -- Change LENNONSB to your library name to suit and make
 -- a similar change in PGM_REFS.

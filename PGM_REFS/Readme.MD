@@ -20,15 +20,21 @@ and browsing [Scott Forstie Gists on Github](https://gist.github.com/forstie
 In no way does this replace a real cross reference utilily, such as Hawkeye
 or X-Analysis. If you don't have one, this *might* be somewhat useful.
 
-## pgm_refs_Tbl.sql
+## pgm_refs_init.sql
 
-This is the DDL to create the REFS file that the procedure builds. 
+Run this first. `PGM_REFS_INIT(p_RefsLib)` creates (or resets) the `REFS`
+and `PGM_REFS_VISITED` tables in whatever library you pass it, e.g.
+`call pgm_refs_init('LENNONSB');`. No more hand-editing a library name
+into the DDL.
 
-Change the library of the REFS table to one of your libraries and then run this first.
+## pgm.refs_Tbl.sql
+
+Deprecated - kept only for reference. This was the original manual DDL
+for the REFS table, with the library name hardcoded; use
+`pgm_refs_init.sql` instead.
 
 ## pgm_refs.sql
-This is the code to create the PGM_REFS procedure. Change the library of the REFS table to the library you used above.
-There are two places to change following a comments like this: <<<<<< Change this table library >>>>>>>
+This is the code to create the PGM_REFS procedure.
 
 ## pgm_refs_test.SQL
 
@@ -39,7 +45,46 @@ These are some samples of calling the procedure to test it. I used iACS Run SQL 
 ### Parameters
 See pgm_refs_test.sql for some sample call.
 
-You need to supply library and name. The type will default to `*PGM` and the depth will default to `0` if not supplied.
+You need to supply library and name. The type will default to `*PGM`, the depth will default to `0`, and the REFS library will default to `CURRENT_SCHEMA` if not supplied.
+
+## Fork enhancements
+
+This fork makes two changes to the original procedure:
+
+1. **Parameterized REFS library.** `p_RefsLib` is a new parameter on
+   `PGM_REFS` (defaults to `CURRENT_SCHEMA`). Combined with
+   `pgm_refs_init.sql`, you never need to hand-edit a library name into
+   the SQL again.
+
+2. **Memoization.** A new `PGM_REFS_VISITED` table records every
+   object `PGM_REFS` has already expanded with `DSPPGMREF` in the
+   current run. On entry, the procedure checks this table first and
+   returns immediately if the object was already visited - so it
+   never runs `DSPPGMREF` twice on the same object.
+
+   The original relied only on the `REFS` table's primary key to
+   dedupe individual *edges* (a specific caller/callee pair). That
+   still let the same *object* get re-expanded with a fresh
+   `DSPPGMREF` call every time it was reached by a different parent
+   ("diamond" shaped dependencies - e.g. two programs both calling the
+   same service program) or via a genuine cycle. On a real system
+   with shared service programs this could mean re-running the
+   (relatively slow) `DSPPGMREF` command on the same object many
+   times. Now it runs once per object per run.
+
+   `p_MaxDepth` (default `999`) is also new: a hard cap on recursion
+   depth, as a second safety net for very deep or unexpectedly cyclic
+   object graphs, on top of the cycle protection memoization already
+   gives you.
+
+   Note: `DROP TABLE ... IF EXISTS`, used in `pgm_refs_init.sql`,
+   needs IBM i 7.3/7.4 with the relevant Db2 for i PTF group (Oct 2020
+   or later), or 7.5+.
+
+   This has been reviewed carefully but **not run against a live IBM i
+   system** - I don't have one set up. Please test on PUB400 or your
+   own system before relying on it, and report back if you hit
+   anything.
 
 ### Library list
 
